@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'qt_designer/main_window.ui'
+# Form implementation generated from reading ui file 'app/qt_designer/main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.2
 #
@@ -9,6 +9,9 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QPainter, QBrush, QPen
+from PyQt5.QtWidgets import QDialog, QMainWindow
+from new_polygon_window import Ui_newPolygonWindow
 
 
 class Ui_MainWindow(object):
@@ -20,11 +23,6 @@ class Ui_MainWindow(object):
         self.debuggerTextBrowser = QtWidgets.QTextBrowser(self.centralwidget)
         self.debuggerTextBrowser.setGeometry(QtCore.QRect(200, 411, 631, 121))
         self.debuggerTextBrowser.setObjectName("debuggerTextBrowser")
-        self.displayFrame = QtWidgets.QFrame(self.centralwidget)
-        self.displayFrame.setGeometry(QtCore.QRect(200, 20, 631, 381))
-        self.displayFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.displayFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.displayFrame.setObjectName("displayFrame")
         self.displayFileLabel = QtWidgets.QLabel(self.centralwidget)
         self.displayFileLabel.setGeometry(QtCore.QRect(10, 20, 81, 31))
         self.displayFileLabel.setObjectName("displayFileLabel")
@@ -43,15 +41,15 @@ class Ui_MainWindow(object):
         self.loadPushButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadPushButton.setGeometry(QtCore.QRect(130, 140, 51, 34))
         self.loadPushButton.setObjectName("loadPushButton")
-        self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(10, 190, 111, 18))
-        self.label.setObjectName("label")
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(10, 310, 58, 18))
-        self.label_2.setObjectName("label_2")
-        self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(10, 430, 58, 18))
-        self.label_3.setObjectName("label_3")
+        self.transformationsLabel = QtWidgets.QLabel(self.centralwidget)
+        self.transformationsLabel.setGeometry(QtCore.QRect(10, 190, 111, 18))
+        self.transformationsLabel.setObjectName("transformationsLabel")
+        self.rotationLabel = QtWidgets.QLabel(self.centralwidget)
+        self.rotationLabel.setGeometry(QtCore.QRect(10, 310, 58, 18))
+        self.rotationLabel.setObjectName("rotationLabel")
+        self.zoomLabel = QtWidgets.QLabel(self.centralwidget)
+        self.zoomLabel.setGeometry(QtCore.QRect(10, 430, 58, 18))
+        self.zoomLabel.setObjectName("zoomLabel")
         self.upPushButton = QtWidgets.QPushButton(self.centralwidget)
         self.upPushButton.setGeometry(QtCore.QRect(60, 220, 51, 34))
         self.upPushButton.setObjectName("upPushButton")
@@ -79,9 +77,9 @@ class Ui_MainWindow(object):
         self.rotateZPushButton = QtWidgets.QPushButton(self.centralwidget)
         self.rotateZPushButton.setGeometry(QtCore.QRect(130, 370, 51, 34))
         self.rotateZPushButton.setObjectName("rotateZPushButton")
-        self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(20, 340, 58, 18))
-        self.label_4.setObjectName("label_4")
+        self.degreesLabel = QtWidgets.QLabel(self.centralwidget)
+        self.degreesLabel.setGeometry(QtCore.QRect(20, 340, 58, 18))
+        self.degreesLabel.setObjectName("degreesLabel")
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
         self.textEdit.setGeometry(QtCore.QRect(80, 330, 91, 31))
         self.textEdit.setObjectName("textEdit")
@@ -105,6 +103,18 @@ class Ui_MainWindow(object):
         self.line_4.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_4.setObjectName("line_4")
+        self.displayFrame = QtWidgets.QLabel(self.centralwidget)
+        self.displayFrame.setGeometry(QtCore.QRect(200, 20, 630, 380))
+        self.displayFrame.setAutoFillBackground(False)
+        self.displayFrame.setStyleSheet("background-color: rgb(255, 255, 255);")
+        canvas = QtGui.QPixmap(400, 300)
+        canvas.fill(QtGui.QColor("white"))
+        self.displayFrame.setPixmap(canvas)
+        self.painter = QtGui.QPainter(self.displayFrame.pixmap())
+        # self.displayFrame.setText("")
+        self.displayFrame.setObjectName("displayFrame")
+        self.newPushButton.clicked.connect(self.open_new_polygon_window)
+        # self.newPushButton.clicked.connect(lambda: self.draw_something(10, 10, 10, 300))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 847, 30))
@@ -115,7 +125,30 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.dialogs = list()
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    
+    def open_new_polygon_window(self):
+        print("Open new polygon window")
+        window = QMainWindow()
+        polygon_window = Ui_newPolygonWindow()
+        polygon_window.setupUi(window)
+        self.dialogs.append(polygon_window)
+        print(self.dialogs)
+        window.show()
+        window.update()
+    
+    def draw_something(self, x1, y1, x2, y2):
+        print('test')
+        print(self.textEdit.toPlainText())
+        x1 = int(self.textEdit.toPlainText())
+        # print(a)
+        # painter = QtGui.QPainter(self.label_5.pixmap())
+        self.displayFrame.update()
+        self.painter.setPen(QtCore.Qt.blue)
+        print(f"Points=({x1, y1}); {x2, y2})")
+        self.painter.drawLine(x1, y1, x2, y2)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -125,9 +158,9 @@ class Ui_MainWindow(object):
         self.deletePushButton.setText(_translate("MainWindow", "Delete"))
         self.clearPushButton.setText(_translate("MainWindow", "Clear"))
         self.loadPushButton.setText(_translate("MainWindow", "Load"))
-        self.label.setText(_translate("MainWindow", "Transformations"))
-        self.label_2.setText(_translate("MainWindow", "Rotation"))
-        self.label_3.setText(_translate("MainWindow", "Zoom"))
+        self.transformationsLabel.setText(_translate("MainWindow", "Transformations"))
+        self.rotationLabel.setText(_translate("MainWindow", "Rotation"))
+        self.zoomLabel.setText(_translate("MainWindow", "Zoom"))
         self.upPushButton.setText(_translate("MainWindow", "Up"))
         self.downPushButton.setText(_translate("MainWindow", "Down"))
         self.rightPushButton.setText(_translate("MainWindow", "Right"))
@@ -137,4 +170,4 @@ class Ui_MainWindow(object):
         self.rotateXPushButton.setText(_translate("MainWindow", "X"))
         self.rotateYPushButton.setText(_translate("MainWindow", "Y"))
         self.rotateZPushButton.setText(_translate("MainWindow", "Z"))
-        self.label_4.setText(_translate("MainWindow", "Degrees:"))
+        self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
