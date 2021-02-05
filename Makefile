@@ -11,3 +11,4 @@ convert:
 .PHONY: format
 format:
 > poetry run black ./app
+> poetry run black ./tests
