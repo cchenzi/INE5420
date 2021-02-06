@@ -105,11 +105,9 @@ class MainWindow(QMainWindow):
         canvas = QtGui.QPixmap(400, 300)
         canvas.fill(QtGui.QColor("white"))
         self.displayFrame.setPixmap(canvas)
-        # self.painter = QtGui.QPainter(self.displayFrame.pixmap())
-        # self.displayFrame.setText("")
+        self.painter = QtGui.QPainter(self.displayFrame.pixmap())
         self.displayFrame.setObjectName("displayFrame")
-        self.newPushButton.clicked.connect(self.new_wireframe_window)
-        # self.newPushButton.clicked.connect(lambda: self.draw_something(10, 10, 10, 300))
+
         self.menubar = QtWidgets.QMenuBar(self)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 847, 30))
         self.menubar.setObjectName("menubar")
@@ -121,7 +119,7 @@ class MainWindow(QMainWindow):
         self.retranslateUi()
         self.dialogs = list()
         QtCore.QMetaObject.connectSlotsByName(self)
-
+        self.set_buttons_actions()
         self.show()
 
     def retranslateUi(self):
@@ -146,6 +144,21 @@ class MainWindow(QMainWindow):
         self.rotateZPushButton.setText(_translate("MainWindow", "Z"))
         self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
 
-    def new_wireframe_window(self):  # <===
+    def set_buttons_actions(self):
+        self.newPushButton.clicked.connect(self.new_wireframe_window)
+        self.deletePushButton.clicked.connect(
+            lambda: self.draw_something(10, 10, 10, 300)
+        )
+
+    def new_wireframe_window(self):
         self.w = NewWireframeWindow()
         self.w.show()
+
+    def draw_something(self, x1, y1, x2, y2):
+        print("test")
+        print(self.textEdit.toPlainText())
+        x1 = int(self.textEdit.toPlainText())
+        self.displayFrame.update()
+        self.painter.setPen(QtCore.Qt.blue)
+        print(f"Points=({x1, y1}); {x2, y2})")
+        self.painter.drawLine(x1, y1, x2, y2)
