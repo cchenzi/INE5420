@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QMessageBox,
     QLabel,
 )
+from wireframe import Wireframe
 
 
 class NewWireframeWindow(QMainWindow):
@@ -61,6 +62,10 @@ class NewWireframeWindow(QMainWindow):
         self.newXLabel.setText(_translate("Form", "X:"))
         self.newYLabel.setText(_translate("Form", "Y:"))
 
+    def new_window(self):
+        self.points = []
+        self.show()
+
     def add_new_point(self):
         x = int(self.newXTextEdit.toPlainText())
         y = int(self.newYTextEdit.toPlainText())
@@ -71,7 +76,9 @@ class NewWireframeWindow(QMainWindow):
         self.newYTextEdit.clear()
 
     def add_new_wireframe(self):
-        self.wireframes.append(self.points)
+        wireframe = Wireframe(self.points, len(self.wireframes))
+        self.wireframes.append(wireframe)
+        print(f"New wireframe added={wireframe.name}")
         self.close()
         self.partnerDialog.draw_something(10, 10, 10, 300)
 

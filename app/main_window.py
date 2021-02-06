@@ -153,8 +153,7 @@ class MainWindow(QMainWindow):
         )
 
     def new_wireframe_window(self):
-        # self.w = NewWireframeWindow(self.wireframes)
-        self.partnerDialog.show()
+        self.partnerDialog.new_window()
 
     def draw_something(self, x1, y1, x2, y2):
         print("test")
