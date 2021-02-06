@@ -1,18 +1,10 @@
 import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QPushButton,
-    QToolTip,
-    QMessageBox,
-    QLabel,
-)
 from wireframe import Wireframe
 
 
-class NewWireframeWindow(QMainWindow):
+class NewWireframeWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
         self.resize(421, 221)
@@ -80,7 +72,7 @@ class NewWireframeWindow(QMainWindow):
         self.wireframes.append(wireframe)
         print(f"New wireframe added={wireframe.name}")
         self.close()
-        self.partnerDialog.draw_something(10, 10, 10, 300)
+        self.partnerDialog.draw_wireframe(wireframe)
 
     def set_buttons_actions(self):
         self.addNewPointPushButton.clicked.connect(self.add_new_point)

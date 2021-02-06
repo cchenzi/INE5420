@@ -1,14 +1,10 @@
 import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMainWindow
-
-# from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton,
-#                              QToolTip, QMessageBox, QLabel)
 from new_wireframe_window import NewWireframeWindow
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.resize(847, 589)
@@ -164,3 +160,15 @@ class MainWindow(QMainWindow):
         self.painter.setPen(QtCore.Qt.blue)
         print(f"Points=({x1, y1}); {x2, y2})")
         self.painter.drawLine(x1, y1, x2, y2)
+
+    def draw_line(self, x1, y1, x2, y2):
+        print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
+        self.displayFrame.update()
+        self.painter.setPen(QtCore.Qt.blue)
+        self.painter.drawLine(x1, y1, x2, y2)
+
+    def draw_wireframe(self, wireframe):
+        for index in range(wireframe.number_points):
+            x1, y1 = wireframe.coordinates[index]
+            x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
+            self.draw_line(x1, y1, x2, y2)
