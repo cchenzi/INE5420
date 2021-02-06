@@ -1,7 +1,7 @@
 from config import Shape
 
 
-class Polygon:
+class Wireframe:
     def __init__(self, coordinates, name):
         self.coordinates = coordinates
         self.name = name
