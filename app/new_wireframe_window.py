@@ -12,9 +12,12 @@ from PyQt5.QtWidgets import (
 
 
 class NewWireframeWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
         self.resize(421, 221)
+        self.partnerDialog = parent
+        self.wireframes = self.partnerDialog.wireframes
+        self.points = []
         self.setup()
 
     def setup(self):
@@ -47,6 +50,7 @@ class NewWireframeWindow(QMainWindow):
 
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
+        self.set_buttons_actions()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -56,3 +60,21 @@ class NewWireframeWindow(QMainWindow):
         self.setPointsLabel.setText(_translate("Form", "Set points:"))
         self.newXLabel.setText(_translate("Form", "X:"))
         self.newYLabel.setText(_translate("Form", "Y:"))
+
+    def add_new_point(self):
+        x = int(self.newXTextEdit.toPlainText())
+        y = int(self.newYTextEdit.toPlainText())
+        print(f"Points={(x, y)}")
+        self.points.append((x, y))
+        print(f"Points after append={self.points}")
+        self.newXTextEdit.clear()
+        self.newYTextEdit.clear()
+
+    def add_new_wireframe(self):
+        self.wireframes.append(self.points)
+        self.close()
+        self.partnerDialog.draw_something(10, 10, 10, 300)
+
+    def set_buttons_actions(self):
+        self.addNewPointPushButton.clicked.connect(self.add_new_point)
+        self.drawPolygonPushButton.clicked.connect(self.add_new_wireframe)

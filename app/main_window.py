@@ -9,9 +9,11 @@ from new_wireframe_window import NewWireframeWindow
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.resize(847, 589)
+        self.wireframes = []
+        self.partnerDialog = NewWireframeWindow(self)
         self.setup()
 
     def setup(self):
@@ -151,13 +153,14 @@ class MainWindow(QMainWindow):
         )
 
     def new_wireframe_window(self):
-        self.w = NewWireframeWindow()
-        self.w.show()
+        # self.w = NewWireframeWindow(self.wireframes)
+        self.partnerDialog.show()
 
     def draw_something(self, x1, y1, x2, y2):
         print("test")
+        print(f"Wireframes:{self.wireframes}")
         print(self.textEdit.toPlainText())
-        x1 = int(self.textEdit.toPlainText())
+        # x1 = int(self.textEdit.toPlainText())
         self.displayFrame.update()
         self.painter.setPen(QtCore.Qt.blue)
         print(f"Points=({x1, y1}); {x2, y2})")
