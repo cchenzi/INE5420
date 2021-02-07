@@ -145,12 +145,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_buttons_actions(self):
         self.newPushButton.clicked.connect(self.new_wireframe_window)
-        self.deletePushButton.clicked.connect(
-            lambda: self.draw_something(10, 10, 10, 300)
-        )
+        self.clearPushButton.clicked.connect(self.clear_canvas)
+        self.refreshPushButton.clicked.connect(self.redraw_wireframes)
 
     def new_wireframe_window(self):
         self.partnerDialog.new_window()
+
+    def clear_canvas(self):
+        self.displayFrame.pixmap().fill(QtGui.QColor("white"))
+        self.displayFrame.update()
 
     def draw_line(self, x1, y1, x2, y2):
         print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
@@ -182,3 +185,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     x2, y2, self.window_coordinates, self.viewport_coordinates
                 )
                 self.draw_line(xvp1, yvp1, xvp2, yvp2)
+
+    def redraw_wireframes(self):
+        for wirefame in self.display_file:
+            self.draw_wireframe(wirefame)
