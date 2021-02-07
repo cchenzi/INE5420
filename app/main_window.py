@@ -7,7 +7,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.resize(847, 589)
-        self.displayFile = []
+        self.display_file = []
         self.partnerDialog = NewWireframeWindow(self)
         self.window_coordinates = CoordinatesRepresentation(0, 0, 630, 380)
         self.viewport_coordinates = CoordinatesRepresentation(0, 0, 630, 380)

@@ -9,7 +9,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         super().__init__()
         self.resize(421, 221)
         self.partnerDialog = parent
-        self.displayFile = self.partnerDialog.displayFile
+        self.display_file = self.partnerDialog.display_file
         self.points = []
         self.setup()
 
@@ -68,8 +68,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.newYTextEdit.clear()
 
     def add_new_wireframe(self):
-        wireframe = Wireframe(self.points, len(self.displayFile))
-        self.displayFile.append(wireframe)
+        wireframe = Wireframe(self.points, len(self.display_file))
+        self.display_file.append(wireframe)
         print(f"New wireframe added={wireframe.name}")
         self.close()
         self.partnerDialog.draw_wireframe(wireframe)
