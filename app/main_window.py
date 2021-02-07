@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from new_wireframe_window import NewWireframeWindow
-from utils import CoordinatesRepresentation
+from utils import CoordinatesRepresentation, transform_coordinates
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -166,9 +166,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def draw_wireframe(self, wireframe):
         if wireframe.number_points == 1:
-            self.draw_point(*wireframe.coordinates[0])
+            x, y = wireframe.coordinates[0]
+            xvp, yvp = transform_coordinates(
+                x, y, self.window_coordinates, self.viewport_coordinates
+            )
+            self.draw_point(xvp, yvp)
         else:
             for index in range(wireframe.number_points):
                 x1, y1 = wireframe.coordinates[index]
+                xvp1, yvp1 = transform_coordinates(
+                    x1, y1, self.window_coordinates, self.viewport_coordinates
+                )
                 x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
-                self.draw_line(x1, y1, x2, y2)
+                xvp2, yvp2 = transform_coordinates(
+                    x2, y2, self.window_coordinates, self.viewport_coordinates
+                )
+                self.draw_line(xvp1, yvp1, xvp2, yvp2)

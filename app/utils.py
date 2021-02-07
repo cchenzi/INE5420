@@ -1,4 +1,5 @@
 from enum import Enum
+from math import x_viewport_transform, y_viewport_transform
 
 
 class Shape(Enum):
@@ -23,3 +24,22 @@ class CoordinatesRepresentation:
         self.y_min = y_min
         self.x_max = x_max
         self.y_max = y_max
+
+
+def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
+    xvp = x_viewport_transform(
+        x,
+        window_coordinates.x_min,
+        window_coordinates.x_max,
+        viewport_coordinates.x_min,
+        viewport_coordinates.x_max,
+    )
+    yvp = y_viewport_transform(
+        y,
+        window_coordinates.y_min,
+        window_coordinates.y_max,
+        viewport_coordinates.y_min,
+        viewport_coordinates.y_max,
+    )
+
+    return (xvp, yvp)
