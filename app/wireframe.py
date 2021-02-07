@@ -1,4 +1,4 @@
-from config import Shape
+from utils import Shape
 
 
 class Wireframe:

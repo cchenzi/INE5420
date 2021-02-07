@@ -1,20 +1,21 @@
-import sys
-from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
 from new_wireframe_window import NewWireframeWindow
+from utils import CoordinatesRepresentation
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.resize(847, 589)
-        self.wireframes = []
+        self.displayFile = []
         self.partnerDialog = NewWireframeWindow(self)
+        self.window_coordinates = CoordinatesRepresentation(0, 0, 630, 380)
+        self.viewport_coordinates = CoordinatesRepresentation(0, 0, 630, 380)
         self.setup()
 
     def setup(self):
         self.debuggerTextBrowser = QtWidgets.QTextBrowser(self)
-        self.debuggerTextBrowser.setGeometry(QtCore.QRect(200, 411, 631, 121))
+        self.debuggerTextBrowser.setGeometry(QtCore.QRect(200, 410, 630, 120))
         self.debuggerTextBrowser.setObjectName("debuggerTextBrowser")
         self.displayFileLabel = QtWidgets.QLabel(self)
         self.displayFileLabel.setGeometry(QtCore.QRect(10, 20, 81, 31))
@@ -31,9 +32,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clearPushButton = QtWidgets.QPushButton(self)
         self.clearPushButton.setGeometry(QtCore.QRect(130, 110, 51, 34))
         self.clearPushButton.setObjectName("clearPushButton")
-        self.loadPushButton = QtWidgets.QPushButton(self)
-        self.loadPushButton.setGeometry(QtCore.QRect(130, 140, 51, 34))
-        self.loadPushButton.setObjectName("loadPushButton")
+        self.refreshPushButton = QtWidgets.QPushButton(self)
+        self.refreshPushButton.setGeometry(QtCore.QRect(130, 140, 51, 34))
+        self.refreshPushButton.setObjectName("refreshPushButton")
         self.transformationsLabel = QtWidgets.QLabel(self)
         self.transformationsLabel.setGeometry(QtCore.QRect(10, 190, 111, 18))
         self.transformationsLabel.setObjectName("transformationsLabel")
@@ -100,7 +101,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.setGeometry(QtCore.QRect(200, 20, 630, 380))
         self.displayFrame.setAutoFillBackground(False)
         self.displayFrame.setStyleSheet("background-color: rgb(255, 255, 255);")
-        canvas = QtGui.QPixmap(400, 300)
+        canvas = QtGui.QPixmap(630, 380)
         canvas.fill(QtGui.QColor("white"))
         self.displayFrame.setPixmap(canvas)
         self.painter = QtGui.QPainter(self.displayFrame.pixmap())
@@ -127,7 +128,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.newPushButton.setText(_translate("MainWindow", "New"))
         self.deletePushButton.setText(_translate("MainWindow", "Delete"))
         self.clearPushButton.setText(_translate("MainWindow", "Clear"))
-        self.loadPushButton.setText(_translate("MainWindow", "Load"))
+        self.refreshPushButton.setText(_translate("MainWindow", "Refresh"))
         self.transformationsLabel.setText(_translate("MainWindow", "Transformations"))
         self.rotationLabel.setText(_translate("MainWindow", "Rotation"))
         self.zoomLabel.setText(_translate("MainWindow", "Zoom"))
@@ -151,24 +152,23 @@ class MainWindow(QtWidgets.QMainWindow):
     def new_wireframe_window(self):
         self.partnerDialog.new_window()
 
-    def draw_something(self, x1, y1, x2, y2):
-        print("test")
-        print(f"Wireframes:{self.wireframes}")
-        print(self.textEdit.toPlainText())
-        # x1 = int(self.textEdit.toPlainText())
-        self.displayFrame.update()
-        self.painter.setPen(QtCore.Qt.blue)
-        print(f"Points=({x1, y1}); {x2, y2})")
-        self.painter.drawLine(x1, y1, x2, y2)
-
     def draw_line(self, x1, y1, x2, y2):
         print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
         self.displayFrame.update()
-        self.painter.setPen(QtCore.Qt.blue)
+        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
         self.painter.drawLine(x1, y1, x2, y2)
 
+    def draw_point(self, x1, y1):
+        print(f"Drawning new point! Point={(x1, y1)}")
+        self.displayFrame.update()
+        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
+        self.painter.drawPoint(x1, y1)
+
     def draw_wireframe(self, wireframe):
-        for index in range(wireframe.number_points):
-            x1, y1 = wireframe.coordinates[index]
-            x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
-            self.draw_line(x1, y1, x2, y2)
+        if wireframe.number_points == 1:
+            self.draw_point(*wireframe.coordinates[0])
+        else:
+            for index in range(wireframe.number_points):
+                x1, y1 = wireframe.coordinates[index]
+                x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
+                self.draw_line(x1, y1, x2, y2)
