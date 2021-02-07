@@ -1,5 +1,5 @@
 from enum import Enum
-from math import x_viewport_transform, y_viewport_transform
+from math_functions import x_viewport_transform, y_viewport_transform
 
 
 class Shape(Enum):
