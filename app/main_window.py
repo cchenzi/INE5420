@@ -154,6 +154,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.newPushButton.clicked.connect(self.new_wireframe_window)
         self.clearPushButton.clicked.connect(self.clear_canvas)
         self.refreshPushButton.clicked.connect(self.redraw_wireframes)
+        self.leftPushButton.clicked.connect(self.shift_window_left)
+        self.rightPushButton.clicked.connect(self.shift_window_right)
+        self.upPushButton.clicked.connect(self.shift_window_up)
+        self.downPushButton.clicked.connect(self.shift_window_down)
+        self.zoomInPushButton.clicked.connect(self.scale_window_in)
+        self.zoomOutPushButton.clicked.connect(self.scale_window_out)
 
     def new_wireframe_window(self):
         self.partnerDialog.new_window()
@@ -175,24 +181,57 @@ class MainWindow(QtWidgets.QMainWindow):
         self.painter.drawPoint(x1, y1)
 
     def draw_wireframe(self, wireframe):
+        print(self.viewport_coordinates.x_min)
         if wireframe.number_points == 1:
             x, y = wireframe.coordinates[0]
             xvp, yvp = transform_coordinates(
-                x, y, self.window_coordinates, self.viewport_coordinates
+                x + self.viewport_coordinates.x_navigation,
+                y + self.viewport_coordinates.y_navigation,
+                self.window_coordinates,
+                self.viewport_coordinates,
             )
             self.draw_point(xvp, yvp)
         else:
             for index in range(wireframe.number_points):
                 x1, y1 = wireframe.coordinates[index]
                 xvp1, yvp1 = transform_coordinates(
-                    x1, y1, self.window_coordinates, self.viewport_coordinates
+                    x1 + self.viewport_coordinates.x_navigation,
+                    y1 + self.viewport_coordinates.y_navigation,
+                    self.window_coordinates,
+                    self.viewport_coordinates,
                 )
                 x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
                 xvp2, yvp2 = transform_coordinates(
-                    x2, y2, self.window_coordinates, self.viewport_coordinates
+                    x2 + self.viewport_coordinates.x_navigation,
+                    y2 + self.viewport_coordinates.y_navigation,
+                    self.window_coordinates,
+                    self.viewport_coordinates,
                 )
                 self.draw_line(xvp1, yvp1, xvp2, yvp2)
 
+    def shift_window_left(self):
+        self.viewport_coordinates.x_navigation -= 10
+        self.redraw_wireframes()
+
+    def shift_window_right(self):
+        self.viewport_coordinates.x_navigation += 10
+        self.redraw_wireframes()
+
+    def shift_window_up(self):
+        self.viewport_coordinates.y_navigation += 10
+        self.redraw_wireframes()
+
+    def shift_window_down(self):
+        self.viewport_coordinates.y_navigation -= 10
+        self.redraw_wireframes()
+
+    def scale_window_in(self):
+        pass
+
+    def scale_window_out(self):
+        pass
+
     def redraw_wireframes(self):
+        self.clear_canvas()
         for wirefame in self.display_file:
             self.draw_wireframe(wirefame)

@@ -24,6 +24,8 @@ class CoordinatesRepresentation:
         self.y_min = y_min
         self.x_max = x_max
         self.y_max = y_max
+        self.x_navigation = 0
+        self.y_navigation = 0
 
 
 def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
@@ -41,5 +43,4 @@ def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
         viewport_coordinates.y_min,
         viewport_coordinates.y_max,
     )
-
     return (xvp, yvp)
