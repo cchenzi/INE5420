@@ -143,6 +143,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateZPushButton.setText(_translate("MainWindow", "Z"))
         self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
 
+    def console_print(self, string):
+        self.debuggerTextBrowser.append(string)
+        print(string)
+
+    def console_clear(self):
+        self.debuggerTextBrowser.clear()
+
     def set_buttons_actions(self):
         self.newPushButton.clicked.connect(self.new_wireframe_window)
         self.clearPushButton.clicked.connect(self.clear_canvas)
@@ -185,6 +192,8 @@ class MainWindow(QtWidgets.QMainWindow):
                     x2, y2, self.window_coordinates, self.viewport_coordinates
                 )
                 self.draw_line(xvp1, yvp1, xvp2, yvp2)
+
+        self.console_print(f"{wireframe.number_points} points drawed")
 
     def redraw_wireframes(self):
         for wirefame in self.display_file:
