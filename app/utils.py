@@ -3,19 +3,20 @@ from math_functions import x_viewport_transform, y_viewport_transform
 
 
 class Shape(Enum):
-    POINT = 1
-    LINE = 2
-    TRIANGLE = 3
-    SQUARE = 4
-    PENTAGON = 5
-    HEXAGON = 6
-    HEPTAGON = 7
-    OCTAGON = 8
-    POLYGON = -1
+    Nothing = 0
+    Point = 1
+    Line = 2
+    Triangle = 3
+    Square = 4
+    Pentagon = 5
+    Hexagon = 6
+    Heptagon = 7
+    Octagon = 8
+    Polygon = -1
 
     @classmethod
     def _missing_(cls, value):
-        return Shape.POLYGON
+        return Shape.Polygon
 
 
 class CoordinatesRepresentation:
