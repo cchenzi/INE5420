@@ -3,7 +3,6 @@ from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
 from wireframe import Wireframe
 
-
 class NewWireframeWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
@@ -15,13 +14,18 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
     def setup(self):
 
-        self.newPointsTextBrowser = QtWidgets.QTextBrowser(self)
-        self.newPointsTextBrowser.setGeometry(QtCore.QRect(140, 30, 261, 131))
-        self.newPointsTextBrowser.setObjectName("newPointsTextBrowser")
+        self.newPointsListWidget = QtWidgets.QListWidget(self)
+        self.newPointsListWidget.setGeometry(QtCore.QRect(140, 30, 261, 131))
+        self.newPointsListWidget.setObjectName("newPointsListWidget")
         self.drawPolygonPushButton = QtWidgets.QPushButton(self)
         self.drawPolygonPushButton.setEnabled(True)
         self.drawPolygonPushButton.setGeometry(QtCore.QRect(310, 180, 88, 34))
         self.drawPolygonPushButton.setObjectName("drawPolygonPushButton")
+
+        self.deletePointPushButton = QtWidgets.QPushButton(self)
+        self.deletePointPushButton.setGeometry(QtCore.QRect(210, 180, 88, 34))
+        self.deletePointPushButton.setObjectName("deletePointPushButton")
+
         self.addNewPointPushButton = QtWidgets.QPushButton(self)
         self.addNewPointPushButton.setGeometry(QtCore.QRect(50, 130, 51, 34))
         self.addNewPointPushButton.setObjectName("addNewPointPushButton")
@@ -50,6 +54,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(_translate("Form", "Form"))
         self.drawPolygonPushButton.setText(_translate("Form", "Draw"))
         self.addNewPointPushButton.setText(_translate("Form", "Add "))
+        self.deletePointPushButton.setText(_translate("Form", "Delete"))
         self.setPointsLabel.setText(_translate("Form", "Set points:"))
         self.newXLabel.setText(_translate("Form", "X:"))
         self.newYLabel.setText(_translate("Form", "Y:"))
@@ -66,6 +71,10 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         print(f"Points after append={self.points}")
         self.newXTextEdit.clear()
         self.newYTextEdit.clear()
+        point_id = len(self.points)
+        point_str = f'Point {point_id}: {x}, {y}'
+        self.newPointsListWidget.insertItem(point_id, point_str)
+
 
     def add_new_wireframe(self):
         wireframe = Wireframe(self.points, len(self.display_file))
@@ -73,7 +82,14 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         print(f"New wireframe added={wireframe.name}")
         self.close()
         self.partnerDialog.draw_wireframe(wireframe)
+        self.newPointsListWidget.clear()
+    
+    def delete_active_point(self):
+        item = self.newPointsListWidget.currentRow()
+        self.newPointsListWidget.takeItem(item)
+        self.points.pop(item)
 
     def set_buttons_actions(self):
         self.addNewPointPushButton.clicked.connect(self.add_new_point)
         self.drawPolygonPushButton.clicked.connect(self.add_new_wireframe)
+        self.deletePointPushButton.clicked.connect(self.delete_active_point)
