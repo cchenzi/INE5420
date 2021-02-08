@@ -3,6 +3,7 @@ from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
 from wireframe import Wireframe
 
+
 class NewWireframeWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
@@ -72,9 +73,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.newXTextEdit.clear()
         self.newYTextEdit.clear()
         point_id = len(self.points)
-        point_str = f'Point {point_id}: {x}, {y}'
+        point_str = f"Point {point_id}: {x}, {y}"
         self.newPointsListWidget.insertItem(point_id, point_str)
-
 
     def add_new_wireframe(self):
         wireframe = Wireframe(self.points, len(self.display_file))
@@ -83,7 +83,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.close()
         self.partnerDialog.draw_wireframe(wireframe)
         self.newPointsListWidget.clear()
-    
+
     def delete_active_point(self):
         item = self.newPointsListWidget.currentRow()
         self.newPointsListWidget.takeItem(item)
