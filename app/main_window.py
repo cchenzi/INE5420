@@ -210,19 +210,19 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.draw_line(xvp1, yvp1, xvp2, yvp2)
 
     def shift_window_left(self):
-        self.viewport_coordinates.x_navigation -= 10
-        self.redraw_wireframes()
-
-    def shift_window_right(self):
         self.viewport_coordinates.x_navigation += 10
         self.redraw_wireframes()
 
+    def shift_window_right(self):
+        self.viewport_coordinates.x_navigation -= 10
+        self.redraw_wireframes()
+
     def shift_window_up(self):
-        self.viewport_coordinates.y_navigation += 10
+        self.viewport_coordinates.y_navigation -= 10
         self.redraw_wireframes()
 
     def shift_window_down(self):
-        self.viewport_coordinates.y_navigation -= 10
+        self.viewport_coordinates.y_navigation += 10
         self.redraw_wireframes()
 
     def scale_window_in(self):
