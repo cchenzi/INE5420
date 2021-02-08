@@ -163,13 +163,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.update()
 
     def draw_line(self, x1, y1, x2, y2):
-        print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
+        self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
         self.displayFrame.update()
         self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
         self.painter.drawLine(x1, y1, x2, y2)
 
     def draw_point(self, x1, y1):
-        print(f"Drawning new point! Point={(x1, y1)}")
+        self.console_print(f"Drawning new point! Point={(x1, y1)}")
         self.displayFrame.update()
         self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
         self.painter.drawPoint(x1, y1)
@@ -192,8 +192,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     x2, y2, self.window_coordinates, self.viewport_coordinates
                 )
                 self.draw_line(xvp1, yvp1, xvp2, yvp2)
-
-        self.console_print(f"{wireframe.number_points} points drawed")
 
     def redraw_wireframes(self):
         for wirefame in self.display_file:
