@@ -2,6 +2,7 @@ import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
 from wireframe import Wireframe
+from utils import Shape
 
 
 class NewWireframeWindow(QtWidgets.QMainWindow):
@@ -62,6 +63,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
     def new_window(self):
         self.points = []
+        self.set_text_draw_button()
         self.show()
 
     def add_new_point(self):
@@ -75,6 +77,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         point_id = len(self.points) - 1
         point_str = f"Point {point_id}: {x}, {y}"
         self.newPointsListWidget.insertItem(point_id, point_str)
+        self.set_text_draw_button()
 
     def add_new_wireframe(self):
         wireframe = Wireframe(self.points, len(self.display_file))
@@ -89,8 +92,12 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.newPointsListWidget.takeItem(item)
         self.partnerDialog.console_print(f"Point {item} deleted!")
         self.points.pop(item)
+        self.set_text_draw_button()
 
     def set_buttons_actions(self):
         self.addNewPointPushButton.clicked.connect(self.add_new_point)
         self.drawPolygonPushButton.clicked.connect(self.add_new_wireframe)
         self.deletePointPushButton.clicked.connect(self.delete_active_point)
+
+    def set_text_draw_button(self):
+        self.drawPolygonPushButton.setText(f"Draw {Shape(len(self.points)).name}")
