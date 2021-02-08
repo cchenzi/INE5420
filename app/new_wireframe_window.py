@@ -67,19 +67,19 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
     def add_new_point(self):
         x = int(self.newXTextEdit.toPlainText())
         y = int(self.newYTextEdit.toPlainText())
-        print(f"Points={(x, y)}")
+        # self.partnerDialog.console_print(f"Points={(x, y)}")
         self.points.append((x, y))
-        print(f"Points after append={self.points}")
+        self.partnerDialog.console_print(f"Points after append={self.points}")
         self.newXTextEdit.clear()
         self.newYTextEdit.clear()
-        point_id = len(self.points)
+        point_id = len(self.points) - 1
         point_str = f"Point {point_id}: {x}, {y}"
         self.newPointsListWidget.insertItem(point_id, point_str)
 
     def add_new_wireframe(self):
         wireframe = Wireframe(self.points, len(self.display_file))
         self.display_file.append(wireframe)
-        print(f"New wireframe added={wireframe.name}")
+        self.partnerDialog.console_print(f"New wireframe added={wireframe.name}")
         self.close()
         self.partnerDialog.draw_wireframe(wireframe)
         self.newPointsListWidget.clear()
@@ -87,6 +87,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
     def delete_active_point(self):
         item = self.newPointsListWidget.currentRow()
         self.newPointsListWidget.takeItem(item)
+        self.partnerDialog.console_print(f"Point {item} deleted!")
         self.points.pop(item)
 
     def set_buttons_actions(self):
