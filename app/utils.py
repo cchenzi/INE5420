@@ -36,6 +36,7 @@ def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
         window_coordinates.x_max,
         viewport_coordinates.x_min,
         viewport_coordinates.x_max,
+        viewport_coordinates.x_navigation,
     )
     yvp = y_viewport_transform(
         y,
@@ -43,5 +44,11 @@ def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
         window_coordinates.y_max,
         viewport_coordinates.y_min,
         viewport_coordinates.y_max,
+        viewport_coordinates.y_navigation,
     )
     return (xvp, yvp)
+
+
+def calculate_coordinate_shift(max_coordinate, min_coordinate, step):
+    size = max_coordinate - min_coordinate
+    return size * step
