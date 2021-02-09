@@ -101,12 +101,12 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.points.pop(item)
         self.set_text_draw_button()
         self.partnerDialog.console_print(f"Point {item} deleted!")
-    
+
     def pick_color(self):
         color = QtWidgets.QColorDialog.getColor()
         if color.isValid():
             self.color = color
-
+            self.partnerDialog.console_print("Color updated")
 
     def set_buttons_actions(self):
         self.addNewPointPushButton.clicked.connect(self.add_new_point)

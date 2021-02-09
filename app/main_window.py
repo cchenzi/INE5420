@@ -15,8 +15,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.partnerDialog = NewWireframeWindow(self)
         self.default_x = 630
         self.default_y = 380
-        self.window_coordinates = CoordinatesRepresentation(0, 0, self.default_x, self.default_y)
-        self.viewport_coordinates = CoordinatesRepresentation(0, 0, self.default_x, self.default_y)
+        self.window_coordinates = CoordinatesRepresentation(
+            0, 0, self.default_x, self.default_y
+        )
+        self.viewport_coordinates = CoordinatesRepresentation(
+            0, 0, self.default_x, self.default_y
+        )
         self.setup()
 
     def setup(self):
@@ -187,14 +191,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def new_wireframe_window(self):
         self.partnerDialog.new_window()
-    
+
     def delete_wireframe(self):
         item = self.listWidget.currentRow()
         self.listWidget.takeItem(item)
         wireframe = self.display_file.pop(item)
         self.console_print(f"{wireframe.name} deleted!")
         self.redraw_wireframes()
-    
+
     def clear_display_file(self):
         self.listWidget.setCurrentRow(0)
         wireframes = len(self.display_file)
