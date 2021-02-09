@@ -13,8 +13,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(847, 589)
         self.display_file = []
         self.partnerDialog = NewWireframeWindow(self)
-        self.window_coordinates = CoordinatesRepresentation(0, 0, 630, 380)
-        self.viewport_coordinates = CoordinatesRepresentation(0, 0, 630, 380)
+        self.default_x = 630
+        self.default_y = 380
+        self.window_coordinates = CoordinatesRepresentation(0, 0, self.default_x, self.default_y)
+        self.viewport_coordinates = CoordinatesRepresentation(0, 0, self.default_x, self.default_y)
         self.setup()
 
     def setup(self):
@@ -162,6 +164,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_buttons_actions(self):
         self.newPushButton.clicked.connect(self.new_wireframe_window)
+        self.deletePushButton.clicked.connect(self.delete_wireframe)
+        self.clearPushButton.clicked.connect(self.clear_display_file)
         self.clearPushButton.clicked.connect(self.clear_canvas)
         self.refreshPushButton.clicked.connect(self.redraw_wireframes)
         self.leftPushButton.clicked.connect(self.shift_window_left)
@@ -173,6 +177,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def new_wireframe_window(self):
         self.partnerDialog.new_window()
+    
+    def delete_wireframe(self):
+        item = self.listWidget.currentRow()
+        self.listWidget.takeItem(item)
+        wireframe = self.display_file.pop(item)
+        self.console_print(f"{wireframe.name} deleted!")
+        self.redraw_wireframes()
+    
+    def clear_display_file(self):
+        self.listWidget.setCurrentRow(0)
+        wireframes = len(self.display_file)
+        for i in range(wireframes):
+            item = self.listWidget.currentRow()
+            self.listWidget.takeItem(item)
+            self.display_file.pop(item)
+        self.viewport_coordinates.x_navigation = self.default_x
+        self.viewport_coordinates.y_navigation = self.default_y
+        self.scale_window_by_step(0)
+        self.redraw_wireframes()
+        self.console_print("Wireframe cleared")
+
 
     def clear_canvas(self):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
