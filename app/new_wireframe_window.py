@@ -12,6 +12,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.partnerDialog = parent
         self.display_file = self.partnerDialog.display_file
         self.points = []
+        self.color = QtCore.Qt.black
         self.setup()
 
     def setup(self):
@@ -21,11 +22,15 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.newPointsListWidget.setObjectName("newPointsListWidget")
         self.drawPolygonPushButton = QtWidgets.QPushButton(self)
         self.drawPolygonPushButton.setEnabled(True)
-        self.drawPolygonPushButton.setGeometry(QtCore.QRect(310, 180, 88, 34))
+        self.drawPolygonPushButton.setGeometry(QtCore.QRect(280, 180, 120, 34))
         self.drawPolygonPushButton.setObjectName("drawPolygonPushButton")
 
+        self.colorPickerPushButton = QtWidgets.QPushButton(self)
+        self.colorPickerPushButton.setGeometry(QtCore.QRect(140, 180, 120, 34))
+        self.colorPickerPushButton.setObjectName("pickColorPushButton")
+
         self.deletePointPushButton = QtWidgets.QPushButton(self)
-        self.deletePointPushButton.setGeometry(QtCore.QRect(210, 180, 88, 34))
+        self.deletePointPushButton.setGeometry(QtCore.QRect(50, 171, 51, 34))
         self.deletePointPushButton.setObjectName("deletePointPushButton")
 
         self.addNewPointPushButton = QtWidgets.QPushButton(self)
@@ -57,6 +62,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.drawPolygonPushButton.setText(_translate("Form", "Draw"))
         self.addNewPointPushButton.setText(_translate("Form", "Add "))
         self.deletePointPushButton.setText(_translate("Form", "Delete"))
+        self.colorPickerPushButton.setText(_translate("Form", "Pick Color"))
         self.setPointsLabel.setText(_translate("Form", "Set points:"))
         self.newXLabel.setText(_translate("Form", "X:"))
         self.newYLabel.setText(_translate("Form", "Y:"))
@@ -81,7 +87,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
     def add_new_wireframe(self):
         wireframe_id = len(self.display_file)
-        wireframe = Wireframe(self.points, wireframe_id)
+        wireframe = Wireframe(self.points, wireframe_id, self.color)
         self.display_file.append(wireframe)
         self.partnerDialog.console_print(f"New wireframe added={wireframe.name}")
         self.close()
@@ -95,11 +101,18 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.points.pop(item)
         self.set_text_draw_button()
         self.partnerDialog.console_print(f"Point {item} deleted!")
+    
+    def pick_color(self):
+        color = QtWidgets.QColorDialog.getColor()
+        if color.isValid():
+            self.color = color
+
 
     def set_buttons_actions(self):
         self.addNewPointPushButton.clicked.connect(self.add_new_point)
         self.drawPolygonPushButton.clicked.connect(self.add_new_wireframe)
         self.deletePointPushButton.clicked.connect(self.delete_active_point)
+        self.colorPickerPushButton.clicked.connect(self.pick_color)
 
     def set_text_draw_button(self):
         self.drawPolygonPushButton.setText(f"Draw {Shape(len(self.points)).name}")

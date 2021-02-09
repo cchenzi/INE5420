@@ -30,16 +30,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.listWidget.setGeometry(QtCore.QRect(10, 50, 111, 121))
         self.listWidget.setObjectName("listWidget")
         self.newPushButton = QtWidgets.QPushButton(self)
-        self.newPushButton.setGeometry(QtCore.QRect(130, 50, 51, 34))
+        self.newPushButton.setGeometry(QtCore.QRect(130, 50, 60, 34))
         self.newPushButton.setObjectName("newPushButton")
         self.deletePushButton = QtWidgets.QPushButton(self)
-        self.deletePushButton.setGeometry(QtCore.QRect(130, 80, 51, 34))
+        self.deletePushButton.setGeometry(QtCore.QRect(130, 80, 60, 34))
         self.deletePushButton.setObjectName("deletePushButton")
         self.clearPushButton = QtWidgets.QPushButton(self)
-        self.clearPushButton.setGeometry(QtCore.QRect(130, 110, 51, 34))
+        self.clearPushButton.setGeometry(QtCore.QRect(130, 110, 60, 34))
         self.clearPushButton.setObjectName("clearPushButton")
         self.refreshPushButton = QtWidgets.QPushButton(self)
-        self.refreshPushButton.setGeometry(QtCore.QRect(130, 140, 51, 34))
+        self.refreshPushButton.setGeometry(QtCore.QRect(130, 140, 60, 34))
         self.refreshPushButton.setObjectName("refreshPushButton")
         self.navigationLabel = QtWidgets.QLabel(self)
         self.navigationLabel.setGeometry(QtCore.QRect(10, 190, 111, 18))
@@ -214,10 +214,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
         self.displayFrame.update()
 
-    def draw_line(self, x1, y1, x2, y2):
+    def draw_line(self, x1, y1, x2, y2, color):
         self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
         self.displayFrame.update()
-        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
+        self.painter.setPen(QtGui.QPen(color, 5))
         self.painter.drawLine(x1, y1, x2, y2)
 
     def draw_point(self, x1, y1):
@@ -242,7 +242,7 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.window_coordinates,
                 self.viewport_coordinates,
             )
-            self.draw_line(xvp1, yvp1, xvp2, yvp2)
+            self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
 
     def shift_window_left(self):
         self.viewport_coordinates.x_navigation += calculate_coordinate_shift(
