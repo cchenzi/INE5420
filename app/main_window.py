@@ -1,6 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from new_wireframe_window import NewWireframeWindow
-from utils import CoordinatesRepresentation, transform_coordinates
+from utils import (
+    CoordinatesRepresentation,
+    transform_coordinates,
+    calculate_coordinate_shift,
+)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -35,9 +39,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.refreshPushButton = QtWidgets.QPushButton(self)
         self.refreshPushButton.setGeometry(QtCore.QRect(130, 140, 51, 34))
         self.refreshPushButton.setObjectName("refreshPushButton")
-        self.transformationsLabel = QtWidgets.QLabel(self)
-        self.transformationsLabel.setGeometry(QtCore.QRect(10, 190, 111, 18))
-        self.transformationsLabel.setObjectName("transformationsLabel")
+        self.navigationLabel = QtWidgets.QLabel(self)
+        self.navigationLabel.setGeometry(QtCore.QRect(10, 190, 111, 18))
+        self.navigationLabel.setObjectName("navigationLabel")
         self.rotationLabel = QtWidgets.QLabel(self)
         self.rotationLabel.setGeometry(QtCore.QRect(10, 310, 58, 18))
         self.rotationLabel.setObjectName("rotationLabel")
@@ -129,7 +133,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.deletePushButton.setText(_translate("MainWindow", "Delete"))
         self.clearPushButton.setText(_translate("MainWindow", "Clear"))
         self.refreshPushButton.setText(_translate("MainWindow", "Refresh"))
-        self.transformationsLabel.setText(_translate("MainWindow", "Transformations"))
+        self.navigationLabel.setText(_translate("MainWindow", "Navigation"))
         self.rotationLabel.setText(_translate("MainWindow", "Rotation"))
         self.zoomLabel.setText(_translate("MainWindow", "Zoom"))
         self.upPushButton.setText(_translate("MainWindow", "Up"))
@@ -181,55 +185,59 @@ class MainWindow(QtWidgets.QMainWindow):
         self.painter.drawPoint(x1, y1)
 
     def draw_wireframe(self, wireframe):
-        print(self.viewport_coordinates.x_min)
-        if wireframe.number_points == 1:
-            x, y = wireframe.coordinates[0]
-            xvp, yvp = transform_coordinates(
-                x + self.viewport_coordinates.x_navigation,
-                y + self.viewport_coordinates.y_navigation,
+        for index in range(wireframe.number_points):
+            x1, y1 = wireframe.coordinates[index]
+            xvp1, yvp1 = transform_coordinates(
+                x1,
+                y1,
                 self.window_coordinates,
                 self.viewport_coordinates,
             )
-            self.draw_point(xvp, yvp)
-        else:
-            for index in range(wireframe.number_points):
-                x1, y1 = wireframe.coordinates[index]
-                xvp1, yvp1 = transform_coordinates(
-                    x1 + self.viewport_coordinates.x_navigation,
-                    y1 + self.viewport_coordinates.y_navigation,
-                    self.window_coordinates,
-                    self.viewport_coordinates,
-                )
-                x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
-                xvp2, yvp2 = transform_coordinates(
-                    x2 + self.viewport_coordinates.x_navigation,
-                    y2 + self.viewport_coordinates.y_navigation,
-                    self.window_coordinates,
-                    self.viewport_coordinates,
-                )
-                self.draw_line(xvp1, yvp1, xvp2, yvp2)
+            x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
+            xvp2, yvp2 = transform_coordinates(
+                x2,
+                y2,
+                self.window_coordinates,
+                self.viewport_coordinates,
+            )
+            self.draw_line(xvp1, yvp1, xvp2, yvp2)
 
     def shift_window_left(self):
-        self.viewport_coordinates.x_navigation += 10
+        self.viewport_coordinates.x_navigation += calculate_coordinate_shift(
+            self.window_coordinates.x_max, self.window_coordinates.x_min, 0.01
+        )
         self.redraw_wireframes()
 
     def shift_window_right(self):
-        self.viewport_coordinates.x_navigation -= 10
+        self.viewport_coordinates.x_navigation -= calculate_coordinate_shift(
+            self.window_coordinates.x_max, self.window_coordinates.x_min, 0.01
+        )
         self.redraw_wireframes()
 
     def shift_window_up(self):
-        self.viewport_coordinates.y_navigation -= 10
+        self.viewport_coordinates.y_navigation += calculate_coordinate_shift(
+            self.window_coordinates.y_max, self.window_coordinates.y_min, 0.01
+        )
         self.redraw_wireframes()
 
     def shift_window_down(self):
-        self.viewport_coordinates.y_navigation += 10
+        self.viewport_coordinates.y_navigation -= calculate_coordinate_shift(
+            self.window_coordinates.y_max, self.window_coordinates.y_min, 0.01
+        )
         self.redraw_wireframes()
 
+    def scale_window_by_step(self, step):
+        zoom_factor = 1 + step
+        self.window_coordinates.x_max *= zoom_factor
+        self.window_coordinates.y_max *= zoom_factor
+
     def scale_window_in(self):
-        pass
+        self.scale_window_by_step(-0.01)
+        self.redraw_wireframes()
 
     def scale_window_out(self):
-        pass
+        self.scale_window_by_step(0.01)
+        self.redraw_wireframes()
 
     def redraw_wireframes(self):
         self.clear_canvas()
