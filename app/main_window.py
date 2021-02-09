@@ -53,6 +53,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.upPushButton = QtWidgets.QPushButton(self)
         self.upPushButton.setGeometry(QtCore.QRect(60, 220, 51, 34))
         self.upPushButton.setObjectName("upPushButton")
+
+        self.inPushButton = QtWidgets.QPushButton(self)
+        self.inPushButton.setGeometry(QtCore.QRect(115, 200, 35, 20))
+        self.inPushButton.setObjectName("inPushButton")
+        self.outPushButton = QtWidgets.QPushButton(self)
+        self.outPushButton.setGeometry(QtCore.QRect(150, 200, 35, 20))
+        self.outPushButton.setObjectName("outPushButton")
+
         self.downPushButton = QtWidgets.QPushButton(self)
         self.downPushButton.setGeometry(QtCore.QRect(60, 250, 51, 34))
         self.downPushButton.setObjectName("downPushButton")
@@ -148,6 +156,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.downPushButton.setText(_translate("MainWindow", "Down"))
         self.rightPushButton.setText(_translate("MainWindow", "Right"))
         self.leftPushButton.setText(_translate("MainWindow", "Left"))
+        self.inPushButton.setText(_translate("MainWindow", "In"))
+        self.outPushButton.setText(_translate("MainWindow", "Out"))
         self.zoomInPushButton.setText(_translate("MainWindow", "+"))
         self.zoomOutPushButton.setText(_translate("MainWindow", "-"))
         self.rotateXPushButton.setText(_translate("MainWindow", "X"))
@@ -172,8 +182,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rightPushButton.clicked.connect(self.shift_window_right)
         self.upPushButton.clicked.connect(self.shift_window_up)
         self.downPushButton.clicked.connect(self.shift_window_down)
-        self.zoomInPushButton.clicked.connect(self.scale_window_in)
-        self.zoomOutPushButton.clicked.connect(self.scale_window_out)
+        self.inPushButton.clicked.connect(self.scale_window_in)
+        self.outPushButton.clicked.connect(self.scale_window_out)
 
     def new_wireframe_window(self):
         self.partnerDialog.new_window()
@@ -192,12 +202,13 @@ class MainWindow(QtWidgets.QMainWindow):
             item = self.listWidget.currentRow()
             self.listWidget.takeItem(item)
             self.display_file.pop(item)
-        self.viewport_coordinates.x_navigation = self.default_x
-        self.viewport_coordinates.y_navigation = self.default_y
+        self.viewport_coordinates.x_navigation = 0
+        self.viewport_coordinates.y_navigation = 0
+        self.window_coordinates.x_max = self.default_x
+        self.window_coordinates.y_max = self.default_y
         self.scale_window_by_step(0)
         self.redraw_wireframes()
         self.console_print("Wireframe cleared")
-
 
     def clear_canvas(self):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
