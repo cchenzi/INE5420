@@ -13,14 +13,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(847, 589)
         self.display_file = []
         self.partnerDialog = NewWireframeWindow(self)
-        self.default_x = 630
-        self.default_y = 380
-        self.zoom_acumulator = 0
+        self.default_x_max = 630
+        self.default_y_max = 380
+        self.scale_acumulator = 0
         self.window_coordinates = CoordinatesRepresentation(
-            0, 0, self.default_x, self.default_y
+            0, 0, self.default_x_max, self.default_y_max
         )
         self.viewport_coordinates = CoordinatesRepresentation(
-            0, 0, self.default_x, self.default_y
+            0, 0, self.default_x_max, self.default_y_max
         )
         self.setup()
 
@@ -209,11 +209,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.display_file.pop(item)
         self.viewport_coordinates.x_navigation = 0
         self.viewport_coordinates.y_navigation = 0
-        self.window_coordinates.x_max = self.default_x
-        self.window_coordinates.y_max = self.default_y
+        self.window_coordinates.x_max = self.default_x_max
+        self.window_coordinates.y_max = self.default_y_max
+        self.scale_acumulator = 0
         self.scale_window_by_step(0)
         self.redraw_wireframes()
-        self.console_print("Wireframe cleared")
+        self.console_print("Canvas cleared")
 
     def clear_canvas(self):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
@@ -224,12 +225,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.update()
         self.painter.setPen(QtGui.QPen(color, 5))
         self.painter.drawLine(x1, y1, x2, y2)
-
-    def draw_point(self, x1, y1):
-        self.console_print(f"Drawning new point! Point={(x1, y1)}")
-        self.displayFrame.update()
-        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
-        self.painter.drawPoint(x1, y1)
 
     def draw_wireframe(self, wireframe):
         for index in range(wireframe.number_points):
@@ -274,11 +269,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
-        self.zoom_acumulator += step
-        zoom_factor = 1 + self.zoom_acumulator
-        self.window_coordinates.x_max = self.default_x * zoom_factor
-        self.window_coordinates.y_max = self.default_y * zoom_factor
-        print(f"New: {(self.window_coordinates.x_max, self.window_coordinates.y_max)}")
+        self.scale_acumulator += step
+        scale_factor = 1 + self.scale_acumulator
+        self.window_coordinates.x_max = self.default_x_max * scale_factor
+        self.window_coordinates.y_max = self.default_y_max * scale_factor
 
     def scale_window_in(self):
         self.scale_window_by_step(-0.01)
