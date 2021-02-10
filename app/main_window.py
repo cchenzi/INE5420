@@ -15,6 +15,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.partnerDialog = NewWireframeWindow(self)
         self.default_x = 630
         self.default_y = 380
+        self.zoom_acumulator = 0
         self.window_coordinates = CoordinatesRepresentation(
             0, 0, self.default_x, self.default_y
         )
@@ -273,9 +274,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
-        zoom_factor = 1 + step
-        self.window_coordinates.x_max *= zoom_factor
-        self.window_coordinates.y_max *= zoom_factor
+        self.zoom_acumulator += step
+        zoom_factor = 1 + self.zoom_acumulator
+        self.window_coordinates.x_max = self.default_x * zoom_factor
+        self.window_coordinates.y_max = self.default_y * zoom_factor
+        print(f"New: {(self.window_coordinates.x_max, self.window_coordinates.y_max)}")
 
     def scale_window_in(self):
         self.scale_window_by_step(-0.01)
