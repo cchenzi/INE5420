@@ -182,7 +182,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.deletePushButton.clicked.connect(self.delete_wireframe)
         self.clearPushButton.clicked.connect(self.clear_display_file)
         self.clearPushButton.clicked.connect(self.clear_canvas)
-        self.refreshPushButton.clicked.connect(self.redraw_wireframes)
+        self.refreshPushButton.clicked.connect(self.refresh_canvas)
         self.leftPushButton.clicked.connect(self.shift_window_left)
         self.rightPushButton.clicked.connect(self.shift_window_right)
         self.upPushButton.clicked.connect(self.shift_window_up)
@@ -207,11 +207,7 @@ class MainWindow(QtWidgets.QMainWindow):
             item = self.listWidget.currentRow()
             self.listWidget.takeItem(item)
             self.display_file.pop(item)
-        self.viewport_coordinates.x_navigation = 0
-        self.viewport_coordinates.y_navigation = 0
-        self.window_coordinates.x_max = self.default_x_max
-        self.window_coordinates.y_max = self.default_y_max
-        self.scale_acumulator = 0
+        self.set_navigation_default_paramaters()
         self.scale_window_by_step(0)
         self.redraw_wireframes()
         self.console_print("Canvas cleared")
@@ -243,6 +239,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.viewport_coordinates,
             )
             self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
+
+    def set_navigation_default_paramaters(self):
+        self.console_print("Navigation parameters reseted!")
+        self.viewport_coordinates.x_navigation = 0
+        self.viewport_coordinates.y_navigation = 0
+        self.window_coordinates.x_max = self.default_x_max
+        self.window_coordinates.y_max = self.default_y_max
+        self.scale_acumulator = 0
 
     def shift_window_left(self):
         self.viewport_coordinates.x_navigation += calculate_coordinate_shift(
@@ -280,6 +284,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def scale_window_out(self):
         self.scale_window_by_step(0.01)
+        self.redraw_wireframes()
+
+    def refresh_canvas(self):
+        self.set_navigation_default_paramaters()
         self.redraw_wireframes()
 
     def redraw_wireframes(self):
