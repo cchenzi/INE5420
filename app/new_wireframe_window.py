@@ -58,7 +58,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("Form", "Form"))
+        self.setWindowTitle(_translate("Form", "New Wireframe"))
         self.drawPolygonPushButton.setText(_translate("Form", "Draw"))
         self.addNewPointPushButton.setText(_translate("Form", "Add "))
         self.deletePointPushButton.setText(_translate("Form", "Delete"))
