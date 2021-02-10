@@ -148,7 +148,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.setWindowTitle(_translate("MainWindow", "Computer Graphics"))
         self.displayFileLabel.setText(_translate("MainWindow", "Display File"))
         self.newPushButton.setText(_translate("MainWindow", "New"))
         self.deletePushButton.setText(_translate("MainWindow", "Delete"))
