@@ -16,7 +16,7 @@ Este repositório contém o trabalho prático desenvolvido para a primeira parte
     - `Clear`: deleta todos os `wireframes` da lista de objetos.
     - `Refresh`: reseta os parâmetros de navegação e redesenha os objetos na tela.
 
-Ainda à esquerda, estão disponíveos os botões de navegação 2D e zoom, definidos com um `step` de `0.01`:
+* Ainda à esquerda, estão disponíveos os botões de navegação 2D e zoom, com `step` previamente definidos:
     - `Navegação 2D`: esquerda, direita, cima e baixo.
     - `Zoom`: in e out.
 
