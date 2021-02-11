@@ -73,8 +73,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.show()
 
     def add_new_point(self):
-        x = int(self.newXTextEdit.toPlainText())
-        y = int(self.newYTextEdit.toPlainText())
+        x = float(self.newXTextEdit.toPlainText())
+        y = float(self.newYTextEdit.toPlainText())
         # self.partnerDialog.console_print(f"Points={(x, y)}")
         self.points.append((x, y))
         self.partnerDialog.console_print(f"Points after append={self.points}")
