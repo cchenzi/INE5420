@@ -3,7 +3,13 @@ from new_wireframe_window import NewWireframeWindow
 from utils import (
     CoordinatesRepresentation,
     transform_coordinates,
-    calculate_coordinate_shift,
+)
+from config import (
+    DEFAULT_X_MAX,
+    DEFAULT_X_MIN,
+    DEFAULT_Y_MAX,
+    DEFAULT_Y_MIN,
+    SHIFT_FACTOR,
 )
 
 
@@ -13,15 +19,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.resize(847, 589)
         self.display_file = []
         self.partnerDialog = NewWireframeWindow(self)
-        self.default_x_max = 630
-        self.default_y_max = 380
+        self.default_x_max = DEFAULT_X_MAX
+        self.default_x_min = DEFAULT_X_MIN
+        self.default_y_max = DEFAULT_Y_MAX
+        self.default_y_min = DEFAULT_Y_MIN
         self.scale_acumulator = 0
         self.window_coordinates = CoordinatesRepresentation(
-            0, 0, self.default_x_max, self.default_y_max
+            self.default_x_min,
+            self.default_y_min,
+            self.default_x_max,
+            self.default_y_max,
+            factor=SHIFT_FACTOR,
         )
         self.viewport_coordinates = CoordinatesRepresentation(
-            0, 0, self.default_x_max, self.default_y_max
+            self.default_x_min,
+            self.default_y_min,
+            self.default_x_max,
+            self.default_y_max,
         )
+        self.wireframe_count = 0
         self.setup()
 
     def setup(self):
@@ -194,11 +210,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.partnerDialog.new_window()
 
     def delete_wireframe(self):
-        item = self.listWidget.currentRow()
-        self.listWidget.takeItem(item)
-        wireframe = self.display_file.pop(item)
-        self.console_print(f"{wireframe.name} deleted!")
-        self.redraw_wireframes()
+        if len(self.display_file) > 0:
+            item = self.listWidget.currentRow()
+            self.listWidget.takeItem(item)
+            wireframe = self.display_file.pop(item)
+            self.console_print(f"{wireframe.name} deleted!")
+            self.redraw_wireframes()
 
     def clear_display_file(self):
         self.listWidget.setCurrentRow(0)
@@ -242,34 +259,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_navigation_default_paramaters(self):
         self.console_print("Navigation parameters reseted!")
-        self.viewport_coordinates.x_navigation = 0
-        self.viewport_coordinates.y_navigation = 0
         self.window_coordinates.x_max = self.default_x_max
+        self.window_coordinates.x_min = self.default_x_min
         self.window_coordinates.y_max = self.default_y_max
+        self.window_coordinates.y_min = self.default_y_min
         self.scale_acumulator = 0
 
     def shift_window_left(self):
-        self.viewport_coordinates.x_navigation += calculate_coordinate_shift(
-            self.window_coordinates.x_max, self.window_coordinates.x_min, 0.01
-        )
+        self.window_coordinates.x_min -= self.window_coordinates.x_shift_factor
+        self.window_coordinates.x_max -= self.window_coordinates.x_shift_factor
         self.redraw_wireframes()
 
     def shift_window_right(self):
-        self.viewport_coordinates.x_navigation -= calculate_coordinate_shift(
-            self.window_coordinates.x_max, self.window_coordinates.x_min, 0.01
-        )
+        self.window_coordinates.x_min += self.window_coordinates.x_shift_factor
+        self.window_coordinates.x_max += self.window_coordinates.x_shift_factor
         self.redraw_wireframes()
 
     def shift_window_up(self):
-        self.viewport_coordinates.y_navigation += calculate_coordinate_shift(
-            self.window_coordinates.y_max, self.window_coordinates.y_min, 0.01
-        )
+        self.window_coordinates.y_min += self.window_coordinates.y_shift_factor
+        self.window_coordinates.y_max += self.window_coordinates.y_shift_factor
         self.redraw_wireframes()
 
     def shift_window_down(self):
-        self.viewport_coordinates.y_navigation -= calculate_coordinate_shift(
-            self.window_coordinates.y_max, self.window_coordinates.y_min, 0.01
-        )
+        self.window_coordinates.y_min -= self.window_coordinates.y_shift_factor
+        self.window_coordinates.y_max -= self.window_coordinates.y_shift_factor
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
