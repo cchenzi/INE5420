@@ -19,7 +19,7 @@ class CoordinatesRepresentation:
         self.y_min = y_min
         self.x_max = x_max
         self.y_max = y_max
-        self.x_shift_factor = calculate_coordinate_shift(self.x_max, self.y_max, factor)
+        self.x_shift_factor = calculate_coordinate_shift(self.x_max, self.x_min, factor)
         self.y_shift_factor = calculate_coordinate_shift(self.y_max, self.y_min, factor)
 
 
