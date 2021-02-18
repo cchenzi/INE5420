@@ -2,8 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from new_wireframe_window import NewWireframeWindow
 from utils import (
     CoordinatesRepresentation,
-    transform_coordinates,
 )
+from math_functions import transform_coordinates
 from config import (
     DEFAULT_X_MAX,
     DEFAULT_X_MIN,

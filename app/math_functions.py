@@ -1,5 +1,7 @@
 import numpy as np
 
+from app.utils import ReflectionIndexes
+
 
 def x_viewport_transform(
     x_window, x_window_min, x_window_max, x_viewport_min, x_viewport_max
@@ -46,8 +48,8 @@ def build_scaling_matrix(Sx, Sy):
 def build_rotation_matrix(degree):
     """
     Build rotation matrix as:
-        [cos(O) -sin(O) 1]
-        [sin(O)  cos(O) 1]
+        [cos(O) -sin(O) 0]
+        [sin(O)  cos(O) 0]
         [0       0      1]
     """
     matrix = np.identity(3)
@@ -58,3 +60,36 @@ def build_rotation_matrix(degree):
     matrix[0][1] = -sin
     matrix[1][0] = sin
     return matrix
+
+
+def build_reflection_matrix(over):
+    """
+    Build reflection matrix as:
+        [1  0  0]
+        [0  1  0]
+        [0  0  1],
+    where over determine where to
+    apply the reflection: x, y or origin.
+    """
+    matrix = np.identity(3)
+    for index in ReflectionIndexes(over):
+        matrix[index] = -1
+    return matrix
+
+
+def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
+    xvp = x_viewport_transform(
+        x,
+        window_coordinates.x_min,
+        window_coordinates.x_max,
+        viewport_coordinates.x_min,
+        viewport_coordinates.x_max,
+    )
+    yvp = y_viewport_transform(
+        y,
+        window_coordinates.y_min,
+        window_coordinates.y_max,
+        viewport_coordinates.y_min,
+        viewport_coordinates.y_max,
+    )
+    return (xvp, yvp)
