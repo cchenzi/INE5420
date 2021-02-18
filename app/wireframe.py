@@ -16,6 +16,8 @@ class Wireframe:
         self.transformations = []
         self.transformed_coordinates = []
         self.apply_transformations_to_points()
+        self.center = None
+        self.calculate_object_center()
 
     def apply_transformations_to_points(self):
         transformed_points = []
@@ -24,3 +26,6 @@ class Wireframe:
             transformed_points.append((transformed[0], transformed[1]))
 
         self.transformed_coordinates = transformed_points
+
+    def calculate_object_center(self):
+        self.center = tuple(np.array(self.transformed_coordinates).mean(axis=0))

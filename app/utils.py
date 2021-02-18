@@ -1,5 +1,4 @@
 from enum import Enum
-from math_functions import x_viewport_transform, y_viewport_transform
 
 
 class Shape(Enum):
@@ -13,6 +12,10 @@ class Shape(Enum):
         return Shape.Polygon
 
 
+def ReflectionIndexes(over):
+    return {"x": [(1, 1)], "y": [(0, 0)], "origin": [(1, 1), (0, 0)]}[over]
+
+
 class CoordinatesRepresentation:
     def __init__(self, x_min, y_min, x_max, y_max, factor=0):
         self.x_min = x_min
@@ -21,24 +24,6 @@ class CoordinatesRepresentation:
         self.y_max = y_max
         self.x_shift_factor = calculate_coordinate_shift(self.x_max, self.x_min, factor)
         self.y_shift_factor = calculate_coordinate_shift(self.y_max, self.y_min, factor)
-
-
-def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
-    xvp = x_viewport_transform(
-        x,
-        window_coordinates.x_min,
-        window_coordinates.x_max,
-        viewport_coordinates.x_min,
-        viewport_coordinates.x_max,
-    )
-    yvp = y_viewport_transform(
-        y,
-        window_coordinates.y_min,
-        window_coordinates.y_max,
-        viewport_coordinates.y_min,
-        viewport_coordinates.y_max,
-    )
-    return (xvp, yvp)
 
 
 def calculate_coordinate_shift(max_coordinate, min_coordinate, step):
