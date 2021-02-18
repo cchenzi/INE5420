@@ -241,14 +241,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def draw_wireframe(self, wireframe):
         for index in range(wireframe.number_points):
-            x1, y1 = wireframe.coordinates[index]
+            x1, y1 = wireframe.transformed_coordinates[index]
             xvp1, yvp1 = transform_coordinates(
                 x1,
                 y1,
                 self.window_coordinates,
                 self.viewport_coordinates,
             )
-            x2, y2 = wireframe.coordinates[(index + 1) % wireframe.number_points]
+            x2, y2 = wireframe.transformed_coordinates[
+                (index + 1) % wireframe.number_points
+            ]
             xvp2, yvp2 = transform_coordinates(
                 x2,
                 y2,
