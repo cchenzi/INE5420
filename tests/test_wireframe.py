@@ -67,12 +67,33 @@ def test_point_rotation_F():
 
 
 def test_transformations_compositions_G():
-    pass
+    w = setup_class([(1, 3)])
+    t = build_translation_matrix(-3, 2)
+    w.transformations.append(t)
+    t = build_translation_matrix(3, -2)
+    w.transformations.append(t)
+    w.apply_transformations_to_points()
+    expected_points = [(1, 3)]
+    assert w.transformed_coordinates == expected_points
 
 
 def test_transformations_compositions_H():
-    pass
+    w = setup_class([(4, 5)])
+    s = build_scaling_matrix(0.5, 0.5)
+    w.transformations.append(s)
+    s = build_scaling_matrix(2, 2)
+    w.transformations.append(s)
+    w.apply_transformations_to_points()
+    expected_points = [(4, 5)]
+    assert w.transformed_coordinates == expected_points
 
 
 def test_transformations_compositions_I():
-    pass
+    w = setup_class([(2, 2.5)])
+    r = build_rotation_matrix(30)
+    w.transformations.append(r)
+    r = build_rotation_matrix(-30)
+    w.transformations.append(r)
+    w.apply_transformations_to_points()
+    expected_points = [(2, 2.5)]
+    assert_allclose(w.transformed_coordinates, expected_points, rtol=1e-2, atol=0)
