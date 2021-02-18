@@ -1,7 +1,7 @@
 import numpy as np
 from functools import reduce
 
-from utils import Shape
+from app.utils import Shape
 
 
 class Wireframe:
