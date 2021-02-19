@@ -12,8 +12,20 @@ class Shape(Enum):
         return Shape.Polygon
 
 
-def ReflectionIndexes(over):
+def get_reflection_indexes(over):
     return {"x": [(1, 1)], "y": [(0, 0)], "origin": [(1, 1), (0, 0)]}[over]
+
+
+transformations_codes = {
+    "rf": "Reflection",
+    "rt": "Rotation",
+    "sc": "Scaling",
+    "tr": "Translation",
+}
+
+
+def build_transformation_string(transformation):
+    return f"{transformations_codes[transformation[0]]} {transformation[1]}"
 
 
 class CoordinatesRepresentation:

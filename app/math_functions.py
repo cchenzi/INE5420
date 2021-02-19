@@ -1,6 +1,6 @@
 import numpy as np
 
-from app.utils import ReflectionIndexes
+from app.utils import get_reflection_indexes, transformations_codes
 
 
 def x_viewport_transform(
@@ -72,9 +72,17 @@ def build_reflection_matrix(over):
     apply the reflection: x, y or origin.
     """
     matrix = np.identity(3)
-    for index in ReflectionIndexes(over):
+    for index in get_reflection_indexes(over):
         matrix[index] = -1
     return matrix
+
+
+transformations_functions_dict = {
+    "rf": build_reflection_matrix,
+    "rt": build_rotation_matrix,
+    "sc": build_scaling_matrix,
+    "tr": build_translation_matrix,
+}
 
 
 def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
