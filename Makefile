@@ -2,7 +2,7 @@
 
 .PHONY: app
 app: 
-> poetry run python3 app/main.py
+> poetry run python app
 
 .PHONY: test
 test:

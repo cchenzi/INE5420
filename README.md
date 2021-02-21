@@ -45,7 +45,7 @@ O projeto pode ser executado com ajuda do _makefile_ com o comando `make app`, e
 
 Para executar sem a ajuda do __makefile__ e do `poetry`, basta rodar com
 
-`python3 app/main.py`
+`python3 -m app`
 
 atentando-se com as dependências necessárias.
 
