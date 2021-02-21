@@ -85,6 +85,15 @@ transformations_functions_dict = {
 }
 
 
+def build_homogeneous_coordinates(coordinates):
+    ones = np.ones((len(coordinates), 1))
+    return np.hstack((coordinates, ones))
+
+
+def calculate_object_center(coordinates):
+    return tuple(np.array(coordinates).mean(axis=0))
+
+
 def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
     xvp = x_viewport_transform(
         x,
