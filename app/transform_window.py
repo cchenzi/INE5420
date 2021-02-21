@@ -1,10 +1,4 @@
-import sys
-from PyQt5 import QtGui
-from PyQt5 import QtCore, QtGui, QtWidgets
-from wireframe import Wireframe
-from utils import Shape
-
-# UPDATE
+from PyQt5 import QtCore, QtWidgets
 
 
 class TransformWindow(QtWidgets.QMainWindow):
