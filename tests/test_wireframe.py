@@ -13,6 +13,7 @@ def setup_class(points):
     return Wireframe(points, 0, "foo")
 
 
+# Pure transformation calculations
 def test_point_translation_A():
     w = setup_class([(1, 3)])
     t = ("tr", [-3, 2])
@@ -98,3 +99,17 @@ def test_transformations_compositions_I():
     w.apply_transformations_to_points()
     expected_points = [(2, 2.5)]
     assert_allclose(w.transformed_coordinates, expected_points, rtol=1e-2, atol=0)
+
+
+# ----------------------------------------------------------------
+
+
+def test_transformations_compositions_G2():
+    w = setup_class([(1, 3), (2, 8)])
+    t = ("tr", [-3, 2])
+    w.transformations_codes.append(t)
+    t = ("tr", [3, -2])
+    w.transformations_codes.append(t)
+    w.transform_coordinates()
+    expected_points = [(1, 3), (2, 8)]
+    assert w.transformed_coordinates == expected_points
