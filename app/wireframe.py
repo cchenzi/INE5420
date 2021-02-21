@@ -44,7 +44,7 @@ class Wireframe:
         return code in ["rt", "sc"]
 
     def transform_coordinates(self):
-        coord_aux = build_homogeneous_coordinates(self.transformed_coordinates)
+        coord_aux = build_homogeneous_coordinates(self.coordinates)
         for (code, params) in self.transformations_codes:
             t_aux = []
             if self.needs_translation(code):
