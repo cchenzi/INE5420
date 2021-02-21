@@ -1,8 +1,8 @@
 import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
-from wireframe import Wireframe
-from utils import Shape
+from app.wireframe import Wireframe
+from app.utils import Shape
 
 
 class NewWireframeWindow(QtWidgets.QMainWindow):

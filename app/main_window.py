@@ -1,10 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from new_wireframe_window import NewWireframeWindow
-from utils import (
+from app.new_wireframe_window import NewWireframeWindow
+from app.utils import (
     CoordinatesRepresentation,
 )
-from math_functions import transform_coordinates
-from config import (
+from app.math_functions import transform_coordinates
+from app.config import (
     DEFAULT_X_MAX,
     DEFAULT_X_MIN,
     DEFAULT_Y_MAX,
