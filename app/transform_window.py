@@ -99,7 +99,6 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.tabWidget.setCurrentIndex(0)
         self.connect_actions()
 
-
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.transformLabel.setText(
@@ -154,18 +153,18 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.listWidget.clear()
         self.next_id = 0
         for code in self.wireframe.transformations_codes:
-            item = f'{transformations_codes[code[0]]} {self.next_id}'
+            item = f"{transformations_codes[code[0]]} {self.next_id}"
             self.listWidget.insertItem(self.next_id, item)
             self.next_id += 1
-    
+
     def add_last_n_transformations_to_list(self, n):
         codes = self.wireframe.transformations_codes[-n:]
         for code in codes:
             transformation = transformations_codes[code[0]]
-            item = f'{transformation} {self.next_id}'
+            item = f"{transformation} {self.next_id}"
             self.listWidget.insertItem(self.next_id, item)
             self.next_id += 1
-    
+
     def connect_actions(self):
         self.addTransformationPushButton.clicked.connect(self.add_transformation)
         self.deleteTransformationPushButton.clicked.connect(self.delete_transformation)
@@ -177,7 +176,7 @@ class TransformWindow(QtWidgets.QMainWindow):
             item = self.listWidget.currentRow()
             self.listWidget.takeItem(item)
             transformation = self.wireframe.transformations_codes.pop(item)
-            name = f'{transformations_codes[transformation[0]]}'
+            name = f"{transformations_codes[transformation[0]]}"
             self.partnerDialog.console_print(f"{name} removed!")
             self.wireframe.apply_transformations_to_points()
             self.partnerDialog.redraw_wireframes()
@@ -191,8 +190,8 @@ class TransformWindow(QtWidgets.QMainWindow):
 
     def add_rotation(self):
         degrees = self.rotationText.toPlainText()
-        if degrees != '':
-            self.wireframe.transformations_codes.append(('rt', [float(degrees)]))
+        if degrees != "":
+            self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
             self.add_last_n_transformations_to_list(1)
 
     def show_rotation(self, degrees):
@@ -203,9 +202,9 @@ class TransformWindow(QtWidgets.QMainWindow):
         y_text = self.translationYTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 0
         y = float(y_text) if y_text != "" else 0
-        self.wireframe.transformations_codes.append(('tr', [x, y]))
+        self.wireframe.transformations_codes.append(("tr", [x, y]))
         self.add_last_n_transformations_to_list(1)
-    
+
     def show_translation(self, x, y):
         self.translationXTextEdit.setText(str(x))
         self.translationYTextEdit.setText(str(y))
@@ -215,9 +214,9 @@ class TransformWindow(QtWidgets.QMainWindow):
         y_text = self.scalingYTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 1
         y = float(y_text) if y_text != "" else 1
-        self.wireframe.transformations_codes.append(('sc', [x, y]))
+        self.wireframe.transformations_codes.append(("sc", [x, y]))
         self.add_last_n_transformations_to_list(1)
-    
+
     def show_scaling(self, x, y):
         self.scalingXTextEdit.setText(str(x))
         self.scalingYTextEdit.setText(str(y))
@@ -225,39 +224,39 @@ class TransformWindow(QtWidgets.QMainWindow):
     def add_reflection(self):
         count = 0
         if self.reflectionXCheckBox.isChecked():
-            self.wireframe.transformations_codes.append(('rf', ['x']))
+            self.wireframe.transformations_codes.append(("rf", ["x"]))
             count += 1
         if self.reflectionYCheckBox.isChecked():
-            self.wireframe.transformations_codes.append(('rf', ['y']))
+            self.wireframe.transformations_codes.append(("rf", ["y"]))
             count += 1
         if self.reflectionOriginCheckBox.isChecked():
-            self.wireframe.transformations_codes.append(('rf', ['origin']))
+            self.wireframe.transformations_codes.append(("rf", ["origin"]))
             count += 1
         self.add_last_n_transformations_to_list(count)
-    
+
     def show_reflection(self, rtype):
         self.reflectionXCheckBox.setChecked(False)
         self.reflectionYCheckBox.setChecked(False)
         self.reflectionOriginCheckBox.setChecked(False)
-        if rtype == 'x':
+        if rtype == "x":
             self.reflectionXCheckBox.setChecked(True)
-        elif rtype == 'y':
+        elif rtype == "y":
             self.reflectionYCheckBox.setChecked(True)
-        elif rtype == 'origin':
+        elif rtype == "origin":
             self.reflectionOriginCheckBox.setChecked(True)
 
     tab_index_to_function = {
         0: (add_rotation, show_rotation),
         1: (add_translation, show_translation),
         2: (add_scaling, show_scaling),
-        3: (add_reflection, show_reflection)
+        3: (add_reflection, show_reflection),
     }
 
     transformation_name_to_index = {
-        'Rotation': 0,
-        'Translation': 1,
-        'Scaling': 2,
-        'Reflection': 3
+        "Rotation": 0,
+        "Translation": 1,
+        "Scaling": 2,
+        "Reflection": 3,
     }
 
     def show_transformation(self):
@@ -272,5 +271,4 @@ class TransformWindow(QtWidgets.QMainWindow):
             params = transformation_code[1]
             self.tab_index_to_function[new_index][1](self, *params)
         except AttributeError:
-            self.partnerDialog.console_print('Error parsing current transformation')
-        
+            self.partnerDialog.console_print("Error parsing current transformation")
