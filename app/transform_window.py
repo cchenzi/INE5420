@@ -210,16 +210,20 @@ class TransformWindow(QtWidgets.QMainWindow):
             return
         if self.rotationComboBox.currentIndex() == 0:
             # Center of object
-            self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
+            self.wireframe.transformations_codes.append(("rt", [float(degrees), ()]))
         elif self.rotationComboBox.currentIndex() == 1:
             # Origin
-            self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
+            self.wireframe.transformations_codes.append(
+                ("rt", [float(degrees), (0, 0)])
+            )
         elif self.rotationComboBox.currentIndex() == 2:
             # Point
             try:
                 x = float(self.rotationXTextEdit.toPlainText())
                 y = float(self.rotationYTextEdit.toPlainText())
-                self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
+                self.wireframe.transformations_codes.append(
+                    ("rt", [float(degrees), (x, y)])
+                )
             except ValueError:
                 self.partnerDialog.console_print(
                     "Please inform valid X and Y values to rotation about a point"
