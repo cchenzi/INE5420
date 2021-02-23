@@ -97,7 +97,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
         self.tabWidget.setCurrentIndex(0)
-        self.set_buttons_actions()
+        self.connect_actions()
 
 
     def retranslateUi(self):
@@ -151,6 +151,8 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.show()
 
     def update_transformations_list(self):
+        self.listWidget.clear()
+        self.next_id = 0
         for code in self.wireframe.transformations_codes:
             item = f'{transformations_codes[code[0]]} {self.next_id}'
             self.listWidget.insertItem(self.next_id, item)
@@ -164,9 +166,10 @@ class TransformWindow(QtWidgets.QMainWindow):
             self.listWidget.insertItem(self.next_id, item)
             self.next_id += 1
     
-    def set_buttons_actions(self):
+    def connect_actions(self):
         self.addTransformationPushButton.clicked.connect(self.add_transformation)
         self.deleteTransformationPushButton.clicked.connect(self.delete_transformation)
+        self.listWidget.currentItemChanged.connect(self.show_transformation)
 
     def delete_transformation(self):
         transformations = len(self.wireframe.transformations_codes)
@@ -182,7 +185,7 @@ class TransformWindow(QtWidgets.QMainWindow):
     def add_transformation(self):
         active_tab = self.tabWidget.currentIndex()
         print(active_tab)
-        self.map_transformation_tab[active_tab](self)
+        self.tab_index_to_function[active_tab][0](self)
         self.wireframe.apply_transformations_to_points()
         self.partnerDialog.redraw_wireframes()
 
@@ -192,6 +195,9 @@ class TransformWindow(QtWidgets.QMainWindow):
             self.wireframe.transformations_codes.append(('rt', [float(degrees)]))
             self.add_last_n_transformations_to_list(1)
 
+    def show_rotation(self, degrees):
+        self.rotationText.setText(str(degrees))
+
     def add_translation(self):
         x_text = self.translationXTextEdit.toPlainText()
         y_text = self.translationYTextEdit.toPlainText()
@@ -199,6 +205,10 @@ class TransformWindow(QtWidgets.QMainWindow):
         y = float(y_text) if y_text != "" else 0
         self.wireframe.transformations_codes.append(('tr', [x, y]))
         self.add_last_n_transformations_to_list(1)
+    
+    def show_translation(self, x, y):
+        self.translationXTextEdit.setText(str(x))
+        self.translationYTextEdit.setText(str(y))
 
     def add_scaling(self):
         x_text = self.scalingXTextEdit.toPlainText()
@@ -207,6 +217,10 @@ class TransformWindow(QtWidgets.QMainWindow):
         y = float(y_text) if y_text != "" else 1
         self.wireframe.transformations_codes.append(('sc', [x, y]))
         self.add_last_n_transformations_to_list(1)
+    
+    def show_scaling(self, x, y):
+        self.scalingXTextEdit.setText(str(x))
+        self.scalingYTextEdit.setText(str(y))
 
     def add_reflection(self):
         count = 0
@@ -220,10 +234,40 @@ class TransformWindow(QtWidgets.QMainWindow):
             self.wireframe.transformations_codes.append(('rf', ['origin']))
             count += 1
         self.add_last_n_transformations_to_list(count)
+    
+    def show_reflection(self, rtype):
+        self.reflectionXCheckBox.setChecked(False)
+        self.reflectionYCheckBox.setChecked(False)
+        self.reflectionOriginCheckBox.setChecked(False)
+        if rtype == 'x':
+            self.reflectionXCheckBox.setChecked(True)
+        elif rtype == 'y':
+            self.reflectionYCheckBox.setChecked(True)
+        elif rtype == 'origin':
+            self.reflectionOriginCheckBox.setChecked(True)
 
-    map_transformation_tab = {
-        0: add_rotation,
-        1: add_translation,
-        2: add_scaling,
-        3: add_reflection
+    tab_index_to_function = {
+        0: (add_rotation, show_rotation),
+        1: (add_translation, show_translation),
+        2: (add_scaling, show_scaling),
+        3: (add_reflection, show_reflection)
     }
+
+    transformation_name_to_index = {
+        'Rotation': 0,
+        'Translation': 1,
+        'Scaling': 2,
+        'Reflection': 3
+    }
+
+    def show_transformation(self):
+        item = self.listWidget.currentItem()
+        item_name = item.text().split()[0]
+        new_index = self.transformation_name_to_index[item_name]
+        self.tabWidget.setCurrentIndex(new_index)
+
+        row = self.listWidget.currentRow()
+        transformation_code = self.wireframe.transformations_codes[row]
+        params = transformation_code[1]
+        self.tab_index_to_function[new_index][1](self, *params)
+        
