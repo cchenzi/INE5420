@@ -16,7 +16,7 @@ def test_translation_matrix():
 
 def test_scaling_matrix():
     matrix = build_scaling_matrix(30, 30)
-    expected_matrix = np.array([[30, 0, 0], [0, 30, 0], [0, 0, 0]])
+    expected_matrix = np.array([[30, 0, 0], [0, 30, 0], [0, 0, 1]])
     assert_array_equal(matrix, expected_matrix)
 
 
