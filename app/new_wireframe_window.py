@@ -86,15 +86,16 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.set_text_draw_button()
 
     def add_new_wireframe(self):
-        wireframe_id = self.partnerDialog.wireframe_count
-        wireframe = Wireframe(self.points, wireframe_id, self.color)
-        self.display_file.append(wireframe)
-        self.partnerDialog.console_print(f"New wireframe added={wireframe.name}")
+        if len(self.points) > 0:
+            wireframe_id = self.partnerDialog.wireframe_count
+            wireframe = Wireframe(self.points, wireframe_id, self.color)
+            self.display_file.append(wireframe)
+            self.partnerDialog.draw_wireframe(wireframe)
+            self.partnerDialog.listWidget.insertItem(wireframe_id, wireframe.name)
+            self.partnerDialog.wireframe_count += 1
+            self.newPointsListWidget.clear()
+            self.partnerDialog.console_print(f"New wireframe added={wireframe.name}")
         self.close()
-        self.partnerDialog.draw_wireframe(wireframe)
-        self.partnerDialog.listWidget.insertItem(wireframe_id, wireframe.name)
-        self.partnerDialog.wireframe_count += 1
-        self.newPointsListWidget.clear()
 
     def delete_active_point(self):
         item = self.newPointsListWidget.currentRow()
