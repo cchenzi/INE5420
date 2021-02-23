@@ -43,6 +43,19 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.rotationLabel = QtWidgets.QLabel(self.rotationTab)
         self.rotationLabel.setGeometry(QtCore.QRect(30, 60, 71, 17))
         self.rotationLabel.setObjectName("rotationLabel")
+        self.rotationXTextEdit = QtWidgets.QTextEdit(self.rotationTab)
+        self.rotationXTextEdit.setGeometry(QtCore.QRect(100, 90, 51, 21))
+        self.rotationXTextEdit.setObjectName("rotationXTextEdit")
+        self.rotationYLabel = QtWidgets.QLabel(self.rotationTab)
+        self.rotationYLabel.setGeometry(QtCore.QRect(78, 112, 16, 17))
+        self.rotationYLabel.setObjectName("rotationYLabel")
+        self.rotationXLabel = QtWidgets.QLabel(self.rotationTab)
+        self.rotationXLabel.setGeometry(QtCore.QRect(78, 92, 16, 17))
+        self.rotationXLabel.setObjectName("rotationXLabel")
+        self.rotationYTextEdit = QtWidgets.QTextEdit(self.rotationTab)
+        self.rotationYTextEdit.setGeometry(QtCore.QRect(100, 110, 51, 21))
+        self.rotationYTextEdit.setObjectName("rotationYTextEdit")
+        self.disable_edit_rotation_point(True)
         self.tabWidget.addTab(self.rotationTab, "")
 
         self.translationTab = QtWidgets.QWidget()
@@ -136,6 +149,8 @@ class TransformWindow(QtWidgets.QMainWindow):
         )
         self.scalingYLabel.setText(_translate("TransformWindow", "Y:"))
         self.scalingXLabel.setText(_translate("TransformWindow", "X:"))
+        self.rotationYLabel.setText(_translate("TransformWindow", "Y:"))
+        self.rotationXLabel.setText(_translate("TransformWindow", "X:"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.scaleTab),
             _translate("TransformWindow", "Scaling"),
@@ -169,6 +184,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.addTransformationPushButton.clicked.connect(self.add_transformation)
         self.deleteTransformationPushButton.clicked.connect(self.delete_transformation)
         self.listWidget.currentItemChanged.connect(self.show_transformation)
+        self.rotationComboBox.currentIndexChanged.connect(self.select_rotation)
 
     def delete_transformation(self):
         transformations = len(self.wireframe.transformations_codes)
@@ -190,12 +206,39 @@ class TransformWindow(QtWidgets.QMainWindow):
 
     def add_rotation(self):
         degrees = self.rotationText.toPlainText()
-        if degrees != "":
+        if degrees == "":
+            return
+        if self.rotationComboBox.currentIndex() == 0:
+            # Center of object
             self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
-            self.add_last_n_transformations_to_list(1)
+        elif self.rotationComboBox.currentIndex() == 1:
+            # Origin
+            self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
+        elif self.rotationComboBox.currentIndex() == 2:
+            # Point
+            try:
+                x = float(self.rotationXTextEdit.toPlainText())
+                y = float(self.rotationYTextEdit.toPlainText())
+                self.wireframe.transformations_codes.append(("rt", [float(degrees)]))
+            except ValueError:
+                self.partnerDialog.console_print(
+                    "Please inform valid X and Y values to rotation about a point"
+                )
+                return
+        self.add_last_n_transformations_to_list(1)
 
     def show_rotation(self, degrees):
         self.rotationText.setText(str(degrees))
+
+    def select_rotation(self):
+        if self.rotationComboBox.currentIndex() == 2:
+            self.disable_edit_rotation_point(False)
+        else:
+            self.disable_edit_rotation_point(True)
+
+    def disable_edit_rotation_point(self, boolean):
+        self.rotationXTextEdit.setDisabled(boolean)
+        self.rotationYTextEdit.setDisabled(boolean)
 
     def add_translation(self):
         x_text = self.translationXTextEdit.toPlainText()
