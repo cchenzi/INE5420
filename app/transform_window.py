@@ -15,9 +15,9 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.transformLabel = QtWidgets.QLabel(self)
         self.transformLabel.setGeometry(QtCore.QRect(10, 10, 151, 17))
         self.transformLabel.setObjectName("transformLabel")
-        self.listView = QtWidgets.QListWidget(self)
-        self.listView.setGeometry(QtCore.QRect(10, 30, 171, 261))
-        self.listView.setObjectName("listView")
+        self.listWidget = QtWidgets.QListWidget(self)
+        self.listWidget.setGeometry(QtCore.QRect(10, 30, 171, 261))
+        self.listWidget.setObjectName("listWidget")
 
         self.deleteTransformationPushButton = QtWidgets.QPushButton(self)
         self.deleteTransformationPushButton.setGeometry(QtCore.QRect(10, 300, 171, 25))
@@ -153,7 +153,7 @@ class TransformWindow(QtWidgets.QMainWindow):
     def update_transformations_list(self):
         for code in self.wireframe.transformations_codes:
             item = f'{transformations_codes[code[0]]} {self.next_id}'
-            self.listView.insertItem(self.next_id, item)
+            self.listWidget.insertItem(self.next_id, item)
             self.next_id += 1
     
     def add_last_n_transformations_to_list(self, n):
@@ -161,11 +161,23 @@ class TransformWindow(QtWidgets.QMainWindow):
         for code in codes:
             transformation = transformations_codes[code[0]]
             item = f'{transformation} {self.next_id}'
-            self.listView.insertItem(self.next_id, item)
+            self.listWidget.insertItem(self.next_id, item)
             self.next_id += 1
     
     def set_buttons_actions(self):
         self.addTransformationPushButton.clicked.connect(self.add_transformation)
+        self.deleteTransformationPushButton.clicked.connect(self.delete_transformation)
+
+    def delete_transformation(self):
+        transformations = len(self.wireframe.transformations_codes)
+        if transformations > 0:
+            item = self.listWidget.currentRow()
+            self.listWidget.takeItem(item)
+            transformation = self.wireframe.transformations_codes.pop(item)
+            name = f'{transformations_codes[transformation[0]]}'
+            self.partnerDialog.console_print(f"{name} removed!")
+            self.wireframe.apply_transformations_to_points()
+            self.partnerDialog.redraw_wireframes()
 
     def add_transformation(self):
         active_tab = self.tabWidget.currentIndex()
