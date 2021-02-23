@@ -178,14 +178,14 @@ class TransformWindow(QtWidgets.QMainWindow):
             transformation = self.wireframe.transformations_codes.pop(item)
             name = f"{transformations_codes[transformation[0]]}"
             self.partnerDialog.console_print(f"{name} removed!")
-            self.wireframe.apply_transformations_to_points()
+            self.wireframe.transform_coordinates()
             self.partnerDialog.redraw_wireframes()
 
     def add_transformation(self):
         active_tab = self.tabWidget.currentIndex()
         print(active_tab)
         self.tab_index_to_function[active_tab][0](self)
-        self.wireframe.apply_transformations_to_points()
+        self.wireframe.transform_coordinates()
         self.partnerDialog.redraw_wireframes()
 
     def add_rotation(self):
