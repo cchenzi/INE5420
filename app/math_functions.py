@@ -37,9 +37,9 @@ def build_scaling_matrix(Sx, Sy):
     Build scaling matrix as:
         [Sx 0  0]
         [0  Sy 0]
-        [0  0  0]
+        [0  0  1]
     """
-    matrix = np.zeros((3, 3))
+    matrix = np.identity(3)
     matrix[0][0] = Sx
     matrix[1][1] = Sy
     return matrix
