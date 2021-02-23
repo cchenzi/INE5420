@@ -262,12 +262,15 @@ class TransformWindow(QtWidgets.QMainWindow):
 
     def show_transformation(self):
         item = self.listWidget.currentItem()
-        item_name = item.text().split()[0]
-        new_index = self.transformation_name_to_index[item_name]
-        self.tabWidget.setCurrentIndex(new_index)
+        try:
+            item_name = item.text().split()[0]
+            new_index = self.transformation_name_to_index[item_name]
+            self.tabWidget.setCurrentIndex(new_index)
 
-        row = self.listWidget.currentRow()
-        transformation_code = self.wireframe.transformations_codes[row]
-        params = transformation_code[1]
-        self.tab_index_to_function[new_index][1](self, *params)
+            row = self.listWidget.currentRow()
+            transformation_code = self.wireframe.transformations_codes[row]
+            params = transformation_code[1]
+            self.tab_index_to_function[new_index][1](self, *params)
+        except AttributeError:
+            self.partnerDialog.console_print('Error parsing current transformation')
         
