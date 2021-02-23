@@ -217,7 +217,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.newWireframeWindowDialog.new_window()
 
     def transform_window(self):
-        self.transformWindowDialog.new_window()
+        if len(self.display_file) > 0:
+            current_row = self.listWidget.currentRow()
+            active_wireframe = self.display_file[current_row]
+            self.transformWindowDialog.new_window(active_wireframe)
 
     def delete_wireframe(self):
         if len(self.display_file) > 0:
