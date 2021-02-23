@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
+from utils import transformations_codes
 
 
 class TransformWindow(QtWidgets.QMainWindow):
@@ -7,15 +8,17 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.resize(560, 360)
         self.setObjectName("TransformWindow")
         self.partnerDialog = parent
+        self.next_id = 0
         self.setup()
 
     def setup(self):
         self.transformLabel = QtWidgets.QLabel(self)
         self.transformLabel.setGeometry(QtCore.QRect(10, 10, 151, 17))
         self.transformLabel.setObjectName("transformLabel")
-        self.listView = QtWidgets.QListView(self)
+        self.listView = QtWidgets.QListWidget(self)
         self.listView.setGeometry(QtCore.QRect(10, 30, 171, 261))
         self.listView.setObjectName("listView")
+
         self.deleteTransformationPushButton = QtWidgets.QPushButton(self)
         self.deleteTransformationPushButton.setGeometry(QtCore.QRect(10, 300, 171, 25))
         self.deleteTransformationPushButton.setObjectName(
@@ -82,6 +85,9 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.reflectionYCheckBox = QtWidgets.QCheckBox(self.reflectionTab)
         self.reflectionYCheckBox.setGeometry(QtCore.QRect(20, 50, 92, 23))
         self.reflectionYCheckBox.setObjectName("reflectionYCheckBox")
+        self.reflectionOriginCheckBox = QtWidgets.QCheckBox(self.reflectionTab)
+        self.reflectionOriginCheckBox.setGeometry(QtCore.QRect(20, 80, 92, 23))
+        self.reflectionOriginCheckBox.setObjectName("reflectionOriginCheckBox")
         self.tabWidget.addTab(self.reflectionTab, "")
 
         self.addTransformationPushButton = QtWidgets.QPushButton(self)
@@ -92,6 +98,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(self)
         self.tabWidget.setCurrentIndex(0)
         self.set_buttons_actions()
+
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
@@ -109,6 +116,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         )
         self.reflectionXCheckBox.setText(_translate("TransformWindow", "X"))
         self.reflectionYCheckBox.setText(_translate("TransformWindow", "Y"))
+        self.reflectionOriginCheckBox.setText(_translate("TransformWindow", "Origin"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.reflectionTab),
             _translate("TransformWindow", "Reflection"),
@@ -137,8 +145,73 @@ class TransformWindow(QtWidgets.QMainWindow):
             _translate("TransformWindow", "Add Transformation")
         )
 
-    def set_buttons_actions(self):
-        pass
-
-    def new_window(self):
+    def new_window(self, active_wireframe):
+        self.wireframe = active_wireframe
+        self.update_transformations_list()
         self.show()
+
+    def update_transformations_list(self):
+        for code in self.wireframe.transformations_codes:
+            item = f'{transformations_codes[code[0]]} {self.next_id}'
+            self.listView.insertItem(self.next_id, item)
+            self.next_id += 1
+    
+    def add_last_n_transformations_to_list(self, n):
+        codes = self.wireframe.transformations_codes[-n:]
+        for code in codes:
+            transformation = transformations_codes[code[0]]
+            item = f'{transformation} {self.next_id}'
+            self.listView.insertItem(self.next_id, item)
+            self.next_id += 1
+    
+    def set_buttons_actions(self):
+        self.addTransformationPushButton.clicked.connect(self.add_transformation)
+
+    def add_transformation(self):
+        active_tab = self.tabWidget.currentIndex()
+        print(active_tab)
+        self.map_transformation_tab[active_tab](self)
+        self.wireframe.apply_transformations_to_points()
+        self.partnerDialog.redraw_wireframes()
+
+    def add_rotation(self):
+        degrees = self.rotationText.toPlainText()
+        if degrees != '':
+            self.wireframe.transformations_codes.append(('rt', [float(degrees)]))
+            self.add_last_n_transformations_to_list(1)
+
+    def add_translation(self):
+        x_text = self.translationXTextEdit.toPlainText()
+        y_text = self.translationYTextEdit.toPlainText()
+        x = float(x_text) if x_text != "" else 0
+        y = float(y_text) if y_text != "" else 0
+        self.wireframe.transformations_codes.append(('tr', [x, y]))
+        self.add_last_n_transformations_to_list(1)
+
+    def add_scaling(self):
+        x_text = self.scalingXTextEdit.toPlainText()
+        y_text = self.scalingYTextEdit.toPlainText()
+        x = float(x_text) if x_text != "" else 1
+        y = float(y_text) if y_text != "" else 1
+        self.wireframe.transformations_codes.append(('sc', [x, y]))
+        self.add_last_n_transformations_to_list(1)
+
+    def add_reflection(self):
+        count = 0
+        if self.reflectionXCheckBox.isChecked():
+            self.wireframe.transformations_codes.append(('rf', ['x']))
+            count += 1
+        if self.reflectionYCheckBox.isChecked():
+            self.wireframe.transformations_codes.append(('rf', ['y']))
+            count += 1
+        if self.reflectionOriginCheckBox.isChecked():
+            self.wireframe.transformations_codes.append(('rf', ['origin']))
+            count += 1
+        self.add_last_n_transformations_to_list(count)
+
+    map_transformation_tab = {
+        0: add_rotation,
+        1: add_translation,
+        2: add_scaling,
+        3: add_reflection
+    }
