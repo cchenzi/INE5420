@@ -48,10 +48,21 @@ class Wireframe:
         for (code, params) in self.transformations_codes:
             t_aux = []
             if self.needs_translation(code):
-                cX, cY, _ = calculate_object_center(coord_aux)
-                t_aux.append(transformations_functions_dict["tr"](-cX, -cY))
+                if code == "rt":
+                    if len(params[1]) > 0:
+                        translate_x, translate_y = params[1]
+                    else:
+                        translate_x, translate_y, _ = calculate_object_center(coord_aux)
+                    params = [params[0]]
+                else:
+                    translate_x, translate_y, _ = calculate_object_center(coord_aux)
+                t_aux.append(
+                    transformations_functions_dict["tr"](-translate_x, -translate_y)
+                )
                 t_aux.append(transformations_functions_dict[code](*params))
-                t_aux.append(transformations_functions_dict["tr"](cX, cY))
+                t_aux.append(
+                    transformations_functions_dict["tr"](translate_x, translate_y)
+                )
             else:
                 t_aux.append(transformations_functions_dict[code](*params))
             transformed_points = []
