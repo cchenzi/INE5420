@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
-from utils import transformations_codes
+from app.utils import transformations_codes
 
 
 class TransformWindow(QtWidgets.QMainWindow):
