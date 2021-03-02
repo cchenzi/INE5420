@@ -214,6 +214,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.inPushButton.clicked.connect(self.scale_window_in)
         self.outPushButton.clicked.connect(self.scale_window_out)
         self.transformPushButton.clicked.connect(self.transform_window)
+        self.loadPushButton.clicked.connect(self.load_obj_file)
 
     def new_wireframe_window(self):
         self.newWireframeWindowDialog.new_window()
@@ -247,6 +248,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_canvas(self):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
         self.displayFrame.update()
+    
+    def load_obj_file(self):
+        file_name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open obj file', './',"Obj files (*.obj)")
+        self.console_print(file_name[0])
+
 
     def draw_line(self, x1, y1, x2, y2, color):
         self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
