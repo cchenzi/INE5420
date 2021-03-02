@@ -27,10 +27,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.default_y_min = DEFAULT_Y_MIN
         self.scale_acumulator = 0
         self.window_coordinates = CoordinatesRepresentation(
-            self.default_x_min,
-            self.default_y_min,
-            self.default_x_max,
-            self.default_y_max,
+            -self.default_x_max / 2,
+            -self.default_y_max / 2,
+            self.default_x_max / 2,
+            self.default_y_max / 2,
             factor=SHIFT_FACTOR,
         )
         self.viewport_coordinates = CoordinatesRepresentation(
