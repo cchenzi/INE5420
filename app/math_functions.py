@@ -94,6 +94,7 @@ transformations_functions_dict = {
     "rt": build_rotation_matrix,
     "r_rt": build_rotation_matrix,
     "sc": build_scaling_matrix,
+    "r_sc": build_scaling_matrix,
     "tr": build_translation_matrix,
 }
 

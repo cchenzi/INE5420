@@ -24,25 +24,27 @@ class Wireframe:
         self.transformations_codes = []
         self.transformed_coordinates = []
         self.normalized_coordinates = []
-        self.center = None
         self.normalization_values = normalization_values
+        self.window_angle = 0
+        # self.window_transformation = self.build_window_transformations()
+        self.center = None
         self.transform_coordinates()
         # self.normalize_and_transform_points(0)
 
-    def convert_transformations(self):
-        self.transformations = []
-        for (code, params) in self.transformations_codes:
-            print(code, params)
-            self.transformations.append(transformations_functions_dict[code](*params))
+    # def convert_transformations(self):
+    #     self.transformations = []
+    #     for (code, params) in self.transformations_codes:
+    #         print(code, params)
+    #         self.transformations.append(transformations_functions_dict[code](*params))
 
-    def apply_transformations_to_points(self):
-        self.convert_transformations()
-        transformed_points = []
-        for point in self.homogeneous_coordinates:
-            transformed = reduce(np.dot, [point, *self.transformations])
-            transformed_points.append((transformed[0], transformed[1]))
+    # def apply_transformations_to_points(self):
+    #     self.convert_transformations()
+    #     transformed_points = []
+    #     for point in self.homogeneous_coordinates:
+    #         transformed = reduce(np.dot, [point, *self.transformations])
+    #         transformed_points.append((transformed[0], transformed[1]))
 
-        self.transformed_coordinates = transformed_points
+    # self.transformed_coordinates = transformed_points
 
     def calculate_object_center(self):
         self.center = tuple(np.array(self.transformed_coordinates).mean(axis=0))
@@ -50,19 +52,38 @@ class Wireframe:
     def needs_translation(self, code):
         return code in ["rt", "sc", "r_rt"]
 
-    def normalize_points(self):
-        self.normalized_coordinates = []
-        for point in self.coordinates:
-            self.normalized_coordinates.append(
-                normalize_point(point, self.normalization_values)
-            )
+    # def normalize_points(self):
+    #     self.normalized_coordinates = []
+    #     for point in self.coordinates:
+    #         self.normalized_coordinates.append(
+    #             normalize_point(point, self.normalization_values)
+    #         )
+
+    def build_window_transformations(self, coordinates):
+        translate_x, translate_y, _ = calculate_object_center(coordinates)
+        # translation_code = ("tr", [translate_x, translate_y])
+
+        rotation_code = ("r_rt", [self.window_angle, ()])
+
+        width = (self.normalization_values.x_max - self.normalization_values.x_min) / 2
+        height = (self.normalization_values.y_max - self.normalization_values.y_min) / 2
+        print(width, height)
+        scaling_code = (
+            "r_sc",
+            [1 / width, 1 / height],
+        )
+
+        return [rotation_code, scaling_code]
 
     def transform_coordinates(self):
-        print("coord=", self.coordinates)
-        self.normalize_points()
-        print("normalized=", self.normalized_coordinates)
-        coord_aux = build_homogeneous_coordinates(self.normalized_coordinates)
-        for (code, params) in self.transformations_codes:
+        coord_aux = build_homogeneous_coordinates(self.coordinates)
+        window_tranformations = self.build_window_transformations(coord_aux)
+        # window_tranformations = []
+        transformations_codes = [
+            *self.transformations_codes,
+            *window_tranformations,
+        ]
+        for (code, params) in transformations_codes:
             t_aux = []
             if self.needs_translation(code):
                 if code in ["rt", "r_rt"]:

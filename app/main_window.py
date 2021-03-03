@@ -1,4 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from math import cos, sin, radians
+
 from app.new_wireframe_window import NewWireframeWindow
 from app.transform_window import TransformWindow
 from app.utils import (
@@ -312,11 +314,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.window_coordinates.y_max = self.default_y_max / 2
         self.window_coordinates.y_min = -self.default_y_max / 2
         self.scale_acumulator = 0
+        self.acc_rotation_degrees = 0
         print(self.window_coordinates.x_max, self.window_coordinates.x_min)
 
     def shift_window_left(self):
-        self.window_coordinates.x_min -= self.window_coordinates.x_shift_factor
-        self.window_coordinates.x_max -= self.window_coordinates.x_shift_factor
+        rad_angle = radians(self.acc_rotation_degrees)
+        sen_vup = sin(rad_angle)
+        cos_vup = cos(rad_angle)
+        desgraca = 630 * 0.1
+        self.viewport_coordinates.x_min -= self.window_coordinates.x_shift_factor * 100
+        self.viewport_coordinates.x_max -= self.window_coordinates.x_shift_factor * 100
+
+        # self.window_coordinates.y_min += self.window_coordinates.y_shift_factor
+        # self.window_coordinates.y_max += self.window_coordinates.y_shift_factor
         self.redraw_wireframes()
 
     def shift_window_right(self):
@@ -352,10 +362,7 @@ class MainWindow(QtWidgets.QMainWindow):
         degrees = self.degreesEdit.toPlainText()
         self.acc_rotation_degrees -= float(degrees)
         for wireframe in self.display_file:
-            wireframe.transformations_codes.append(
-                ("r_rt", [self.acc_rotation_degrees, ()])
-            )
-            wireframe.transform_coordinates()
+            wireframe.window_angle = self.acc_rotation_degrees
         self.redraw_wireframes()
 
     def refresh_canvas(self):
