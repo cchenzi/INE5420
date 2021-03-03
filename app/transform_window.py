@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
 from app.utils import transformations_codes, build_transformation_string
-from app.math_functions import normalize_point
 
 
 class TransformWindow(QtWidgets.QMainWindow):
@@ -222,9 +221,8 @@ class TransformWindow(QtWidgets.QMainWindow):
             try:
                 x = float(self.rotationXTextEdit.toPlainText())
                 y = float(self.rotationYTextEdit.toPlainText())
-                x_normalized, y_normalized = normalize_point((x, y))
                 self.wireframe.transformations_codes.append(
-                    ("rt", [float(degrees), (x_normalized, y_normalized)])
+                    ("rt", [float(degrees), (x, y)])
                 )
             except ValueError:
                 self.partnerDialog.console_print(
@@ -266,10 +264,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         y_text = self.translationYTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 0
         y = float(y_text) if y_text != "" else 0
-        x_normalized, y_normalized = normalize_point((x, y))
-        self.wireframe.transformations_codes.append(
-            ("tr", [x_normalized, y_normalized])
-        )
+        self.wireframe.transformations_codes.append(("tr", [x, y]))
         self.add_last_n_transformations_to_list(1)
 
     def show_translation(self, x, y):
