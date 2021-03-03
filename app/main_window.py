@@ -20,7 +20,7 @@ from obj_handler import ObjLoader, ObjWriter
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.resize(847, 589)
+        self.resize(860, 590)
         self.display_file = []
         self.newWireframeWindowDialog = NewWireframeWindow(self)
         self.transformWindowDialog = TransformWindow(self)
@@ -43,6 +43,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.default_y_max,
         )
         self.wireframe_count = 0
+        self.acc_rotation_degrees = 0
         self.setup()
 
     def setup(self):
@@ -118,7 +119,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateXPushButton = QtWidgets.QPushButton(self)
         self.rotateXPushButton.setGeometry(QtCore.QRect(10, 430, 51, 34))
         self.rotateXPushButton.setObjectName("rotateXPushButton")
-        self.rotateXPushButton.setEnabled(False)
+        # self.rotateXPushButton.setEnabled(False)
         self.rotateYPushButton = QtWidgets.QPushButton(self)
         self.rotateYPushButton.setGeometry(QtCore.QRect(70, 430, 51, 34))
         self.rotateYPushButton.setObjectName("rotateYPushButton")
@@ -130,10 +131,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.degreesLabel = QtWidgets.QLabel(self)
         self.degreesLabel.setGeometry(QtCore.QRect(20, 400, 58, 18))
         self.degreesLabel.setObjectName("degreesLabel")
-        self.textEdit = QtWidgets.QTextEdit(self)
-        self.textEdit.setGeometry(QtCore.QRect(80, 390, 91, 31))
-        self.textEdit.setObjectName("textEdit")
-        self.textEdit.setEnabled(False)
+        self.degreesEdit = QtWidgets.QTextEdit(self)
+        self.degreesEdit.setGeometry(QtCore.QRect(80, 390, 91, 31))
+        self.degreesEdit.setObjectName("degreesEdit")
+        # self.textEdit.setEnabled(False)
         self.line = QtWidgets.QFrame(self)
         self.line.setGeometry(QtCore.QRect(10, 10, 196, 20))
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -219,6 +220,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.transformPushButton.clicked.connect(self.transform_window)
         self.loadPushButton.clicked.connect(self.load_obj_file)
         self.savePushButton.clicked.connect(self.save_obj_file)
+        self.rotateXPushButton.clicked.connect(self.rotate_window)
 
     def new_wireframe_window(self):
         self.newWireframeWindowDialog.new_window()
@@ -284,6 +286,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def draw_wireframe(self, wireframe):
         for index in range(wireframe.number_points):
+            wireframe.transform_coordinates()
             x1, y1 = wireframe.transformed_coordinates[index]
             xvp1, yvp1 = transform_coordinates(
                 x1,
@@ -309,6 +312,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.window_coordinates.y_max = self.default_y_max / 2
         self.window_coordinates.y_min = -self.default_y_max / 2
         self.scale_acumulator = 0
+        print(self.window_coordinates.x_max, self.window_coordinates.x_min)
 
     def shift_window_left(self):
         self.window_coordinates.x_min -= self.window_coordinates.x_shift_factor
@@ -344,11 +348,23 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scale_window_by_step(0.01)
         self.redraw_wireframes()
 
+    def rotate_window(self):
+        degrees = self.degreesEdit.toPlainText()
+        self.acc_rotation_degrees -= float(degrees)
+        for wireframe in self.display_file:
+            wireframe.transformations_codes.append(
+                ("r_rt", [self.acc_rotation_degrees, ()])
+            )
+            wireframe.transform_coordinates()
+        self.redraw_wireframes()
+
     def refresh_canvas(self):
         self.set_navigation_default_paramaters()
         self.redraw_wireframes()
 
     def redraw_wireframes(self):
         self.clear_canvas()
-        for wirefame in self.display_file:
-            self.draw_wireframe(wirefame)
+        for wireframe in self.display_file:
+            print(self.window_coordinates.x_max, self.window_coordinates.x_min)
+            wireframe.normalization_values = self.window_coordinates
+            self.draw_wireframe(wireframe)

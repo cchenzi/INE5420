@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
 from app.utils import transformations_codes, build_transformation_string
+from app.math_functions import normalize_point
 
 
 class TransformWindow(QtWidgets.QMainWindow):
@@ -168,9 +169,10 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.listWidget.clear()
         self.next_id = 0
         for code in self.wireframe.transformations_codes:
-            item = build_transformation_string(code)
-            self.listWidget.insertItem(self.next_id, item)
-            self.next_id += 1
+            if code[0] != "r_rt":
+                item = build_transformation_string(code)
+                self.listWidget.insertItem(self.next_id, item)
+                self.next_id += 1
 
     def add_last_n_transformations_to_list(self, n):
         codes = self.wireframe.transformations_codes[-n:]
@@ -220,8 +222,9 @@ class TransformWindow(QtWidgets.QMainWindow):
             try:
                 x = float(self.rotationXTextEdit.toPlainText())
                 y = float(self.rotationYTextEdit.toPlainText())
+                x_normalized, y_normalized = normalize_point((x, y))
                 self.wireframe.transformations_codes.append(
-                    ("rt", [float(degrees), (x, y)])
+                    ("rt", [float(degrees), (x_normalized, y_normalized)])
                 )
             except ValueError:
                 self.partnerDialog.console_print(
@@ -263,7 +266,10 @@ class TransformWindow(QtWidgets.QMainWindow):
         y_text = self.translationYTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 0
         y = float(y_text) if y_text != "" else 0
-        self.wireframe.transformations_codes.append(("tr", [x, y]))
+        x_normalized, y_normalized = normalize_point((x, y))
+        self.wireframe.transformations_codes.append(
+            ("tr", [x_normalized, y_normalized])
+        )
         self.add_last_n_transformations_to_list(1)
 
     def show_translation(self, x, y):
@@ -329,7 +335,8 @@ class TransformWindow(QtWidgets.QMainWindow):
 
             row = self.listWidget.currentRow()
             transformation_code = self.wireframe.transformations_codes[row]
-            params = transformation_code[1]
-            self.tab_index_to_function[new_index][1](self, *params)
+            if transformation_code != "r_rt":
+                params = transformation_code[1]
+                self.tab_index_to_function[new_index][1](self, *params)
         except AttributeError:
             self.partnerDialog.console_print("Error parsing current transformation")
