@@ -5,6 +5,16 @@ from app.math_functions import (
     build_scaling_matrix,
     build_rotation_matrix,
     build_reflection_matrix,
+    normalize_point,
+    desnormalize_point,
+)
+from app.config import (
+    X_MAX_TRANSLATED,
+    X_MIN_TRANSLATED,
+    Y_MAX_TRANSLATED,
+    Y_MIN_TRANSLATED,
+    MAX_NORMALIZED_VALUE,
+    MIN_NORMALIZED_VALUE,
 )
 
 
@@ -44,3 +54,59 @@ def test_reflection_matrix_over_origin():
     matrix = build_reflection_matrix("origin")
     expected_matrix = np.array([[-1, 0, 0], [0, -1, 0], [0, 0, 1]])
     assert_array_equal(matrix, expected_matrix)
+
+
+def test_point_normalization_zeros():
+    point = (0, 0)
+    expected_result = (0, 0)
+    normalized = normalize_point(point)
+    assert normalized == expected_result
+
+
+def test_point_normalization_max():
+    point = (X_MAX_TRANSLATED, Y_MAX_TRANSLATED)
+    expected_result = (1, 1)
+    normalized = normalize_point(point)
+    assert normalized == expected_result
+
+
+def test_point_normalization_min():
+    point = (X_MIN_TRANSLATED, Y_MIN_TRANSLATED)
+    expected_result = (-1, -1)
+    normalized = normalize_point(point)
+    assert normalized == expected_result
+
+
+def test_point_normalization_over_boundaries():
+    point = (X_MAX_TRANSLATED * 1000, Y_MAX_TRANSLATED * -1000)
+    expected_result = (1, -1)
+    normalized = normalize_point(point)
+    assert normalized == expected_result
+
+
+def test_point_desnormalization_zeros():
+    point = (0, 0)
+    expected_result = (0, 0)
+    desnormalized = desnormalize_point(point)
+    assert desnormalized == expected_result
+
+
+def test_point_desnormalization_max():
+    point = (1, 1)
+    expected_result = (X_MAX_TRANSLATED, Y_MAX_TRANSLATED)
+    desnormalized = desnormalize_point(point)
+    assert desnormalized == expected_result
+
+
+def test_point_desnormalization_min():
+    point = (-1, -1)
+    expected_result = (X_MIN_TRANSLATED, Y_MIN_TRANSLATED)
+    desnormalized = desnormalize_point(point)
+    assert desnormalized == expected_result
+
+
+def test_point_desnormalization():
+    point = (1, -1)
+    expected_result = (X_MAX_TRANSLATED, Y_MIN_TRANSLATED)
+    desnormalized = desnormalize_point(point)
+    assert desnormalized == expected_result

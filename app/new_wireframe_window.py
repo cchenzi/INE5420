@@ -88,7 +88,12 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
     def add_new_wireframe(self):
         if len(self.points) > 0:
             wireframe_id = self.partnerDialog.wireframe_count
-            wireframe = Wireframe(self.points, wireframe_id, self.color)
+            wireframe = Wireframe(
+                self.points,
+                wireframe_id,
+                self.color,
+                self.partnerDialog.window_coordinates,
+            )
             self.display_file.append(wireframe)
             self.partnerDialog.draw_wireframe(wireframe)
             self.partnerDialog.listWidget.insertItem(wireframe_id, wireframe.name)
