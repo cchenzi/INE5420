@@ -13,6 +13,9 @@ from app.config import (
     SHIFT_FACTOR,
 )
 
+import obj_handler
+from obj_handler import ObjLoader
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -215,6 +218,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.outPushButton.clicked.connect(self.scale_window_out)
         self.transformPushButton.clicked.connect(self.transform_window)
         self.loadPushButton.clicked.connect(self.load_obj_file)
+        self.savePushButton.clicked.connect(self.save_obj_file)
 
     def new_wireframe_window(self):
         self.newWireframeWindowDialog.new_window()
@@ -250,8 +254,20 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.update()
     
     def load_obj_file(self):
-        file_name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open obj file', './',"Obj files (*.obj)")
-        self.console_print(file_name[0])
+        file_name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open obj file', './',"Obj files (*.obj)")[0]
+        loader = ObjLoader(file_name)
+        self.clear_display_file()
+        new_wireframes = loader.wireframes
+        index = 0
+        for wireframe in new_wireframes:
+            self.display_file.append(wireframe)
+            self.draw_wireframe(wireframe)
+            self.listWidget.insertItem(index, wireframe.name)
+            index += 1
+
+
+    def save_obj_file(self):
+        obj_handler.save()
 
 
     def draw_line(self, x1, y1, x2, y2, color):
