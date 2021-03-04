@@ -87,7 +87,7 @@ class Wireframe:
         self.center = calculate_object_center(coord_aux)
         # Remove last column and map the points to tuple
         self.transformed_coordinates = list(map(tuple, coord_aux[:, :-1]))
-        print("normalized coordinates=", self.transform_coordinates)
+        print("normalized coordinates=", self.transformed_coordinates)
 
     def to_obj(self, desnormalization_matrix):
         coord_aux = build_homogeneous_coordinates(self.transformed_coordinates)
