@@ -5,21 +5,21 @@ from wireframe import Wireframe
 
 class ObjLoader:
 
-    def __init__(self, file_path):
+    def __init__(self, file_path, wireframe_index):
         self.vertices = []
         self.mtl = None
         self.mtl_dict = {}
-        self.mtl_parsing = ''
-        self.obj_parsing = ''
+        self.mtl_parsing = ""
+        self.obj_parsing = ""
         self.wireframes = []
-        self.wireframe_index = 0
+        self.wireframe_index = wireframe_index
         self.load(file_path)
 
     def vertice_handler(self, args):
         x = float(args[0])
         y = float(args[1])
-        z = float(args[2])
-        vertex = (x, y, z)
+        # z = float(args[2])
+        vertex = (x, y)
         self.vertices.append(vertex)
     
     def mtllib_handler(self, args):
@@ -38,9 +38,12 @@ class ObjLoader:
     def object_build_handler(self, args):
         points = []
         for vertex in args:
-            index = int(vertex) - 1
-            points.append(self.vertices[index])
-        print(f'AAAAACVVV: {points}')
+            if vertex[0] == '-':
+                index = int(vertex)
+                points.append(self.vertices[index])
+            else:
+                index = int(vertex) - 1
+                points.append(self.vertices[index])
         if not self.mtl:
             self.mtl = QtCore.Qt.black
         wireframe = Wireframe(points, self.wireframe_index, self.mtl)
@@ -49,7 +52,7 @@ class ObjLoader:
         self.wireframe_index += 1
         self.mtl = None
         self.obj_parsing = ''
-    
+
     obj_parser = {
         'v': vertice_handler,
         'mtllib': mtllib_handler,
@@ -77,14 +80,9 @@ class ObjLoader:
         'Kd': Kd_handler
     }
 
-
     def load(self, file_path):
         self.parse_file(file_path, self.obj_parser)
-        print(self.wireframes)
-        print('AAAAAAAAAAAAAAAA')
-        print(self.vertices)
-        
-        
+
     def parse_file(self, file_path, parse_dict):
         with open(file_path) as file:
             for line in file.readlines():
@@ -98,6 +96,30 @@ class ObjLoader:
                     pass
 
 
-def save():
-    print('salva')
-    pass
+class ObjWriter:
+
+    def __init__(self, wireframes_list, scene_name):
+        self.wirefames_list = wireframes_list
+        self.scene_name = scene_name
+    
+    def create_obj(self):
+        obj_lines = []
+        mtl_lines = []
+        obj_lines.append(f'mtllib {self.scene_name}.mtl\n')
+
+        for wireframe in self.wirefames_list:
+            obj_list, mtl_list = wireframe.to_obj()
+            obj_lines += obj_list
+            mtl_lines += mtl_list
+
+        file_path = str(pathlib.Path().absolute() / 'obj' / self.scene_name)
+        obj_name = file_path + '.obj'
+        mtl_name = file_path + '.mtl'
+        self.write_file(obj_name, obj_lines)
+        self.write_file(mtl_name, mtl_lines)
+        
+    
+    def write_file(self, file_name, lines):
+        with open(file_name, 'w') as writer:
+            for line in lines:
+                writer.write(line)
