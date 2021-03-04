@@ -6,7 +6,7 @@ from app.transform_window import TransformWindow
 from app.utils import (
     CoordinatesRepresentation,
 )
-from app.math_functions import transform_coordinates
+from app.math_functions import transform_coordinates, build_window_normalizations
 from app.config import (
     DEFAULT_X_MAX,
     DEFAULT_X_MIN,
@@ -48,6 +48,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.acc_rotation_degrees = 0
         self.acc_x_shift = 0
         self.acc_y_shift = 0
+        self.window_transformations_matrix = None
+        self.prepare_normalization_matrix()
         self.setup()
 
     def setup(self):
@@ -195,7 +197,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.outPushButton.setText(_translate("MainWindow", "Out"))
         self.zoomInPushButton.setText(_translate("MainWindow", "+"))
         self.zoomOutPushButton.setText(_translate("MainWindow", "-"))
-        self.rotateXPushButton.setText(_translate("MainWindow", "X"))
+        self.rotateXPushButton.setText(_translate("MainWindow", "⮏"))
         self.rotateYPushButton.setText(_translate("MainWindow", "Y"))
         self.rotateZPushButton.setText(_translate("MainWindow", "Z"))
         self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
@@ -370,11 +372,21 @@ class MainWindow(QtWidgets.QMainWindow):
         self.set_navigation_default_paramaters()
         self.redraw_wireframes()
 
+    def prepare_normalization_matrix(self):
+        height = self.window_coordinates.y_max - self.window_coordinates.y_min
+        width = self.window_coordinates.x_max - self.window_coordinates.x_min
+        self.window_transformations_matrix = build_window_normalizations(
+            self.acc_x_shift, self.acc_y_shift, width, height, self.acc_rotation_degrees
+        )
+
     def redraw_wireframes(self):
         self.clear_canvas()
+        self.prepare_normalization_matrix()
+        height = self.window_coordinates.y_max - self.window_coordinates.y_min
+        width = self.window_coordinates.x_max - self.window_coordinates.x_min
         for wireframe in self.display_file:
             wireframe.normalization_values = self.window_coordinates
-            wireframe.window_x_shift_acc = self.acc_x_shift
-            wireframe.window_y_shift_acc = self.acc_y_shift
-            wireframe.build_window_normalizations()
+            wireframe.window_width = width
+            wireframe.window_height = height
+            wireframe.window_transformations = self.window_transformations_matrix
             self.draw_wireframe(wireframe)

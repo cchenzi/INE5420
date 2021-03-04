@@ -93,9 +93,11 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                 wireframe_id,
                 self.color,
                 self.partnerDialog.window_coordinates,
+                self.partnerDialog.window_transformations_matrix,
             )
             self.display_file.append(wireframe)
             self.partnerDialog.draw_wireframe(wireframe)
+            # self.partnerDialog.redraw_wireframes()
             self.partnerDialog.listWidget.insertItem(wireframe_id, wireframe.name)
             self.partnerDialog.wireframe_count += 1
             self.newPointsListWidget.clear()
