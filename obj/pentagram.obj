@@ -1,5 +1,5 @@
 mtllib pentagram.mtl
-o Polygon_1
+o pentagram
 usemtl Polygon_1_mtl
 v -75.0 80.0 0.0
 v 0.0 -100.0 0.0
