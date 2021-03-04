@@ -108,66 +108,9 @@ def calculate_object_center(coordinates):
     return tuple(np.array(coordinates).mean(axis=0))
 
 
-def normalize_function():
-    return lambda a, b, min_v, max_v, value: a + (
-        (value - min_v) * (b - a) / (max_v - min_v)
-    )
+def multiply_coordinates_by_transformations(coordinates, transformations):
 
-
-def desnormalize_function():
-    return (
-        lambda a, b, min_v, max_v, value: ((value - a) * (max_v - min_v) / (b - a))
-        + min_v
-    )
-
-
-def normalize_point(point, normalization_values):
-    x, y = point
-    normalize_function
-    x_normalized = np.clip(
-        normalize_function()(
-            MIN_NORMALIZED_VALUE,
-            MAX_NORMALIZED_VALUE,
-            normalization_values.x_min,
-            normalization_values.x_max,
-            x,
-        ),
-        MIN_NORMALIZED_VALUE,
-        MAX_NORMALIZED_VALUE,
-    )
-    y_normalized = np.clip(
-        normalize_function()(
-            MIN_NORMALIZED_VALUE,
-            MAX_NORMALIZED_VALUE,
-            normalization_values.y_min,
-            normalization_values.y_max,
-            y,
-        ),
-        MIN_NORMALIZED_VALUE,
-        MAX_NORMALIZED_VALUE,
-    )
-    return (x_normalized, y_normalized)
-
-
-def desnormalize_point(point):
-    x_normalized, y_normalized = point
-
-    x = desnormalize_function()(
-        MIN_NORMALIZED_VALUE,
-        MAX_NORMALIZED_VALUE,
-        X_MIN_TRANSLATED,
-        X_MAX_TRANSLATED,
-        x_normalized,
-    )
-    y = desnormalize_function()(
-        MIN_NORMALIZED_VALUE,
-        MAX_NORMALIZED_VALUE,
-        Y_MIN_TRANSLATED,
-        Y_MAX_TRANSLATED,
-        y_normalized,
-    )
-
-    return (x, y)
+    return np.dot(coordinates, transformations)
 
 def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
     xvp = x_viewport_transform(

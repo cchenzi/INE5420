@@ -7,8 +7,7 @@ from app.math_functions import (
     transformations_functions_dict,
     build_homogeneous_coordinates,
     calculate_object_center,
-    normalize_point,
-    desnormalize_point,
+    multiply_coordinates_by_transformations,
 )
 
 
@@ -26,67 +25,46 @@ class Wireframe:
         self.normalized_coordinates = []
         self.normalization_values = normalization_values
         self.window_angle = 0
-        # self.window_transformation = self.build_window_transformations()
+        self.window_x_shift_acc = 0
+        self.window_y_shift_acc = 0
+        self.window_transformations = None
+        self.build_window_normalizations()
         self.center = None
         self.transform_coordinates()
-        # self.normalize_and_transform_points(0)
-
-    # def convert_transformations(self):
-    #     self.transformations = []
-    #     for (code, params) in self.transformations_codes:
-    #         print(code, params)
-    #         self.transformations.append(transformations_functions_dict[code](*params))
-
-    # def apply_transformations_to_points(self):
-    #     self.convert_transformations()
-    #     transformed_points = []
-    #     for point in self.homogeneous_coordinates:
-    #         transformed = reduce(np.dot, [point, *self.transformations])
-    #         transformed_points.append((transformed[0], transformed[1]))
-
-    # self.transformed_coordinates = transformed_points
 
     def calculate_object_center(self):
         self.center = tuple(np.array(self.transformed_coordinates).mean(axis=0))
 
     def needs_translation(self, code):
-        return code in ["rt", "sc", "r_rt"]
+        return code in ["rt", "sc"]
 
-    # def normalize_points(self):
-    #     self.normalized_coordinates = []
-    #     for point in self.coordinates:
-    #         self.normalized_coordinates.append(
-    #             normalize_point(point, self.normalization_values)
-    #         )
+    def build_window_normalizations(self):
 
-    def build_window_transformations(self, coordinates):
-        translate_x, translate_y, _ = calculate_object_center(coordinates)
-        # translation_code = ("tr", [translate_x, translate_y])
+        translation_matrix = transformations_functions_dict["tr"](
+            self.window_x_shift_acc, self.window_y_shift_acc
+        )
 
-        rotation_code = ("r_rt", [self.window_angle, ()])
+        rotation_matrix = transformations_functions_dict["rt"](self.window_angle)
 
         width = (self.normalization_values.x_max - self.normalization_values.x_min) / 2
         height = (self.normalization_values.y_max - self.normalization_values.y_min) / 2
-        print(width, height)
-        scaling_code = (
-            "r_sc",
-            [1 / width, 1 / height],
+        scaling_matrix = transformations_functions_dict["sc"](1 / width, 1 / height)
+
+        composition = reduce(
+            np.dot, [translation_matrix, rotation_matrix, scaling_matrix]
         )
 
-        return [rotation_code, scaling_code]
+        self.window_transformations = composition
 
     def transform_coordinates(self):
         coord_aux = build_homogeneous_coordinates(self.coordinates)
-        window_tranformations = self.build_window_transformations(coord_aux)
-        # window_tranformations = []
-        transformations_codes = [
-            *self.transformations_codes,
-            *window_tranformations,
-        ]
-        for (code, params) in transformations_codes:
+        coord_aux = multiply_coordinates_by_transformations(
+            coord_aux, self.window_transformations
+        )
+        for (code, params) in self.transformations_codes:
             t_aux = []
             if self.needs_translation(code):
-                if code in ["rt", "r_rt"]:
+                if code in ["rt"]:
                     if len(params[1]) > 0:
                         translate_x, translate_y = params[1]
                     else:
@@ -103,15 +81,15 @@ class Wireframe:
                 )
             else:
                 t_aux.append(transformations_functions_dict[code](*params))
-            transformed_points = []
-            for point in coord_aux:
-                transformed_points.append(tuple(reduce(np.dot, [point, *t_aux])))
-            coord_aux = np.array(transformed_points)
+
+            composition_matrix = reduce(np.dot, t_aux)
+            coord_aux = multiply_coordinates_by_transformations(
+                coord_aux, composition_matrix
+            )
 
         self.center = calculate_object_center(coord_aux)
         # Remove last column and map the points to tuple
         self.transformed_coordinates = list(map(tuple, coord_aux[:, :-1]))
-<<<<<<< HEAD
 
     def to_obj(self):
         obj_list = []
@@ -140,6 +118,3 @@ class Wireframe:
         obj_list = [obj + '\n' for obj in obj_list]
         mtl_list = [mtl + '\n' for mtl in mtl_list]
         return (obj_list, mtl_list)
-=======
-        print("tranformed=", self.transformed_coordinates)
->>>>>>> 2542e78 (Add window rotation)

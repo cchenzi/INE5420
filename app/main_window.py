@@ -46,6 +46,8 @@ class MainWindow(QtWidgets.QMainWindow):
         )
         self.wireframe_count = 0
         self.acc_rotation_degrees = 0
+        self.acc_x_shift = 0
+        self.acc_y_shift = 0
         self.setup()
 
     def setup(self):
@@ -315,33 +317,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.window_coordinates.y_min = -self.default_y_max / 2
         self.scale_acumulator = 0
         self.acc_rotation_degrees = 0
-        print(self.window_coordinates.x_max, self.window_coordinates.x_min)
+        self.acc_x_shift = 0
+        self.acc_y_shift = 0
 
     def shift_window_left(self):
-        rad_angle = radians(self.acc_rotation_degrees)
-        sen_vup = sin(rad_angle)
-        cos_vup = cos(rad_angle)
-        desgraca = 630 * 0.1
-        self.viewport_coordinates.x_min -= self.window_coordinates.x_shift_factor * 100
-        self.viewport_coordinates.x_max -= self.window_coordinates.x_shift_factor * 100
 
+        self.acc_x_shift -= 10
+        # self.window_coordinates.x_min -= self.window_coordinates.x_shift_factor * 100
+        # self.window_coordinates.x_max -= self.window_coordinates.x_shift_factor * 100
+        self.redraw_wireframes()
+
+    def shift_window_right(self):
+        self.acc_x_shift += 10
+        # self.window_coordinates.x_min += self.window_coordinates.x_shift_factor
+        # self.window_coordinates.x_max += self.window_coordinates.x_shift_factor
+        self.redraw_wireframes()
+
+    def shift_window_up(self):
+        self.acc_y_shift += 10
         # self.window_coordinates.y_min += self.window_coordinates.y_shift_factor
         # self.window_coordinates.y_max += self.window_coordinates.y_shift_factor
         self.redraw_wireframes()
 
-    def shift_window_right(self):
-        self.window_coordinates.x_min += self.window_coordinates.x_shift_factor
-        self.window_coordinates.x_max += self.window_coordinates.x_shift_factor
-        self.redraw_wireframes()
-
-    def shift_window_up(self):
-        self.window_coordinates.y_min += self.window_coordinates.y_shift_factor
-        self.window_coordinates.y_max += self.window_coordinates.y_shift_factor
-        self.redraw_wireframes()
-
     def shift_window_down(self):
-        self.window_coordinates.y_min -= self.window_coordinates.y_shift_factor
-        self.window_coordinates.y_max -= self.window_coordinates.y_shift_factor
+        self.acc_y_shift -= 10
+        # self.window_coordinates.y_min -= self.window_coordinates.y_shift_factor
+        # self.window_coordinates.y_max -= self.window_coordinates.y_shift_factor
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
@@ -372,6 +373,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def redraw_wireframes(self):
         self.clear_canvas()
         for wireframe in self.display_file:
-            print(self.window_coordinates.x_max, self.window_coordinates.x_min)
             wireframe.normalization_values = self.window_coordinates
+            wireframe.window_x_shift_acc = self.acc_x_shift
+            wireframe.window_y_shift_acc = self.acc_y_shift
+            wireframe.build_window_normalizations()
             self.draw_wireframe(wireframe)
