@@ -58,6 +58,7 @@ class ObjLoader:
             self.window_transformations,
         )
         wireframe.name = self.obj_parsing
+        print(wireframe.name)
         self.wireframes.append(wireframe)
         self.wireframe_index += 1
         self.mtl = None
@@ -104,9 +105,11 @@ class ObjLoader:
 
 
 class ObjWriter:
-    def __init__(self, wireframes_list, scene_name):
+    def __init__(self, wireframes_list, scene_name, desnormalization_matrix):
         self.wirefames_list = wireframes_list
         self.scene_name = scene_name
+        self.desnormalization_matrix = desnormalization_matrix
+        print(self.desnormalization_matrix)
 
     def create_obj(self):
         obj_lines = []
@@ -114,7 +117,7 @@ class ObjWriter:
         obj_lines.append(f"mtllib {self.scene_name}.mtl\n")
 
         for wireframe in self.wirefames_list:
-            obj_list, mtl_list = wireframe.to_obj()
+            obj_list, mtl_list = wireframe.to_obj(self.desnormalization_matrix)
             obj_lines += obj_list
             mtl_lines += mtl_list
 

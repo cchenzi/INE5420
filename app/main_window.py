@@ -49,7 +49,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.acc_x_shift = 0
         self.acc_y_shift = 0
         self.window_transformations_matrix = None
+        self.desnormalization_matrix = None
         self.prepare_normalization_matrix()
+        self.prepare_desnormalization_matrix()
         self.setup()
 
     def setup(self):
@@ -252,9 +254,8 @@ class MainWindow(QtWidgets.QMainWindow):
             item = self.listWidget.currentRow()
             self.listWidget.takeItem(item)
             self.display_file.pop(item)
-        self.set_navigation_default_paramaters()
         self.scale_window_by_step(0)
-        self.redraw_wireframes()
+        self.refresh_canvas()
         self.console_print("Canvas cleared")
 
     def clear_canvas(self):
@@ -284,7 +285,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self, "Text Input Dialog", "Enter scene name:"
         )
         if ok:
-            writer = ObjWriter(self.display_file, file_name)
+            writer = ObjWriter(
+                self.display_file, file_name, self.desnormalization_matrix
+            )
             writer.create_obj()
             self.console_print("Scene saved")
         else:
@@ -330,27 +333,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def shift_window_left(self):
 
-        self.acc_x_shift -= 10
-        # self.window_coordinates.x_min -= self.window_coordinates.x_shift_factor * 100
-        # self.window_coordinates.x_max -= self.window_coordinates.x_shift_factor * 100
+        self.acc_x_shift += 10
         self.redraw_wireframes()
 
     def shift_window_right(self):
-        self.acc_x_shift += 10
-        # self.window_coordinates.x_min += self.window_coordinates.x_shift_factor
-        # self.window_coordinates.x_max += self.window_coordinates.x_shift_factor
+        self.acc_x_shift -= 10
         self.redraw_wireframes()
 
     def shift_window_up(self):
-        self.acc_y_shift += 10
-        # self.window_coordinates.y_min += self.window_coordinates.y_shift_factor
-        # self.window_coordinates.y_max += self.window_coordinates.y_shift_factor
+        self.acc_y_shift -= 10
         self.redraw_wireframes()
 
     def shift_window_down(self):
-        self.acc_y_shift -= 10
-        # self.window_coordinates.y_min -= self.window_coordinates.y_shift_factor
-        # self.window_coordinates.y_max -= self.window_coordinates.y_shift_factor
+        self.acc_y_shift += 10
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
@@ -375,6 +370,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.redraw_wireframes()
 
     def refresh_canvas(self):
+        self.prepare_desnormalization_matrix()
         self.set_navigation_default_paramaters()
         self.redraw_wireframes()
 
@@ -384,6 +380,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.window_transformations_matrix = build_window_normalizations(
             self.acc_x_shift, self.acc_y_shift, width, height, self.acc_rotation_degrees
         )
+
+    def prepare_desnormalization_matrix(self):
+        height = self.window_coordinates.y_max - self.window_coordinates.y_min
+        width = self.window_coordinates.x_max - self.window_coordinates.x_min
+        matrix = build_window_normalizations(
+            -self.acc_x_shift,
+            -self.acc_y_shift,
+            4 / width,
+            4 / height,
+            -self.acc_rotation_degrees,
+        )
+        self.desnormalization_matrix = matrix
 
     def redraw_wireframes(self):
         self.clear_canvas()

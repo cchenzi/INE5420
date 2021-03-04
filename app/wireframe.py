@@ -89,14 +89,19 @@ class Wireframe:
         self.transformed_coordinates = list(map(tuple, coord_aux[:, :-1]))
         print("normalized coordinates=", self.transform_coordinates)
 
-    def to_obj(self):
+    def to_obj(self, desnormalization_matrix):
+        coord_aux = build_homogeneous_coordinates(self.transformed_coordinates)
+        desnormalized_coordinates = multiply_coordinates_by_transformations(
+            coord_aux, desnormalization_matrix
+        )
+
         obj_list = []
         mtl_list = []
 
         obj_list.append(f"o {self.name}")
         obj_list.append(f"usemtl {self.name}_mtl")
 
-        for vertex in self.transformed_coordinates:
+        for vertex in desnormalized_coordinates:
             obj_list.append(f"v {vertex[0]} {vertex[1]} 0.0")
 
         f = ["f"]
