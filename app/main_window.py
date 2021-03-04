@@ -14,7 +14,7 @@ from app.config import (
 )
 
 import obj_handler
-from obj_handler import ObjLoader
+from obj_handler import ObjLoader, ObjWriter
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -254,20 +254,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.update()
     
     def load_obj_file(self):
-        file_name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open obj file', './',"Obj files (*.obj)")[0]
-        loader = ObjLoader(file_name)
-        self.clear_display_file()
+        file_name = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Open obj file", "./", "Obj files (*.obj)")[0]
+        loader = ObjLoader(file_name, wireframe_index=self.wireframe_count)
         new_wireframes = loader.wireframes
-        index = 0
         for wireframe in new_wireframes:
             self.display_file.append(wireframe)
             self.draw_wireframe(wireframe)
-            self.listWidget.insertItem(index, wireframe.name)
-            index += 1
+            self.listWidget.insertItem(self.wireframe_count, wireframe.name)
+            self.wireframe_count += 1
+        self.console_print('Obj loaded')
 
 
     def save_obj_file(self):
-        obj_handler.save()
+        file_name, ok = QtWidgets.QInputDialog.getText(self, 'Text Input Dialog', 'Enter scene name:')
+        if ok:
+            writer = ObjWriter(self.display_file, file_name)
+            writer.create_obj()
+            self.console_print('Scene saved')
+        else:
+            self.console_print('Invalid scene name')
 
 
     def draw_line(self, x1, y1, x2, y2, color):
@@ -298,10 +304,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def set_navigation_default_paramaters(self):
         self.console_print("Navigation parameters reseted!")
-        self.window_coordinates.x_max = self.default_x_max
-        self.window_coordinates.x_min = self.default_x_min
-        self.window_coordinates.y_max = self.default_y_max
-        self.window_coordinates.y_min = self.default_y_min
+        self.window_coordinates.x_max = self.default_x_max / 2
+        self.window_coordinates.x_min = -self.default_x_max / 2
+        self.window_coordinates.y_max = self.default_y_max / 2
+        self.window_coordinates.y_min = -self.default_y_max / 2
         self.scale_acumulator = 0
 
     def shift_window_left(self):
