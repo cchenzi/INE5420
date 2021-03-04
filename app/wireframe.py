@@ -87,31 +87,32 @@ class Wireframe:
         self.center = calculate_object_center(coord_aux)
         # Remove last column and map the points to tuple
         self.transformed_coordinates = list(map(tuple, coord_aux[:, :-1]))
+        print("normalized coordinates=", self.transform_coordinates)
 
     def to_obj(self):
         obj_list = []
         mtl_list = []
 
-        obj_list.append(f'o {self.name}')
-        obj_list.append(f'usemtl {self.name}_mtl')
+        obj_list.append(f"o {self.name}")
+        obj_list.append(f"usemtl {self.name}_mtl")
 
         for vertex in self.transformed_coordinates:
-            obj_list.append(f'v {vertex[0]} {vertex[1]} 0.0')
+            obj_list.append(f"v {vertex[0]} {vertex[1]} 0.0")
 
-        f = ['f']
-        points = [f'-{n+1}' for n in range(self.number_points)]
+        f = ["f"]
+        points = [f"-{n+1}" for n in range(self.number_points)]
         f += points[::-1]
-        f_line = ' '.join(f)
+        f_line = " ".join(f)
         obj_list.append(f_line)
 
-        mtl_list.append(f'newmtl {self.name}_mtl')
+        mtl_list.append(f"newmtl {self.name}_mtl")
         r, g, b, a = (0, 0, 0, 0)
         try:
             r, g, b, a = self.color.getRgb()
         except AttributeError:
             r, g, b, a = QtGui.QColor(self.color).getRgb()
-        mtl_list.append(f'Kd {r/255} {g/255} {b/255} {a/255}')
+        mtl_list.append(f"Kd {r/255} {g/255} {b/255} {a/255}")
 
-        obj_list = [obj + '\n' for obj in obj_list]
-        mtl_list = [mtl + '\n' for mtl in mtl_list]
+        obj_list = [obj + "\n" for obj in obj_list]
+        mtl_list = [mtl + "\n" for mtl in mtl_list]
         return (obj_list, mtl_list)
