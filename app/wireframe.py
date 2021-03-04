@@ -83,7 +83,7 @@ class Wireframe:
         obj_list.append(f'o {self.name}')
         obj_list.append(f'usemtl {self.name}_mtl')
 
-        for vertex in self.coordinates:
+        for vertex in self.transformed_coordinates:
             obj_list.append(f'v {vertex[0]} {vertex[1]} 0.0')
 
         f = ['f']
