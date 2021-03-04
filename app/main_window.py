@@ -15,8 +15,7 @@ from app.config import (
     SHIFT_FACTOR,
 )
 
-import obj_handler
-from obj_handler import ObjLoader, ObjWriter
+from app.obj_handler import ObjLoader, ObjWriter
 
 
 class MainWindow(QtWidgets.QMainWindow):

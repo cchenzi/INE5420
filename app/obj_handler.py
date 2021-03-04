@@ -1,7 +1,7 @@
 import pathlib
 from PyQt5 import QtGui, QtCore
 
-from wireframe import Wireframe
+from app.wireframe import Wireframe
 
 
 class ObjLoader:
