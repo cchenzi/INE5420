@@ -260,29 +260,35 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_canvas(self):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
         self.displayFrame.update()
-    
+
     def load_obj_file(self):
         file_name = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Open obj file", "./", "Obj files (*.obj)")[0]
-        loader = ObjLoader(file_name, wireframe_index=self.wireframe_count)
+            self, "Open obj file", "./", "Obj files (*.obj)"
+        )[0]
+        loader = ObjLoader(
+            file_name,
+            self.wireframe_count,
+            self.window_coordinates,
+            self.window_transformations_matrix,
+        )
         new_wireframes = loader.wireframes
         for wireframe in new_wireframes:
             self.display_file.append(wireframe)
             self.draw_wireframe(wireframe)
             self.listWidget.insertItem(self.wireframe_count, wireframe.name)
             self.wireframe_count += 1
-        self.console_print('Obj loaded')
-
+        self.console_print("Obj loaded")
 
     def save_obj_file(self):
-        file_name, ok = QtWidgets.QInputDialog.getText(self, 'Text Input Dialog', 'Enter scene name:')
+        file_name, ok = QtWidgets.QInputDialog.getText(
+            self, "Text Input Dialog", "Enter scene name:"
+        )
         if ok:
             writer = ObjWriter(self.display_file, file_name)
             writer.create_obj()
-            self.console_print('Scene saved')
+            self.console_print("Scene saved")
         else:
-            self.console_print('Invalid scene name')
-
+            self.console_print("Invalid scene name")
 
     def draw_line(self, x1, y1, x2, y2, color):
         self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
