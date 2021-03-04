@@ -8,11 +8,14 @@ from app.math_functions import (
     build_homogeneous_coordinates,
     calculate_object_center,
     multiply_coordinates_by_transformations,
+    normalize_point,
 )
 
 
 class Wireframe:
-    def __init__(self, coordinates, index, color, normalization_values):
+    def __init__(
+        self, coordinates, index, color, normalization_values, window_transformations
+    ):
         self.coordinates = coordinates
         self.number_points = len(self.coordinates)
         self.homogeneous_coordinates = build_homogeneous_coordinates(self.coordinates)
@@ -27,8 +30,13 @@ class Wireframe:
         self.window_angle = 0
         self.window_x_shift_acc = 0
         self.window_y_shift_acc = 0
-        self.window_transformations = None
-        self.build_window_normalizations()
+        self.window_transformations = window_transformations
+        self.window_width = (
+            self.normalization_values.x_max - self.normalization_values.x_min
+        )
+        self.window_height = (
+            self.normalization_values.y_max - self.normalization_values.y_min
+        )
         self.center = None
         self.transform_coordinates()
 
@@ -37,24 +45,6 @@ class Wireframe:
 
     def needs_translation(self, code):
         return code in ["rt", "sc"]
-
-    def build_window_normalizations(self):
-
-        translation_matrix = transformations_functions_dict["tr"](
-            self.window_x_shift_acc, self.window_y_shift_acc
-        )
-
-        rotation_matrix = transformations_functions_dict["rt"](self.window_angle)
-
-        width = (self.normalization_values.x_max - self.normalization_values.x_min) / 2
-        height = (self.normalization_values.y_max - self.normalization_values.y_min) / 2
-        scaling_matrix = transformations_functions_dict["sc"](1 / width, 1 / height)
-
-        composition = reduce(
-            np.dot, [translation_matrix, rotation_matrix, scaling_matrix]
-        )
-
-        self.window_transformations = composition
 
     def transform_coordinates(self):
         coord_aux = build_homogeneous_coordinates(self.coordinates)
@@ -66,7 +56,9 @@ class Wireframe:
             if self.needs_translation(code):
                 if code in ["rt"]:
                     if len(params[1]) > 0:
-                        translate_x, translate_y = params[1]
+                        translate_x, translate_y = normalize_point(
+                            params[1], self.window_width / 2, self.window_height / 2
+                        )
                     else:
                         translate_x, translate_y, _ = calculate_object_center(coord_aux)
                     params = [params[0]]
@@ -80,6 +72,11 @@ class Wireframe:
                     transformations_functions_dict["tr"](translate_x, translate_y)
                 )
             else:
+                if code == "tr":
+                    x_normalized, y_normalized = normalize_point(
+                        params, self.window_width / 2, self.window_height / 2
+                    )
+                    params = [x_normalized, y_normalized]
                 t_aux.append(transformations_functions_dict[code](*params))
 
             composition_matrix = reduce(np.dot, t_aux)

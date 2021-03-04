@@ -1,5 +1,5 @@
 import numpy as np
-
+from functools import reduce
 from app.utils import get_reflection_indexes, transformations_codes
 from app.config import (
     X_MAX_TRANSLATED,
@@ -111,6 +111,29 @@ def calculate_object_center(coordinates):
 def multiply_coordinates_by_transformations(coordinates, transformations):
 
     return np.dot(coordinates, transformations)
+
+
+def normalize_point(point, height, width):
+    x, y = point
+    return (x / height, y / width)
+
+
+def build_window_normalizations(
+    window_x_shift, window_y_shift, window_width, window_height, window_angle
+):
+    translation_matrix = transformations_functions_dict["tr"](
+        window_x_shift, window_y_shift
+    )
+    rotation_matrix = transformations_functions_dict["rt"](window_angle)
+
+    scaling_matrix = transformations_functions_dict["sc"](
+        2 / window_width, 2 / window_height
+    )
+
+    composition = reduce(np.dot, [translation_matrix, rotation_matrix, scaling_matrix])
+
+    return composition
+
 
 def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
     xvp = x_viewport_transform(
