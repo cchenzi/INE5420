@@ -6,31 +6,24 @@ Este repositório contém o trabalho prático desenvolvido para a primeira parte
 
 ## Atenção
 
-A maneira de rodar mudou (por causa da adição de testes)! Além disso, os detalhes sobre a implementação da 1.1 estão no arquivo OLD_README.md. Decidimos deixar neste arquivo apenas as novidades desenvolvidas.
+Os detalhes sobre as implementações passadas estão no arquivo OLD_README.md. Decidimos deixar neste arquivo apenas as novidades desenvolvidas.
 
-## Versão 1.2: Implementação de Transformações 2D e Coordenadas Homogêneas
+## Versão 1.3: Implementação de Rotação da Window, SCN, leitura e escrita de arquivos obj
 
 **Funcionalidades Implementadas:**
 
-* Foi adicionado um novo botão, `Transform`, que abre uma janela de diálogo referente ao objeto selecionado no `display file`.
+* O sistema de coordenadas foi alterado para a utilização do Sistema de Coordenadas Normalizado. Para isto, foram feitas as seguintes modificações:
+    - A window foi fixada entre [-1, 1].
+    - Criação da função `build_window_normalizations` (`app/math_functions`), que realiza a criação das matrizes de translação ao centro da window, a rotação do ângulo inserido e o escalonamento para a normalização. As matrizes, portanto, são compostas e retornadas. Elas são recalculadas sempre que necessário, mas apenas uma vez, pelo controlador da `main_window`. Sendo assim, cada `wireframe` recebe pronta a matriz com as transformações de window.
+    - Na parte de transformações de coordenadas dos `wireframes` (`transform_coordinates` em `app/wireframe.py`), é feito um passo antes de compor as matrizes de transformações, multiplicando as coordenadas originais e homogêneas pela matriz de normalização da window. As coordenadas normalizadas e transformadas são salvas e utilizadas no desenho.
 
-* A janela de transformações consta com 4 abas: `Rotation`, `Translation`, `Scaling` e `Reflection`, além da lista de transformações do objeto. O objeto é atualizado visualmente a cada transformação adicionada.
+* Para a rotação da window, foi habilitado o botão de rotação "⮏", que irá girar para a esquerda o valor de graus informado (para a direita, basta inverter o sinal). Com isso, fará que recalcule a matriz de normalização, assim como as funções de navegação normais (que estão funcionando!!).
 
-    - `Rotation`: é possível selecionar entre os três tipos: ao redor do centro, origem e de um ponto arbitrário.
-    - `Translation`: definir (x, y).
-    - `Scaling`: definir (x, y).
-    - `Reflection`: escolher entre X, Y e origem.
+* Para lidar com arquivos `.obj`, foram criadas duas classes: `ObjLoader` e `ObjWriter`(`app/obj_handler`), além de serem adicionados dois botões: `Save` e `Load`.
+    - `Load`: carrega os objetos de um aquivo obj para a cena. Caso um arquivo obj especifique um `.mtl`, é preciso que ele se encontre na mesma pasta do obj. 
+    - `Save`: exporta todos os `wireframes` para um arquivo obj com o nome especificado para a cena, criando um arquivo `.mtl` auxiliar para salvar as cores dos objetos. Como as coordenadas transformadas estão normalizadas, é necessário realizar um passo de desnormalização para salvá-las. Para isso, cria-se uma matriz de normalização inversa e aplica-se as coordenadas normalizadas.
 
-* As matrizes de transformações estão definidas em `app/math_functions.py`, cada qual com exemplo de saída. Internamente, definimos códigos para traduzir as transformações e ser possível realizar os cálculos.
-
-* `Wireframes` agora possuem um conjunto de coordenadas homogêneas, de coordenadas transformadas e de transformações. A função que calcula as transformações está em `app/wireframe.py`: `transform_coordinates`.
-
-    - Coordenadas homogêneas são utilizadas nos cálculos das transformações.
-    - Coordenadas transformadas são as que passaram pelas transformações e serão mostrada em tela.
-    - A função `transform_coordinates` itera sobre as coordenadas homogêneas, aplicando todas as transformações e atualizando-se. Casos que precisam de translação são tratados ali mesmo. (Uma versão simplificada dessa função consta em `apply_transformations_to_points`, utilizada para testar apenas as transformações)
-
-* Foram adicionados testes para alguns aspectos do programa. Em `tests/test_wiframe.py` são testados os exercícios de transformações (1.2.2).
-
+* Três arquivos foram disponibilizados, na pasta `/obj`, como exemplo de carregamento e exportação de `.obj`: `house.obj`, `pentagram.obj` e `ruby.obj`, todos eles criados e exportados pelo próprio programa.
 
 ## Execução
 
