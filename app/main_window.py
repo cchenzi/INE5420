@@ -1,5 +1,4 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from math import cos, sin, radians
 
 from app.new_wireframe_window import NewWireframeWindow
 from app.transform_window import TransformWindow
@@ -192,6 +191,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dialogs = list()
         QtCore.QMetaObject.connectSlotsByName(self)
         self.set_buttons_actions()
+        self.draw_native_objects()
         self.show()
 
     def retranslateUi(self):
@@ -372,6 +372,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
             
 
+    def draw_native_objects(self):
+        offset = 20
+        x1 = offset
+        y1 = offset
+        x2 = self.viewport_coordinates.x_max - offset
+        y2 = self.viewport_coordinates.y_max - offset
+        window_rectangle = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
+        for index in range(len(window_rectangle)):
+            x1, y1 = window_rectangle[index]
+            x2, y2 = window_rectangle[(index + 1) % len(window_rectangle)]
+            self.draw_line(x1, y1, x2, y2, QtCore.Qt.red)
+
     def set_navigation_default_paramaters(self):
         self.console_print("Navigation parameters reseted!")
         self.window_coordinates.x_max = self.default_x_max / 2
@@ -453,6 +465,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.prepare_normalization_matrix()
         height = self.window_coordinates.y_max - self.window_coordinates.y_min
         width = self.window_coordinates.x_max - self.window_coordinates.x_min
+        self.draw_native_objects()
         for wireframe in self.display_file:
             wireframe.normalization_values = self.window_coordinates
             wireframe.window_width = width
