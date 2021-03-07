@@ -39,6 +39,7 @@ class Wireframe:
         )
         self.center = None
         self.filled = False
+        self.visible = True
         self.transform_coordinates()
 
     def calculate_object_center(self):

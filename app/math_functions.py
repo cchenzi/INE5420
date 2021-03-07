@@ -18,7 +18,7 @@ def x_viewport_transform(
     x_window_max = 1
     return ((x_window - x_window_min) / (x_window_max - x_window_min)) * (
         x_viewport_max - x_viewport_min
-    )
+    ) + 20
 
 
 def y_viewport_transform(
@@ -28,7 +28,7 @@ def y_viewport_transform(
     y_window_max = 1
     return (1 - ((y_window - y_window_min) / (y_window_max - y_window_min))) * (
         y_viewport_max - y_viewport_min
-    )
+    ) + 20
 
 
 def build_translation_matrix(Dx, Dy):
@@ -151,3 +151,15 @@ def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
         viewport_coordinates.y_max,
     )
     return (xvp, yvp)
+
+
+def clip(wireframe, method=None):
+    # Apply point clipping
+    if wireframe.number_points == 1:
+        coord_aux = np.array(wireframe.transformed_coordinates[0])
+        if np.any((coord_aux < -1) | (coord_aux > 1)):
+            print(f"Coords {coord_aux} not visible!")
+            wireframe.visible = False
+        else:
+            print(f"Coords {coord_aux} visible!")
+            wireframe.visible = True
