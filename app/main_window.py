@@ -5,7 +5,7 @@ from app.transform_window import TransformWindow
 from app.utils import (
     CoordinatesRepresentation,
 )
-from app.math_functions import transform_coordinates, build_window_normalizations
+from app.math_functions import transform_coordinates, build_window_normalizations, clip
 from app.config import (
     DEFAULT_X_MAX,
     DEFAULT_X_MIN,
@@ -37,10 +37,10 @@ class MainWindow(QtWidgets.QMainWindow):
             factor=SHIFT_FACTOR,
         )
         self.viewport_coordinates = CoordinatesRepresentation(
-            self.default_x_min,
-            self.default_y_min,
-            self.default_x_max,
-            self.default_y_max,
+            self.default_x_min + 20,
+            self.default_y_min + 20,
+            self.default_x_max - 20,
+            self.default_y_max - 20,
         )
         self.wireframe_count = 0
         self.acc_rotation_degrees = 0
@@ -376,8 +376,9 @@ class MainWindow(QtWidgets.QMainWindow):
         offset = 20
         x1 = offset
         y1 = offset
-        x2 = self.viewport_coordinates.x_max - offset
-        y2 = self.viewport_coordinates.y_max - offset
+        x2 = self.viewport_coordinates.x_max
+        y2 = self.viewport_coordinates.y_max
+        print("kkkkk", x2, y2)
         window_rectangle = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
         for index in range(len(window_rectangle)):
             x1, y1 = window_rectangle[index]
@@ -397,19 +398,19 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def shift_window_left(self):
 
-        self.acc_x_shift += 10
+        self.acc_x_shift += 5
         self.redraw_wireframes()
 
     def shift_window_right(self):
-        self.acc_x_shift -= 10
+        self.acc_x_shift -= 5
         self.redraw_wireframes()
 
     def shift_window_up(self):
-        self.acc_y_shift -= 10
+        self.acc_y_shift -= 5
         self.redraw_wireframes()
 
     def shift_window_down(self):
-        self.acc_y_shift += 10
+        self.acc_y_shift += 5
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
