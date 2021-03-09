@@ -73,8 +73,12 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.show()
 
     def add_new_point(self):
-        x = float(self.newXTextEdit.toPlainText())
-        y = float(self.newYTextEdit.toPlainText())
+        try:
+            x = float(self.newXTextEdit.toPlainText())
+            y = float(self.newYTextEdit.toPlainText())
+        except ValueError:
+            self.partnerDialog.console_print("Invalid or empty value on X or Y")
+            return
         # self.partnerDialog.console_print(f"Points={(x, y)}")
         self.points.append((x, y))
         self.partnerDialog.console_print(f"Points after append={self.points}")
@@ -107,7 +111,11 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
     def delete_active_point(self):
         item = self.newPointsListWidget.currentRow()
         self.newPointsListWidget.takeItem(item)
-        self.points.pop(item)
+        try:
+            self.points.pop(item)
+        except IndexError:
+            self.partnerDialog.console_print("There is no point to remove")
+            return
         self.set_text_draw_button()
         self.partnerDialog.console_print(f"Point {item} deleted!")
 
