@@ -303,7 +303,8 @@ class TransformWindow(QtWidgets.QMainWindow):
         if self.reflectionOriginCheckBox.isChecked():
             self.wireframe.transformations_codes.append(("rf", ["origin"]))
             count += 1
-        self.add_last_n_transformations_to_list(count)
+        if count > 0:
+            self.add_last_n_transformations_to_list(count)
 
     def show_reflection(self, rtype):
         self.reflectionXCheckBox.setChecked(False)

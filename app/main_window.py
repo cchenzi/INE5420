@@ -285,6 +285,10 @@ class MainWindow(QtWidgets.QMainWindow):
         file_name = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open obj file", "./", "Obj files (*.obj)"
         )[0]
+
+        if not file_name:
+            return
+
         loader = ObjLoader(
             file_name,
             self.wireframe_count,
@@ -395,7 +399,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def rotate_window(self):
         degrees = self.degreesEdit.toPlainText()
-        self.acc_rotation_degrees -= float(degrees)
+        try:
+            self.acc_rotation_degrees -= float(degrees)
+        except ValueError:
+            self.console_print("Invalid or missing degrees value")
         for wireframe in self.display_file:
             wireframe.window_angle = self.acc_rotation_degrees
         self.redraw_wireframes()
