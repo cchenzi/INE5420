@@ -107,6 +107,10 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.addTransformationPushButton.setGeometry(QtCore.QRect(380, 300, 171, 25))
         self.addTransformationPushButton.setObjectName("addTransformationPushButton")
 
+        self.transformPushButton = QtWidgets.QPushButton(self)
+        self.transformPushButton.setGeometry(QtCore.QRect(380, 330, 171, 25))
+        self.transformPushButton.setObjectName("transformPushButton")
+
         self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(self)
         self.tabWidget.setCurrentIndex(0)
@@ -158,6 +162,9 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.addTransformationPushButton.setText(
             _translate("TransformWindow", "Add Transformation")
         )
+        self.transformPushButton.setText(
+            _translate("TransformWindow", "Transform")
+        )
 
     def new_window(self, active_wireframe):
         self.wireframe = active_wireframe
@@ -184,8 +191,14 @@ class TransformWindow(QtWidgets.QMainWindow):
     def connect_actions(self):
         self.addTransformationPushButton.clicked.connect(self.add_transformation)
         self.deleteTransformationPushButton.clicked.connect(self.delete_transformation)
+        self.transformPushButton.clicked.connect(self.transform)
         self.listWidget.currentItemChanged.connect(self.show_transformation)
         self.rotationComboBox.currentIndexChanged.connect(self.select_rotation)
+    
+    def transform(self):
+        self.wireframe.transform_coordinates()
+        self.partnerDialog.redraw_wireframes()
+        self.partnerDialog.console_print(f"Transformations applyed")
 
     def delete_transformation(self):
         transformations = len(self.wireframe.transformations_codes)
@@ -195,14 +208,10 @@ class TransformWindow(QtWidgets.QMainWindow):
             transformation = self.wireframe.transformations_codes.pop(item)
             name = f"{transformations_codes[transformation[0]]}"
             self.partnerDialog.console_print(f"{name} removed!")
-            self.wireframe.transform_coordinates()
-            self.partnerDialog.redraw_wireframes()
 
     def add_transformation(self):
         active_tab = self.tabWidget.currentIndex()
         self.tab_index_to_function[active_tab][0](self)
-        self.wireframe.transform_coordinates()
-        self.partnerDialog.redraw_wireframes()
 
     def add_rotation(self):
         degrees = self.rotationText.toPlainText()
