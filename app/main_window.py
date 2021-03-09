@@ -378,7 +378,6 @@ class MainWindow(QtWidgets.QMainWindow):
         y1 = offset
         x2 = self.viewport_coordinates.x_max
         y2 = self.viewport_coordinates.y_max
-        print("kkkkk", x2, y2)
         window_rectangle = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
         for index in range(len(window_rectangle)):
             x1, y1 = window_rectangle[index]
