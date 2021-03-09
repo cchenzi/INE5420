@@ -21,7 +21,7 @@ from app.obj_handler import ObjLoader, ObjWriter
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.resize(860, 590)
+        self.resize(860, 640)
         self.display_file = []
         self.newWireframeWindowDialog = NewWireframeWindow(self)
         self.transformWindowDialog = TransformWindow(self)
@@ -49,13 +49,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.acc_y_shift = 0
         self.window_transformations_matrix = None
         self.desnormalization_matrix = None
+        self.line_clipping_method = None
         self.prepare_normalization_matrix()
         self.prepare_desnormalization_matrix()
         self.setup()
 
     def setup(self):
         self.debuggerTextBrowser = QtWidgets.QTextBrowser(self)
-        self.debuggerTextBrowser.setGeometry(QtCore.QRect(220, 430, 610, 120))
+        self.debuggerTextBrowser.setGeometry(QtCore.QRect(220, 430, 610, 195))
         self.debuggerTextBrowser.setObjectName("debuggerTextBrowser")
         self.displayFileLabel = QtWidgets.QLabel(self)
         self.displayFileLabel.setGeometry(QtCore.QRect(10, 20, 81, 31))
@@ -141,6 +142,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.degreesEdit = QtWidgets.QTextEdit(self)
         self.degreesEdit.setGeometry(QtCore.QRect(80, 390, 91, 31))
         self.degreesEdit.setObjectName("degreesEdit")
+
+        self.clippingLabel = QtWidgets.QLabel(self)
+        self.clippingLabel.setGeometry(QtCore.QRect(10, 570, 180, 18))
+        self.clippingLabel.setObjectName("clippingLabel")
+        self.clippingComboBox = QtWidgets.QComboBox(self)
+        self.clippingComboBox.setGeometry(QtCore.QRect(10, 600, 180, 25))
+        self.clippingComboBox.setObjectName("clippingComboBox")
+        self.clippingComboBox.addItem("")
+        self.clippingComboBox.addItem("")
+
         # self.textEdit.setEnabled(False)
         self.line = QtWidgets.QFrame(self)
         self.line.setGeometry(QtCore.QRect(10, 10, 196, 20))
@@ -162,6 +173,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.line_4.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_4.setObjectName("line_4")
+        self.line_5 = QtWidgets.QFrame(self)
+        self.line_5.setGeometry(QtCore.QRect(10, 550, 196, 20))
+        self.line_5.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line_5.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_5.setObjectName("line_5")
         self.displayFrame = QtWidgets.QLabel(self)
         self.displayFrame.setGeometry(QtCore.QRect(222, 20, 630, 380))
         self.displayFrame.setAutoFillBackground(False)
@@ -204,6 +220,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
         self.savePushButton.setText(_translate("MainWindow", "Save"))
         self.loadPushButton.setText(_translate("MainWindow", "Load"))
+        self.clippingComboBox.setItemText(0, _translate("MainWindow", "Method 0"))
+        self.clippingComboBox.setItemText(1, _translate("MainWindow", "Method 1"))
+        self.clippingLabel.setText(_translate("MainWindow", "Line clipping method"))
 
     def console_print(self, string):
         self.debuggerTextBrowser.append(string)
@@ -228,6 +247,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadPushButton.clicked.connect(self.load_obj_file)
         self.savePushButton.clicked.connect(self.save_obj_file)
         self.rotateXPushButton.clicked.connect(self.rotate_window)
+        self.clippingComboBox.currentIndexChanged.connect(self.select_line_clipping_method)
 
     def new_wireframe_window(self):
         self.newWireframeWindowDialog.new_window()
@@ -291,6 +311,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.console_print("Scene saved")
         else:
             self.console_print("Invalid scene name")
+    
+    line_clipping_methods = {
+        0: 'Method 0',
+        1: 'Method 1'
+    }
+
+    def select_line_clipping_method(self):
+        index = self.clippingComboBox.currentIndex()
+        method = self.line_clipping_methods[index]
+        self.line_clipping_method = method
+        self.redraw_wireframes()
+        self.console_print(f"Clipping method changed to {method}")
 
     def draw_line(self, x1, y1, x2, y2, color):
         self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
