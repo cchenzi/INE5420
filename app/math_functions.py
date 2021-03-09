@@ -153,13 +153,99 @@ def transform_coordinates(x, y, window_coordinates, viewport_coordinates):
     return (xvp, yvp)
 
 
+def get_angle(x, x1, x2):
+    return (x - x1) / (x2 - x1)
+
+
+def get_cohen_sutherland_point_code(
+    value, min_value, max_value, lower_code, upper_code
+):
+    if value > max_value:
+        return upper_code
+    if value < min_value:
+        return lower_code
+    return 0
+
+
+def cohen_sutherland(p1, p2):
+    top = 8
+    bottom = 4
+    left = 1
+    right = 2
+
+    x_min = -1
+    y_min = -1
+    x_max = 1
+    y_max = 1
+
+    p0_code = 0
+    x0, y0 = p1
+    p0_code += get_cohen_sutherland_point_code(x0, x_min, x_max, left, right)
+    p0_code += get_cohen_sutherland_point_code(y0, y_min, y_max, bottom, top)
+
+    p1_code = 0
+    x1, y1 = p2
+    p1_code += get_cohen_sutherland_point_code(x1, x_min, x_max, left, right)
+    p1_code += get_cohen_sutherland_point_code(y1, y_min, y_max, bottom, top)
+    while True:
+
+        print(p0_code, p1_code, p0_code & p1_code, p0_code | p1_code)
+        # Both out from window
+        if p0_code & p1_code != 0:
+            return (False, (x0, y0), (x1, y1))
+        # Both in
+        if p0_code | p1_code == 0:
+            return (True, (x0, y0), (x1, y1))
+
+        x = 0
+        y = 0
+
+        outside_code = max(p0_code, p1_code)
+        if outside_code & left == left:
+            y = y0 + (y1 - y0) * (x_min - x0) / (x1 - x0)
+            x = x_min
+        if outside_code & right == right:
+            y = y0 + (y1 - y0) * (x_max - x0) / (x1 - x0)
+            x = x_max
+
+        if outside_code & top == top:
+            x = x0 + (x1 - x0) * (y_max - y0) / (y1 - y0)
+            y = y_max
+
+        if outside_code & bottom == bottom:
+            x = x0 + (x1 - x0) * (y_min - y0) / (y1 - y0)
+            y = y_min
+
+        if outside_code == p0_code:
+            x0 = x
+            y0 = y
+            p0_code = 0
+            p0_code += get_cohen_sutherland_point_code(x0, x_min, x_max, left, right)
+            p0_code += get_cohen_sutherland_point_code(y0, y_min, y_max, bottom, top)
+        else:
+            x1 = x
+            y1 = y
+            p1_code = 0
+            p1_code += get_cohen_sutherland_point_code(x1, x_min, x_max, left, right)
+            p1_code += get_cohen_sutherland_point_code(y1, y_min, y_max, bottom, top)
+
+    return (False, None, None)
+
+
 def clip(wireframe, method=None):
     # Apply point clipping
     if wireframe.number_points == 1:
         coord_aux = np.array(wireframe.transformed_coordinates[0])
         if np.any((coord_aux < -1) | (coord_aux > 1)):
             print(f"Coords {coord_aux} not visible!")
-            wireframe.visible = False
+            is_visible = False
+            return is_visible, None
         else:
             print(f"Coords {coord_aux} visible!")
-            wireframe.visible = True
+            is_visible = True
+            return is_visible, [coord_aux]
+    if wireframe.number_points == 2:
+        p1 = wireframe.transformed_coordinates[0]
+        p2 = wireframe.transformed_coordinates[1]
+        is_visible, new_p1, new_p2 = cohen_sutherland(p1, p2)
+        return is_visible, [new_p1, new_p2]

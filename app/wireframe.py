@@ -96,7 +96,7 @@ class Wireframe:
         desnormalized_coordinates = multiply_coordinates_by_transformations(
             coord_aux, desnormalization_matrix
         )
-
+        print(coord_aux, "->>>", desnormalization_matrix)
         obj_list = []
         mtl_list = []
 
