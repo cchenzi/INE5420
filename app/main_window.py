@@ -333,8 +333,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.update()
         self.painter.setPen(QtGui.QPen(color, 5))
         self.painter.drawLine(x1, y1, x2, y2)
+        
 
     def draw_wireframe(self, wireframe):
+        fill_points = []
         for index in range(wireframe.number_points):
             wireframe.transform_coordinates()
             x1, y1 = wireframe.transformed_coordinates[index]
@@ -354,6 +356,21 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.viewport_coordinates,
             )
             self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
+            if wireframe.filled:
+                fill_points.append((xvp1, yvp1))
+
+        if fill_points:
+            # Create QPoints just to use filling primitive from pyqt
+            polygon = QtGui.QPolygonF()
+            for point in fill_points:
+                new_point = QtCore.QPointF(point[0], point[1])
+                polygon.append(new_point)
+            path = QtGui.QPainterPath()
+            path.addPolygon(polygon)
+            self.painter.setBrush(wireframe.color)
+            self.painter.drawPath(path)
+
+            
 
     def set_navigation_default_paramaters(self):
         self.console_print("Navigation parameters reseted!")
