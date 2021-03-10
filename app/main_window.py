@@ -418,11 +418,11 @@ class MainWindow(QtWidgets.QMainWindow):
         degrees = self.degreesEdit.toPlainText()
         try:
             self.acc_rotation_degrees -= float(degrees)
+            for wireframe in self.display_file:
+                wireframe.window_angle = self.acc_rotation_degrees
+            self.redraw_wireframes()
         except ValueError:
             self.console_print("Invalid or missing degrees value")
-        for wireframe in self.display_file:
-            wireframe.window_angle = self.acc_rotation_degrees
-        self.redraw_wireframes()
 
     def refresh_canvas(self):
         self.prepare_desnormalization_matrix()
