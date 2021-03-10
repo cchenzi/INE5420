@@ -38,6 +38,7 @@ class Wireframe:
             self.normalization_values.y_max - self.normalization_values.y_min
         )
         self.center = None
+        self.filled = False
         self.transform_coordinates()
 
     def calculate_object_center(self):

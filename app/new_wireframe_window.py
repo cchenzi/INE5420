@@ -8,7 +8,7 @@ from app.utils import Shape
 class NewWireframeWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
-        self.resize(421, 221)
+        self.resize(421, 250)
         self.partnerDialog = parent
         self.display_file = self.partnerDialog.display_file
         self.points = []
@@ -24,6 +24,10 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.drawPolygonPushButton.setEnabled(True)
         self.drawPolygonPushButton.setGeometry(QtCore.QRect(280, 180, 120, 34))
         self.drawPolygonPushButton.setObjectName("drawPolygonPushButton")
+        self.fillCheckBox = QtWidgets.QCheckBox(self)
+        self.fillCheckBox.setGeometry(QtCore.QRect(280, 220, 120, 18))
+        self.fillCheckBox.setObjectName("fillCheckBox")
+        self.fillCheckBox.setEnabled(False)
 
         self.colorPickerPushButton = QtWidgets.QPushButton(self)
         self.colorPickerPushButton.setGeometry(QtCore.QRect(140, 180, 120, 34))
@@ -66,6 +70,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.setPointsLabel.setText(_translate("Form", "Set points:"))
         self.newXLabel.setText(_translate("Form", "X:"))
         self.newYLabel.setText(_translate("Form", "Y:"))
+        self.fillCheckBox.setText(_translate("Form", "Fill Polygon"))
 
     def new_window(self):
         self.points = []
@@ -88,6 +93,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         point_str = f"Point {point_id}: {x}, {y}"
         self.newPointsListWidget.insertItem(point_id, point_str)
         self.set_text_draw_button()
+        if len(self.points) > 2:
+            self.fillCheckBox.setEnabled(True)
 
     def add_new_wireframe(self):
         if len(self.points) > 0:
@@ -99,6 +106,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                 self.partnerDialog.window_coordinates,
                 self.partnerDialog.window_transformations_matrix,
             )
+            if self.fillCheckBox.isChecked():
+                wireframe.filled = True
             self.display_file.append(wireframe)
             self.partnerDialog.draw_wireframe(wireframe)
             # self.partnerDialog.redraw_wireframes()
