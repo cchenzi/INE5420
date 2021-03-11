@@ -5,7 +5,8 @@ from app.transform_window import TransformWindow
 from app.utils import (
     CoordinatesRepresentation,
 )
-from app.math_functions import transform_coordinates, build_window_normalizations, clip
+from app.math_functions import transform_coordinates, build_window_normalizations
+from app.clipping import clip
 from app.config import (
     DEFAULT_X_MAX,
     DEFAULT_X_MIN,
