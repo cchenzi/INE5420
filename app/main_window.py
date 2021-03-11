@@ -341,7 +341,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def draw_wireframe(self, wireframe):
         fill_points = []
         should_clip = True
-        print(self.line_clipping_method)
+
         if self.line_clipping_method == "no-clipping":
             should_clip = False
 
@@ -349,7 +349,7 @@ class MainWindow(QtWidgets.QMainWindow):
         coordinates = wireframe.transformed_coordinates
 
         if should_clip:
-            is_visible, coordinates = clip(wireframe)
+            is_visible, coordinates = clip(wireframe, method=self.line_clipping_method)
         else:
             is_visible = True
 

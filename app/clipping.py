@@ -229,7 +229,10 @@ def clip(wireframe, method=None):
     if wireframe.number_points == 2:
         p1 = wireframe.transformed_coordinates[0]
         p2 = wireframe.transformed_coordinates[1]
-        is_visible, new_p1, new_p2 = liang_barsky(p1, p2)
+        if method == "liang-barsky":
+            is_visible, new_p1, new_p2 = liang_barsky(p1, p2)
+        if method == "cohen-sutherland":
+            is_visible, new_p1, new_p2 = cohen_sutherland(p1, p2)
         return is_visible, [new_p1, new_p2]
 
     # coordinates = weiler_atherton(wireframe.transformed_coordinates)
