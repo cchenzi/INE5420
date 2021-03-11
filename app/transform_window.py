@@ -162,9 +162,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.addTransformationPushButton.setText(
             _translate("TransformWindow", "Add Transformation")
         )
-        self.transformPushButton.setText(
-            _translate("TransformWindow", "Transform")
-        )
+        self.transformPushButton.setText(_translate("TransformWindow", "Transform"))
 
     def new_window(self, active_wireframe):
         self.wireframe = active_wireframe
@@ -194,7 +192,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.transformPushButton.clicked.connect(self.transform)
         self.listWidget.currentItemChanged.connect(self.show_transformation)
         self.rotationComboBox.currentIndexChanged.connect(self.select_rotation)
-    
+
     def transform(self):
         self.wireframe.transform_coordinates()
         self.partnerDialog.redraw_wireframes()

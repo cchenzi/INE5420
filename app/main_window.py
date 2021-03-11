@@ -49,7 +49,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.acc_y_shift = 0
         self.window_transformations_matrix = None
         self.desnormalization_matrix = None
-        self.line_clipping_method = None
+        self.line_clipping_method = "no-clipping"
         self.prepare_normalization_matrix()
         self.prepare_desnormalization_matrix()
         self.setup()
@@ -151,6 +151,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.clippingComboBox.setObjectName("clippingComboBox")
         self.clippingComboBox.addItem("")
         self.clippingComboBox.addItem("")
+        self.clippingComboBox.addItem("")
 
         # self.textEdit.setEnabled(False)
         self.line = QtWidgets.QFrame(self)
@@ -221,8 +222,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
         self.savePushButton.setText(_translate("MainWindow", "Save"))
         self.loadPushButton.setText(_translate("MainWindow", "Load"))
-        self.clippingComboBox.setItemText(0, _translate("MainWindow", "Method 0"))
-        self.clippingComboBox.setItemText(1, _translate("MainWindow", "Method 1"))
+        self.clippingComboBox.setItemText(0, _translate("MainWindow", "No Clipping"))
+        self.clippingComboBox.setItemText(
+            1, _translate("MainWindow", "Cohen-Sutherland")
+        )
+        self.clippingComboBox.setItemText(2, _translate("MainWindow", "Liang-Barsky"))
         self.clippingLabel.setText(_translate("MainWindow", "Line clipping method"))
 
     def console_print(self, string):
@@ -248,7 +252,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.loadPushButton.clicked.connect(self.load_obj_file)
         self.savePushButton.clicked.connect(self.save_obj_file)
         self.rotateXPushButton.clicked.connect(self.rotate_window)
-        self.clippingComboBox.currentIndexChanged.connect(self.select_line_clipping_method)
+        self.clippingComboBox.currentIndexChanged.connect(
+            self.select_line_clipping_method
+        )
 
     def new_wireframe_window(self):
         self.newWireframeWindowDialog.new_window()
@@ -316,11 +322,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.console_print("Scene saved")
         else:
             self.console_print("Invalid scene name")
-    
-    line_clipping_methods = {
-        0: 'Method 0',
-        1: 'Method 1'
-    }
+
+    line_clipping_methods = {0: "no-clipping", 1: "cohen-sutherland", 2: "liang-barsky"}
 
     def select_line_clipping_method(self):
         index = self.clippingComboBox.currentIndex()
@@ -334,44 +337,52 @@ class MainWindow(QtWidgets.QMainWindow):
         self.displayFrame.update()
         self.painter.setPen(QtGui.QPen(color, 5))
         self.painter.drawLine(x1, y1, x2, y2)
-        
 
     def draw_wireframe(self, wireframe):
         fill_points = []
-        for index in range(wireframe.number_points):
-            wireframe.transform_coordinates()
-            x1, y1 = wireframe.transformed_coordinates[index]
-            xvp1, yvp1 = transform_coordinates(
-                x1,
-                y1,
-                self.window_coordinates,
-                self.viewport_coordinates,
-            )
-            x2, y2 = wireframe.transformed_coordinates[
-                (index + 1) % wireframe.number_points
-            ]
-            xvp2, yvp2 = transform_coordinates(
-                x2,
-                y2,
-                self.window_coordinates,
-                self.viewport_coordinates,
-            )
-            self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
-            if wireframe.filled:
-                fill_points.append((xvp1, yvp1))
+        should_clip = True
+        print(self.line_clipping_method)
+        if self.line_clipping_method == "no-clipping":
+            should_clip = False
 
-        if fill_points:
-            # Create QPoints just to use filling primitive from pyqt
-            polygon = QtGui.QPolygonF()
-            for point in fill_points:
-                new_point = QtCore.QPointF(point[0], point[1])
-                polygon.append(new_point)
-            path = QtGui.QPainterPath()
-            path.addPolygon(polygon)
-            self.painter.setBrush(wireframe.color)
-            self.painter.drawPath(path)
+        wireframe.transform_coordinates()
+        coordinates = wireframe.transformed_coordinates
 
-            
+        if should_clip:
+            is_visible, coordinates = clip(wireframe)
+        else:
+            is_visible = True
+
+        if is_visible:
+            for index in range(wireframe.number_points):
+                x1, y1 = coordinates[index]
+                xvp1, yvp1 = transform_coordinates(
+                    x1,
+                    y1,
+                    self.window_coordinates,
+                    self.viewport_coordinates,
+                )
+                x2, y2 = coordinates[(index + 1) % wireframe.number_points]
+                xvp2, yvp2 = transform_coordinates(
+                    x2,
+                    y2,
+                    self.window_coordinates,
+                    self.viewport_coordinates,
+                )
+                self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
+                if wireframe.filled:
+                    fill_points.append((xvp1, yvp1))
+
+            if fill_points:
+                # Create QPoints just to use filling primitive from pyqt
+                polygon = QtGui.QPolygonF()
+                for point in fill_points:
+                    new_point = QtCore.QPointF(point[0], point[1])
+                    polygon.append(new_point)
+                path = QtGui.QPainterPath()
+                path.addPolygon(polygon)
+                self.painter.setBrush(wireframe.color)
+                self.painter.drawPath(path)
 
     def draw_native_objects(self):
         offset = 20
