@@ -338,51 +338,59 @@ class MainWindow(QtWidgets.QMainWindow):
         self.painter.setPen(QtGui.QPen(color, 5))
         self.painter.drawLine(x1, y1, x2, y2)
 
-    def draw_wireframe(self, wireframe):
-        fill_points = []
+    def prepare_coordinates_to_draw(self, wireframe):
         should_clip = True
 
         if self.line_clipping_method == "no-clipping":
             should_clip = False
 
         wireframe.transform_coordinates()
-        coordinates = wireframe.transformed_coordinates
+        coordinates = [wireframe.transformed_coordinates]
 
         if should_clip:
             is_visible, coordinates = clip(wireframe, method=self.line_clipping_method)
         else:
             is_visible = True
 
-        if is_visible:
-            for index in range(wireframe.number_points):
-                x1, y1 = coordinates[index]
-                xvp1, yvp1 = transform_coordinates(
-                    x1,
-                    y1,
-                    self.window_coordinates,
-                    self.viewport_coordinates,
-                )
-                x2, y2 = coordinates[(index + 1) % wireframe.number_points]
-                xvp2, yvp2 = transform_coordinates(
-                    x2,
-                    y2,
-                    self.window_coordinates,
-                    self.viewport_coordinates,
-                )
-                self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
-                if wireframe.filled:
-                    fill_points.append((xvp1, yvp1))
+        return is_visible, coordinates
 
-            if fill_points:
-                # Create QPoints just to use filling primitive from pyqt
-                polygon = QtGui.QPolygonF()
-                for point in fill_points:
-                    new_point = QtCore.QPointF(point[0], point[1])
-                    polygon.append(new_point)
-                path = QtGui.QPainterPath()
-                path.addPolygon(polygon)
-                self.painter.setBrush(wireframe.color)
-                self.painter.drawPath(path)
+    def draw_wireframe(self, wireframe):
+        fill_points = []
+
+        is_visible, coordinates = self.prepare_coordinates_to_draw(wireframe)
+
+        if is_visible:
+            # When clipping, it might return multiple objects
+            for inside_coordinates in coordinates:
+                for index in range(len(inside_coordinates)):
+                    x1, y1 = inside_coordinates[index]
+                    xvp1, yvp1 = transform_coordinates(
+                        x1,
+                        y1,
+                        self.window_coordinates,
+                        self.viewport_coordinates,
+                    )
+                    x2, y2 = inside_coordinates[(index + 1) % len(inside_coordinates)]
+                    xvp2, yvp2 = transform_coordinates(
+                        x2,
+                        y2,
+                        self.window_coordinates,
+                        self.viewport_coordinates,
+                    )
+                    self.draw_line(xvp1, yvp1, xvp2, yvp2, wireframe.color)
+                    if wireframe.filled:
+                        fill_points.append((xvp1, yvp1))
+
+                if fill_points:
+                    # Create QPoints just to use filling primitive from pyqt
+                    polygon = QtGui.QPolygonF()
+                    for point in fill_points:
+                        new_point = QtCore.QPointF(point[0], point[1])
+                        polygon.append(new_point)
+                    path = QtGui.QPainterPath()
+                    path.addPolygon(polygon)
+                    self.painter.setBrush(wireframe.color)
+                    self.painter.drawPath(path)
 
     def draw_native_objects(self):
         offset = 20
