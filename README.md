@@ -8,22 +8,21 @@ Este repositório contém o trabalho prático desenvolvido para a primeira parte
 
 Os detalhes sobre as implementações passadas estão no arquivo OLD_README.md. Decidimos deixar neste arquivo apenas as novidades desenvolvidas.
 
-## Versão 1.3: Implementação de Rotação da Window, SCN, leitura e escrita de arquivos obj
+## Versão 1.4: Clipping e preenchimento de polígonos
 
-**Funcionalidades Implementadas:**
+* O sistema foi adaptado para suportar o `clipping` de objetos no mundo. Para isso, foi fixado, como solicitado, um retângulo vermelho com proporções menores que as do Canvas utilizados (20px). Atualmente, o sistema suporta o `clipping` para pontos, linhas e polígonos. Como o sistema utiliza Sistema de Coordenadas Normalizado, o `clipping` se baseou nos limites de [-1, 1], em ambos os sentidos. Os algoritmos estão no arquivo `app/clipping.py`. Um selecionador de configuração de `clipping` foi inserido na parte inferior esquerda da interface.
+    - Para linhas, foram implementados os algoritmos de `Cohen-Sutherland` e `Liang-Barsky`.
+    - Para polígonos, foi implementado o algoritmo `Weiler-Atherton`.
 
-* O sistema de coordenadas foi alterado para a utilização do Sistema de Coordenadas Normalizado. Para isto, foram feitas as seguintes modificações:
-    - A window foi fixada entre [-1, 1].
-    - Criação da função `build_window_normalizations` (`app/math_functions`), que realiza a criação das matrizes de translação ao centro da window, a rotação do ângulo inserido e o escalonamento para a normalização. As matrizes, portanto, são compostas e retornadas. Elas são recalculadas sempre que necessário, mas apenas uma vez, pelo controlador da `main_window`. Sendo assim, cada `wireframe` recebe pronta a matriz com as transformações de window.
-    - Na parte de transformações de coordenadas dos `wireframes` (`transform_coordinates` em `app/wireframe.py`), é feito um passo antes de compor as matrizes de transformações, multiplicando as coordenadas originais e homogêneas pela matriz de normalização da window. As coordenadas normalizadas e transformadas são salvas e utilizadas no desenho.
+* Para facilitar a verificação, além da opção por selecionar entre os dois algoritmos de linha, foi adicionado a opção `no-clipping`, com intuito de permitir a observação do "vazamento" de pontos/linhas para fora do retângulo fixado. **Sempre** que um algoritmo de linha é selecionado, automaticamente são ligados os algoritmos de clipping de pontos e polígonos.
 
-* Para a rotação da window, foi habilitado o botão de rotação "⮏", que irá girar para a esquerda o valor de graus informado (para a direita, basta inverter o sinal). Com isso, fará que recalcule a matriz de normalização, assim como as funções de navegação normais (que estão funcionando!!).
+* Foram adicionados 6 novos exemplos de arquivos `.obj` para facilitar a verificação, também. A navegação (cima, baixo, esquerda, direita) é encorajada.
+    - `clipping_points_example.obj`: possui pontos em diversas localizações da window, dentro e fora do retângulo de referência.
+    - `clipping_line_example.obj`: possui um conjunto de linhas com diversos tipos de intersecções com bordas e vazamentos.
+    - `wireframe_clipping_{0-4}.obj`: polígono de exemplo, transladado e rotacionado para as quatro intersecções principais do retângulo de referência. É interessante abrir os quatro ao mesmo tempo, ligar e desligar o `clipping`.
 
-* Para lidar com arquivos `.obj`, foram criadas duas classes: `ObjLoader` e `ObjWriter`(`app/obj_handler`), além de serem adicionados dois botões: `Save` e `Load`.
-    - `Load`: carrega os objetos de um aquivo obj para a cena. Caso um arquivo obj especifique um `.mtl`, é preciso que ele se encontre na mesma pasta do obj. 
-    - `Save`: exporta todos os `wireframes` para um arquivo obj com o nome especificado para a cena, criando um arquivo `.mtl` auxiliar para salvar as cores dos objetos. Como as coordenadas transformadas estão normalizadas, é necessário realizar um passo de desnormalização para salvá-las. Para isso, cria-se uma matriz de normalização inversa e aplica-se as coordenadas normalizadas.
 
-* Três arquivos foram disponibilizados, na pasta `/obj`, como exemplo de carregamento e exportação de `.obj`: `house.obj`, `pentagram.obj` e `ruby.obj`, todos eles criados e exportados pelo próprio programa.
+* Foi adicionada a opção de preencher o polígono com cor, no momento de sua criação. 
 
 ## Execução
 
