@@ -34,7 +34,6 @@ def cohen_sutherland(p1, p2):
     p1_code += get_cohen_sutherland_point_code(y1, y_min, y_max, bottom, top)
     while True:
 
-        print(p0_code, p1_code, p0_code & p1_code, p0_code | p1_code)
         # Both out from window
         if p0_code & p1_code != 0:
             return (False, (x0, y0), (x1, y1))
@@ -121,21 +120,24 @@ def liang_barsky(point_1, point_2):
 
 def w_a_get_window_index(window_vertices, point, code):
     x, y = point
+    # The index from window vertices list must be the
+    # right before the next window vertice
     if x == 1:
-        # Right, so right top
-        index = window_vertices.index(((1, 1), 0)) + 1
+        # Right, so right bottom
+        index = window_vertices.index(((1, -1), 0))
         window_vertices.insert(index, (point, code))
     if x == -1:
-        # Left, so left bottom
-        index = window_vertices.index(((-1, -1), 0)) + 1
+        # Left, so left top
+        index = window_vertices.index(((-1, 1), 0))
+
         window_vertices.insert(index, (point, code))
     if y == 1:
-        # Top, so left top
-        index = window_vertices.index(((-1, 1), 0)) + 1
+        # Top, so right top
+        index = window_vertices.index(((1, 1), 0))
         window_vertices.insert(index, (point, code))
     if y == -1:
-        # Bottom, so right bottom
-        index = window_vertices.index(((1, -1), 0)) + 1
+        # Bottom, so left bottom
+        index = window_vertices.index(((-1, -1), 0))
         window_vertices.insert(index, (point, code))
     return window_vertices
 
@@ -157,9 +159,7 @@ def weiler_atherton(object_coordinates):
         p0 = object_coordinates[index]
         p1 = object_coordinates[(index + 1) % number_points]
 
-        is_visible, new_p0, new_p1 = liang_barsky(p0, p1)
-        print(p1, p0)
-        print(is_visible, new_p0, new_p1)
+        is_visible, new_p0, new_p1 = cohen_sutherland(p0, p1)
         if is_visible:
             if new_p1 != p1:
                 # Exit point
@@ -176,41 +176,43 @@ def weiler_atherton(object_coordinates):
                 enter_points.append((new_p0, 1))
                 window_vertices = w_a_get_window_index(window_vertices, new_p0, 1)
 
-        print("after append=", object_vertices, "\n----\n")
-
-    print("\n\nwindow=", window_vertices)
-    print("\n\nobject=", object_vertices)
-    print("\n\nenter=", enter_points)
+    new_polygons = []
     new_points = []
-    # if enter_points != []:
-    while enter_points != []:
-        # Get first point from enter
-        reference_point = enter_points.pop(0)
-        point_index = object_vertices.index(reference_point) + 1
-        new_points.append(reference_point)
+    # If enter points is empty, return the own coordinates
+    if enter_points != []:
+        # Repeat until empty enter points
+        while enter_points != []:
+            # Get first point from enter
+            reference_point = enter_points.pop(0)
+            rf_p, _ = reference_point
+            inside_points = [rf_p]
+            point_index = object_vertices.index(reference_point) + 1
+            new_points.append(reference_point)
 
-        obj_len = len(object_vertices)
-        for aux_index in range(obj_len):
-            (p, c) = object_vertices[(point_index + aux_index) % obj_len]
-            print(f"POINT OBJ ={(p, c)}, index = {(point_index + aux_index) % obj_len}")
-            new_points.append((p, c))
-            if c != 0:
-                break
+            obj_len = len(object_vertices)
+            for aux_index in range(obj_len):
+                (p, c) = object_vertices[(point_index + aux_index) % obj_len]
+                new_points.append((p, c))
+                inside_points.append(p)
+                if c != 0:
+                    break
 
-        last_point = new_points[-1]
-        point_index = window_vertices.index(last_point) + 1
-        window_len = len(window_vertices)
-        for aux_index in range(window_len):
-            (p, c) = window_vertices[(point_index + aux_index) % window_len]
-            print(
-                f"POINT WIN ={(p, c)}, index = {(point_index + aux_index) % window_len}"
-            )
-            new_points.append((p, c))
-            if c != 0:
-                break
+            last_point = new_points[-1]
+            point_index = window_vertices.index(last_point)
+            window_len = len(window_vertices)
+            for aux_index in range(window_len):
+                (p, c) = window_vertices[(point_index + aux_index) % window_len]
+                new_points.append((p, c))
+                inside_points.append(p)
+                if c != 0:
+                    break
 
-    coordinates = [c for (c, p) in new_points]
-    print(coordinates)
+            new_polygons.append(inside_points)
+        coordinates = new_polygons
+    else:
+        coordinates = [object_coordinates]
+
+    print(f"Coordinates after weiler_atherton={coordinates}")
     return coordinates
 
 
@@ -225,7 +227,7 @@ def clip(wireframe, method=None):
         else:
             print(f"Coords {coord_aux} visible!")
             is_visible = True
-            return is_visible, [coord_aux]
+            return is_visible, [[coord_aux]]
     if wireframe.number_points == 2:
         p1 = wireframe.transformed_coordinates[0]
         p2 = wireframe.transformed_coordinates[1]
@@ -233,7 +235,7 @@ def clip(wireframe, method=None):
             is_visible, new_p1, new_p2 = liang_barsky(p1, p2)
         if method == "cohen-sutherland":
             is_visible, new_p1, new_p2 = cohen_sutherland(p1, p2)
-        return is_visible, [new_p1, new_p2]
+        return is_visible, [[new_p1, new_p2]]
 
-    # coordinates = weiler_atherton(wireframe.transformed_coordinates)
-    return True, wireframe.transformed_coordinates
+    coordinates = weiler_atherton(wireframe.transformed_coordinates)
+    return True, coordinates
