@@ -1,4 +1,4 @@
-mtllib clipping_point_example.mtl
+mtllib clipping_points_example.mtl
 o Point_2
 usemtl Point_2_mtl
 v 0.0 180.0 0.0
@@ -34,4 +34,20 @@ f -1
 o Point_8
 usemtl Point_8_mtl
 v 300.0 -180.0 0.0
+f -1
+o Point_9
+usemtl Point_9_mtl
+v 330.0 0.0 0.0
+f -1
+o Point_10
+usemtl Point_10_mtl
+v -330.0 0.0 0.0
+f -1
+o Point_12
+usemtl Point_12_mtl
+v 0.0 200.0 0.0
+f -1
+o Point_13
+usemtl Point_13_mtl
+v 0.0 -200.0 0.0
 f -1
