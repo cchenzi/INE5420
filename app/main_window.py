@@ -287,6 +287,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_canvas(self):
         self.displayFrame.pixmap().fill(QtGui.QColor("white"))
         self.displayFrame.update()
+        self.draw_native_objects()
 
     def load_obj_file(self):
         file_name = QtWidgets.QFileDialog.getOpenFileName(
@@ -308,6 +309,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.draw_wireframe(wireframe)
             self.listWidget.insertItem(self.wireframe_count, wireframe.name)
             self.wireframe_count += 1
+        self.draw_native_objects()
         self.console_print("Obj loaded")
 
     def save_obj_file(self):
@@ -485,10 +487,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.prepare_normalization_matrix()
         height = self.window_coordinates.y_max - self.window_coordinates.y_min
         width = self.window_coordinates.x_max - self.window_coordinates.x_min
-        self.draw_native_objects()
         for wireframe in self.display_file:
             wireframe.normalization_values = self.window_coordinates
             wireframe.window_width = width
             wireframe.window_height = height
             wireframe.window_transformations = self.window_transformations_matrix
             self.draw_wireframe(wireframe)
+        self.draw_native_objects()
