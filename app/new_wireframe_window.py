@@ -110,6 +110,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                 wireframe.filled = True
             self.display_file.append(wireframe)
             self.partnerDialog.draw_wireframe(wireframe)
+            self.partnerDialog.draw_native_objects()
             # self.partnerDialog.redraw_wireframes()
             self.partnerDialog.listWidget.insertItem(wireframe_id, wireframe.name)
             self.partnerDialog.wireframe_count += 1
