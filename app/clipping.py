@@ -142,7 +142,18 @@ def w_a_get_window_index(window_vertices, point, code):
     return window_vertices
 
 
+def is_point_outside_window(points):
+    return np.any((points < -1) | (points > 1))
+
+
 def weiler_atherton(object_coordinates):
+
+    # Check if there's any point inside the window
+    all_outside = np.all(
+        [is_point_outside_window(np.array(c)) for c in object_coordinates]
+    )
+    if all_outside:
+        return False, [None]
 
     # 0 = original
     # 1 = enter
@@ -213,14 +224,14 @@ def weiler_atherton(object_coordinates):
         coordinates = [object_coordinates]
 
     print(f"Coordinates after weiler_atherton={coordinates}")
-    return coordinates
+    return True, coordinates
 
 
 def clip(wireframe, method=None):
     # Apply point clipping
     if wireframe.number_points == 1:
         coord_aux = np.array(wireframe.transformed_coordinates[0])
-        if np.any((coord_aux < -1) | (coord_aux > 1)):
+        if is_point_outside_window(coord_aux):
             print(f"Coords {coord_aux} not visible!")
             is_visible = False
             return is_visible, [None]
@@ -237,5 +248,5 @@ def clip(wireframe, method=None):
             is_visible, new_p1, new_p2 = cohen_sutherland(p1, p2)
         return is_visible, [[new_p1, new_p2]]
 
-    coordinates = weiler_atherton(wireframe.transformed_coordinates)
-    return True, coordinates
+    is_visible, coordinates = weiler_atherton(wireframe.transformed_coordinates)
+    return is_visible, coordinates
