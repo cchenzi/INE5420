@@ -16,6 +16,7 @@ from app.config import (
 )
 
 from app.obj_handler import ObjLoader, ObjWriter
+from app.wireframe import Wireframe, BezierCurve
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -364,7 +365,10 @@ class MainWindow(QtWidgets.QMainWindow):
         if is_visible:
             # When clipping, it might return multiple objects
             for inside_coordinates in coordinates:
-                for index in range(len(inside_coordinates)):
+                range_to_draw = len(inside_coordinates)
+                if isinstance(wireframe, BezierCurve):
+                    range_to_draw -= 1
+                for index in range(range_to_draw):
                     x1, y1 = inside_coordinates[index]
                     xvp1, yvp1 = transform_coordinates(
                         x1,
@@ -405,6 +409,16 @@ class MainWindow(QtWidgets.QMainWindow):
             x1, y1 = window_rectangle[index]
             x2, y2 = window_rectangle[(index + 1) % len(window_rectangle)]
             self.draw_line(x1, y1, x2, y2, QtCore.Qt.red)
+
+        # curve_example = [(-50, 0), (100, -50), (150, 120), (300, 170)]
+        # bezier_example = BezierCurve(
+        #     curve_example,
+        #     666,
+        #     QtCore.Qt.black,
+        #     self.window_coordinates,
+        #     self.window_transformations_matrix,
+        # )
+        # self.display_file.append(bezier_example)
 
     def set_navigation_default_paramaters(self):
         self.console_print("Navigation parameters reseted!")

@@ -89,6 +89,32 @@ def build_reflection_matrix(over):
     return matrix
 
 
+def bezier_blending_functions(t):
+    """
+    Givin Bezier matrix as:
+        [-1  3 -3  1]
+        [ 3 -6  3  0]
+        [-3  3  0  0]
+        [ 1  0  0  0],
+    and vector T as:
+        [t³  t²  t 1],
+    return Bézier blending function as
+        [(1 - t)³  ]
+        [3t(1 - t)²]
+        [3t²(1 - t)]
+        [t3        ]
+    """
+    return np.array(
+        [(1 - t) ** 3, 3 * t * ((1 - t) ** 2), 3 * (t ** 2) * (1 - t), t ** 3]
+    )
+
+
+def calculate_bezier_points(points, t):
+
+    blending_functions = bezier_blending_functions(t)
+    return np.dot(blending_functions, points)
+
+
 transformations_functions_dict = {
     "rf": build_reflection_matrix,
     "rt": build_rotation_matrix,
