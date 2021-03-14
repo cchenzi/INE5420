@@ -9,6 +9,7 @@ from app.math_functions import (
     calculate_object_center,
     multiply_coordinates_by_transformations,
     normalize_point,
+    calculate_bezier_points,
 )
 
 
@@ -123,3 +124,28 @@ class Wireframe:
         obj_list = [obj + "\n" for obj in obj_list]
         mtl_list = [mtl + "\n" for mtl in mtl_list]
         return (obj_list, mtl_list)
+
+
+class BezierCurve(Wireframe):
+    def __init__(
+        self, base_points, index, color, normalization_values, window_transformations
+    ):
+        self.base_points = base_points
+        self.coordinates = self.build_bezier_coordinates()
+        Wireframe.__init__(
+            self,
+            self.coordinates,
+            index,
+            color,
+            normalization_values,
+            window_transformations,
+        )
+        self.name = f"Bezier_Curve_{index}"
+
+    def build_bezier_coordinates(self):
+        n = 10
+        bezier_points = [
+            calculate_bezier_points(self.base_points, t)
+            for t in np.linspace(0, 1, num=n)
+        ]
+        return [(x, y) for (x, y) in bezier_points]
