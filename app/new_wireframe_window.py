@@ -8,7 +8,7 @@ from app.utils import Shape
 class NewWireframeWindow(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
-        self.resize(421, 250)
+        self.resize(560, 360)
         self.partnerDialog = parent
         self.display_file = self.partnerDialog.display_file
         self.points = []
@@ -16,61 +16,77 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.setup()
 
     def setup(self):
+        self.newWireframeLabel = QtWidgets.QLabel(self)
+        self.newWireframeLabel.setGeometry(QtCore.QRect(10, 10, 151, 17))
+        self.newWireframeLabel.setObjectName("newWireframeLabel")
+
+        self.tabWidget = QtWidgets.QTabWidget(self)
+        self.tabWidget.setGeometry(QtCore.QRect(200, 30, 351, 261))
+        self.tabWidget.setObjectName("tabWidget")
 
         self.newPointsListWidget = QtWidgets.QListWidget(self)
-        self.newPointsListWidget.setGeometry(QtCore.QRect(140, 30, 261, 131))
+        self.newPointsListWidget.setGeometry(QtCore.QRect(10, 30, 171, 261))
         self.newPointsListWidget.setObjectName("newPointsListWidget")
+        self.deletePointPushButton = QtWidgets.QPushButton(self)
+        self.deletePointPushButton.setGeometry(QtCore.QRect(10, 300, 171, 25))
+        self.deletePointPushButton.setObjectName("deletePointPushButton")
+        self.colorPickerPushButton = QtWidgets.QPushButton(self)
+        self.colorPickerPushButton.setGeometry(QtCore.QRect(200, 300, 171, 25))
+        self.colorPickerPushButton.setObjectName("pickColorPushButton")
+        self.addNewPointPushButton = QtWidgets.QPushButton(self)
+        self.addNewPointPushButton.setGeometry(QtCore.QRect(380, 300, 171, 25))
+        self.addNewPointPushButton.setObjectName("addNewPointPushButton")
         self.drawPolygonPushButton = QtWidgets.QPushButton(self)
         self.drawPolygonPushButton.setEnabled(True)
-        self.drawPolygonPushButton.setGeometry(QtCore.QRect(280, 180, 120, 34))
+        self.drawPolygonPushButton.setGeometry(QtCore.QRect(380, 330, 171, 25))
         self.drawPolygonPushButton.setObjectName("drawPolygonPushButton")
-        self.fillCheckBox = QtWidgets.QCheckBox(self)
-        self.fillCheckBox.setGeometry(QtCore.QRect(280, 220, 120, 18))
+        
+
+        self.wireframeTab = QtWidgets.QWidget()
+        self.setPointsLabel = QtWidgets.QLabel(self.wireframeTab)
+        self.setPointsLabel.setGeometry(QtCore.QRect(10, 10, 81, 18))
+        self.setPointsLabel.setObjectName("setPointsLabel")
+        self.newXLabel = QtWidgets.QLabel(self.wireframeTab)
+        self.newXLabel.setGeometry(QtCore.QRect(30, 45, 21, 18))
+        self.newXLabel.setObjectName("newXLabel")
+        self.newYLabel = QtWidgets.QLabel(self.wireframeTab)
+        self.newYLabel.setGeometry(QtCore.QRect(30, 85, 16, 16))
+        self.newYLabel.setObjectName("newYLabel")
+        self.newXTextEdit = QtWidgets.QTextEdit(self.wireframeTab)
+        self.newXTextEdit.setGeometry(QtCore.QRect(50, 35, 51, 31))
+        self.newXTextEdit.setObjectName("newXTextEdit")
+        self.newYTextEdit = QtWidgets.QTextEdit(self.wireframeTab)
+        self.newYTextEdit.setGeometry(QtCore.QRect(50, 75, 51, 31))
+        self.newYTextEdit.setObjectName("newYTextEdit")
+        self.fillCheckBox = QtWidgets.QCheckBox(self.wireframeTab)
+        self.fillCheckBox.setGeometry(QtCore.QRect(30, 115, 120, 18))
         self.fillCheckBox.setObjectName("fillCheckBox")
         self.fillCheckBox.setEnabled(False)
-
-        self.colorPickerPushButton = QtWidgets.QPushButton(self)
-        self.colorPickerPushButton.setGeometry(QtCore.QRect(140, 180, 120, 34))
-        self.colorPickerPushButton.setObjectName("pickColorPushButton")
-
-        self.deletePointPushButton = QtWidgets.QPushButton(self)
-        self.deletePointPushButton.setGeometry(QtCore.QRect(50, 171, 51, 34))
-        self.deletePointPushButton.setObjectName("deletePointPushButton")
-
-        self.addNewPointPushButton = QtWidgets.QPushButton(self)
-        self.addNewPointPushButton.setGeometry(QtCore.QRect(50, 130, 51, 34))
-        self.addNewPointPushButton.setObjectName("addNewPointPushButton")
-        self.setPointsLabel = QtWidgets.QLabel(self)
-        self.setPointsLabel.setGeometry(QtCore.QRect(10, 30, 81, 18))
-        self.setPointsLabel.setObjectName("setPointsLabel")
-        self.newXLabel = QtWidgets.QLabel(self)
-        self.newXLabel.setGeometry(QtCore.QRect(30, 60, 21, 18))
-        self.newXLabel.setObjectName("newXLabel")
-        self.newYLabel = QtWidgets.QLabel(self)
-        self.newYLabel.setGeometry(QtCore.QRect(30, 100, 16, 16))
-        self.newYLabel.setObjectName("newYLabel")
-        self.newXTextEdit = QtWidgets.QTextEdit(self)
-        self.newXTextEdit.setGeometry(QtCore.QRect(50, 50, 51, 31))
-        self.newXTextEdit.setObjectName("newXTextEdit")
-        self.newYTextEdit = QtWidgets.QTextEdit(self)
-        self.newYTextEdit.setGeometry(QtCore.QRect(50, 90, 51, 31))
-        self.newYTextEdit.setObjectName("newYTextEdit")
+        self.tabWidget.addTab(self.wireframeTab, "")
 
         self.retranslateUi()
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
         self.set_buttons_actions()
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
+        self.newWireframeLabel.setText(
+            _translate("Form", "List of Points")
+        )
         self.setWindowTitle(_translate("Form", "New Wireframe"))
         self.drawPolygonPushButton.setText(_translate("Form", "Draw"))
-        self.addNewPointPushButton.setText(_translate("Form", "Add "))
-        self.deletePointPushButton.setText(_translate("Form", "Delete"))
+        self.addNewPointPushButton.setText(_translate("Form", "Add Point"))
+        self.deletePointPushButton.setText(_translate("Form", "Delete Point"))
         self.colorPickerPushButton.setText(_translate("Form", "Pick Color"))
         self.setPointsLabel.setText(_translate("Form", "Set points:"))
         self.newXLabel.setText(_translate("Form", "X:"))
         self.newYLabel.setText(_translate("Form", "Y:"))
         self.fillCheckBox.setText(_translate("Form", "Fill Polygon"))
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.wireframeTab),
+            _translate("Form", "Wireframe"),
+        )
 
     def new_window(self):
         self.points = []
@@ -116,6 +132,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
             self.partnerDialog.wireframe_count += 1
             self.newPointsListWidget.clear()
             self.partnerDialog.console_print(f"New wireframe added={wireframe.name}")
+        self.fillCheckBox.setChecked(False)
+        self.fillCheckBox.setEnabled(False)
         self.close()
 
     def delete_active_point(self):
