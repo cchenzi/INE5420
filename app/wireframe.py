@@ -128,7 +128,13 @@ class Wireframe:
 
 class BezierCurve(Wireframe):
     def __init__(
-        self, base_points, index, color, normalization_values, window_transformations
+        self,
+        base_points,
+        index,
+        color,
+        normalization_values,
+        window_transformations,
+        accuracy,
     ):
         self.base_points = base_points
         self.coordinates = self.build_bezier_coordinates()
