@@ -150,8 +150,21 @@ class BezierCurve(Wireframe):
         self.name = f"Bezier_Curve_{index}"
 
     def build_bezier_coordinates(self):
-        bezier_points = [
-            calculate_bezier_points(self.base_points, t)
-            for t in np.linspace(0, 1, num=self.accuracy)
-        ]
-        return [(x, y) for (x, y) in bezier_points]
+        bezier_points = []
+        minimum_points = 4
+        # Bezier Curves needs, at minimum, 4 points.
+        # So, create chunks of size 4 and calculate
+        # the bezier points to each of them.
+        for i in range(0, len(self.base_points), minimum_points - 1):
+            points = self.base_points[i : i + minimum_points]
+            if len(points) != minimum_points:
+                break
+            else:
+                bezier_points.append(
+                    [
+                        calculate_bezier_points(points, t)
+                        for t in np.linspace(0, 1, num=self.accuracy)
+                    ]
+                )
+        flattened_bezier = [item for sublist in bezier_points for item in sublist]
+        return [(x, y) for (x, y) in flattened_bezier]
