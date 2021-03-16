@@ -367,6 +367,7 @@ class MainWindow(QtWidgets.QMainWindow):
             for inside_coordinates in coordinates:
                 range_to_draw = len(inside_coordinates)
                 if isinstance(wireframe, BezierCurve):
+                    print("olha a curva!")
                     range_to_draw -= 1
                 for index in range(range_to_draw):
                     x1, y1 = inside_coordinates[index]

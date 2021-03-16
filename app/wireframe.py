@@ -134,9 +134,10 @@ class BezierCurve(Wireframe):
         color,
         normalization_values,
         window_transformations,
-        accuracy,
+        accuracy=10,
     ):
         self.base_points = base_points
+        self.accuracy = accuracy
         self.coordinates = self.build_bezier_coordinates()
         Wireframe.__init__(
             self,
@@ -149,9 +150,8 @@ class BezierCurve(Wireframe):
         self.name = f"Bezier_Curve_{index}"
 
     def build_bezier_coordinates(self):
-        n = 10
         bezier_points = [
             calculate_bezier_points(self.base_points, t)
-            for t in np.linspace(0, 1, num=n)
+            for t in np.linspace(0, 1, num=self.accuracy)
         ]
         return [(x, y) for (x, y) in bezier_points]
