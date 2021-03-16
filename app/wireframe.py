@@ -162,6 +162,10 @@ class BezierCurve(Wireframe):
             else:
                 bezier_points.append(
                     [
+                        # Calculate bezier points, using the blending functions,
+                        # for each point. The number of points are specified
+                        # by the accuracy. This will build the curve like
+                        #  a polygon with (acc - 1) polygons
                         calculate_bezier_points(points, t)
                         for t in np.linspace(0, 1, num=self.accuracy)
                     ]
