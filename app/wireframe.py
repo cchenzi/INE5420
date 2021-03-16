@@ -134,7 +134,7 @@ class BezierCurve(Wireframe):
         color,
         normalization_values,
         window_transformations,
-        accuracy=10,
+        accuracy=20,
     ):
         self.base_points = base_points
         self.accuracy = int(accuracy)
