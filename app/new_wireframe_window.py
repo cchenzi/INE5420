@@ -85,7 +85,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.accuracyBezierTextEdit = QtWidgets.QTextEdit(self.bezierTab)
         self.accuracyBezierTextEdit.setGeometry(QtCore.QRect(100, 138, 71, 31))
         self.accuracyBezierTextEdit.setObjectName("accuracyTextEdit")
-        self.accuracyBezierTextEdit.setText("10.0")
+        self.accuracyBezierTextEdit.setText("20.0")
         self.tabWidget.addTab(self.bezierTab, "")
 
         self.retranslateUi()
@@ -175,9 +175,9 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                     accuracy = float(self.accuracyBezierTextEdit.toPlainText())
                 except ValueError:
                     self.partnerDialog.console_print(
-                        "Invalid or empty value on accuracy, using default value (10)"
+                        "Invalid or empty value on accuracy, using default value (20)"
                     )
-                    accuracy = 10
+                    accuracy = 20
                 wireframe = BezierCurve(
                     self.points,
                     wireframe_id,
