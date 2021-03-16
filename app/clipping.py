@@ -146,6 +146,7 @@ def w_a_get_window_index(window_vertices, point, code):
 def is_point_outside_window(points):
     return np.any((points < -1) | (points > 1))
 
+
 def is_point_inside_window(points):
     return not is_point_outside_window(np.array(points))
 
@@ -230,8 +231,10 @@ def weiler_atherton(object_coordinates):
     print(f"Coordinates after weiler_atherton={coordinates}")
     return True, coordinates
 
+
 def clip_points(point):
     return np.clip(np.array(point), -1, 1)
+
 
 def clip(wireframe, method=None):
     # Apply point clipping
@@ -245,6 +248,8 @@ def clip(wireframe, method=None):
             print(f"Coords {coord_aux} visible!")
             is_visible = True
             return is_visible, [[coord_aux]]
+
+    # Apply line clipping
     if wireframe.number_points == 2:
         p1 = wireframe.transformed_coordinates[0]
         p2 = wireframe.transformed_coordinates[1]
@@ -254,9 +259,11 @@ def clip(wireframe, method=None):
             is_visible, new_p1, new_p2 = cohen_sutherland(p1, p2)
         return is_visible, [[new_p1, new_p2]]
 
+    # Apply point clipping to curve
     if isinstance(wireframe, BezierCurve):
         coordinates = list(map(clip_points, wireframe.transformed_coordinates))
-        print("aqui as coordenadas", coordinates)
         return True, [coordinates]
+
+    # Apply polygon clipping
     is_visible, coordinates = weiler_atherton(wireframe.transformed_coordinates)
     return is_visible, coordinates

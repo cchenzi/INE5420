@@ -137,7 +137,7 @@ class BezierCurve(Wireframe):
         accuracy=10,
     ):
         self.base_points = base_points
-        self.accuracy = accuracy
+        self.accuracy = int(accuracy)
         self.coordinates = self.build_bezier_coordinates()
         Wireframe.__init__(
             self,
