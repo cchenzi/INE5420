@@ -67,30 +67,30 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.setPointsBezierLabel = QtWidgets.QLabel(self.bezierTab)
         self.setPointsBezierLabel.setGeometry(QtCore.QRect(10, 10, 81, 18))
         self.setPointsBezierLabel.setObjectName("setPointsBezierLabel")
-        self.newXBezierLabel = QtWidgets.QLabel(self.bezierTab)
-        self.newXBezierLabel.setGeometry(QtCore.QRect(30, 45, 21, 18))
-        self.newXBezierLabel.setObjectName("newXBezierLabel")
-        self.newYBezierLabel = QtWidgets.QLabel(self.bezierTab)
-        self.newYBezierLabel.setGeometry(QtCore.QRect(30, 85, 16, 16))
-        self.newYBezierLabel.setObjectName("newYBezierLabel")
-        self.newXBezierTextEdit = QtWidgets.QTextEdit(self.bezierTab)
-        self.newXBezierTextEdit.setGeometry(QtCore.QRect(50, 35, 51, 31))
-        self.newXBezierTextEdit.setObjectName("newXBezierTextEdit")
-        self.newYBezierTextEdit = QtWidgets.QTextEdit(self.bezierTab)
-        self.newYBezierTextEdit.setGeometry(QtCore.QRect(50, 75, 51, 31))
-        self.newYBezierTextEdit.setObjectName("newYBezierTextEdit")
+        self.newXCurveLabel = QtWidgets.QLabel(self.bezierTab)
+        self.newXCurveLabel.setGeometry(QtCore.QRect(30, 45, 21, 18))
+        self.newXCurveLabel.setObjectName("newXCurveLabel")
+        self.newYCurveLabel = QtWidgets.QLabel(self.bezierTab)
+        self.newYCurveLabel.setGeometry(QtCore.QRect(30, 85, 16, 16))
+        self.newYCurveLabel.setObjectName("newYCurveLabel")
+        self.newXCurveTextEdit = QtWidgets.QTextEdit(self.bezierTab)
+        self.newXCurveTextEdit.setGeometry(QtCore.QRect(50, 35, 51, 31))
+        self.newXCurveTextEdit.setObjectName("newXCurveTextEdit")
+        self.newYCurveTextEdit = QtWidgets.QTextEdit(self.bezierTab)
+        self.newYCurveTextEdit.setGeometry(QtCore.QRect(50, 75, 51, 31))
+        self.newYCurveTextEdit.setObjectName("newYCurveTextEdit")
         self.curveComboBox = QtWidgets.QComboBox(self.bezierTab)
         self.curveComboBox.setGeometry(QtCore.QRect(30, 120, 142, 25))
         self.curveComboBox.setObjectName("curveComboBox")
         self.curveComboBox.addItem("Bezier")
         self.curveComboBox.addItem("B-Spline")
-        self.accuracyBezierLabel = QtWidgets.QLabel(self.bezierTab)
-        self.accuracyBezierLabel.setGeometry(QtCore.QRect(30, 165, 81, 16))
-        self.accuracyBezierLabel.setObjectName("accuracyLabel")
-        self.accuracyBezierTextEdit = QtWidgets.QTextEdit(self.bezierTab)
-        self.accuracyBezierTextEdit.setGeometry(QtCore.QRect(100, 158, 71, 31))
-        self.accuracyBezierTextEdit.setObjectName("accuracyTextEdit")
-        self.accuracyBezierTextEdit.setText("20.0")
+        self.accuracyCurveLabel = QtWidgets.QLabel(self.bezierTab)
+        self.accuracyCurveLabel.setGeometry(QtCore.QRect(30, 165, 81, 16))
+        self.accuracyCurveLabel.setObjectName("accuracyLabel")
+        self.accuracyCurveTextEdit = QtWidgets.QTextEdit(self.bezierTab)
+        self.accuracyCurveTextEdit.setGeometry(QtCore.QRect(100, 158, 71, 31))
+        self.accuracyCurveTextEdit.setObjectName("accuracyTextEdit")
+        self.accuracyCurveTextEdit.setText("20.0")
         self.tabWidget.addTab(self.bezierTab, "")
 
         self.retranslateUi()
@@ -110,10 +110,10 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.setPointsBezierLabel.setText(_translate("Form", "Set points:"))
         self.newXWireframeLabel.setText(_translate("Form", "X:"))
         self.newYWireframeLabel.setText(_translate("Form", "Y:"))
-        self.newXBezierLabel.setText(_translate("Form", "X:"))
-        self.newYBezierLabel.setText(_translate("Form", "Y:"))
+        self.newXCurveLabel.setText(_translate("Form", "X:"))
+        self.newYCurveLabel.setText(_translate("Form", "Y:"))
         self.fillCheckBox.setText(_translate("Form", "Fill Polygon"))
-        self.accuracyBezierLabel.setText(_translate("Form", "Accuracy:"))
+        self.accuracyCurveLabel.setText(_translate("Form", "Accuracy:"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.wireframeTab),
             _translate("Form", "Wireframe"),
@@ -135,8 +135,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
             xTextEdit = self.newXWireframeTextEdit
             yTextEdit = self.newYWireframeTextEdit
         if active_tab == 1:
-            xTextEdit = self.newXBezierTextEdit
-            yTextEdit = self.newYBezierTextEdit
+            xTextEdit = self.newXCurveTextEdit
+            yTextEdit = self.newYCurveTextEdit
         try:
             x = float(xTextEdit.toPlainText())
             y = float(yTextEdit.toPlainText())
@@ -174,14 +174,9 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
             if active_tab == 1:
                 # Curve tab
-                if len(self.points) % 3 != 1 or len(self.points) < 3:
-                    self.partnerDialog.console_print(
-                        "Invalid number of points to draw curve"
-                    )
-                    return
                 accuracy = None
                 try:
-                    accuracy = float(self.accuracyBezierTextEdit.toPlainText())
+                    accuracy = float(self.accuracyCurveTextEdit.toPlainText())
                 except ValueError:
                     self.partnerDialog.console_print(
                         "Invalid or empty value on accuracy, using default value"
@@ -197,11 +192,26 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
                 if self.curveComboBox.currentIndex() == 0:
                     # Bezier
+
+                    if len(self.points) % 3 != 1 or len(self.points) < 3:
+                        self.partnerDialog.console_print(
+                            "Invalid number of points to draw bezier curve"
+                        )
+                        return
+
                     accuracy = accuracy if accuracy else 20.0
                     args.append(accuracy)
                     wireframe = BezierCurve(*args)
+
                 if self.curveComboBox.currentIndex() == 1:
                     # B-Spline
+
+                    if len(self.points) < 4:
+                        self.partnerDialog.console_print(
+                            "Invalid number of points to draw B-Spline curve"
+                        )
+                        return
+
                     accuracy = accuracy if accuracy else 0.1
                     args.append(accuracy)
                     wireframe = BSplineCurve(*args)
@@ -256,6 +266,6 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
     def set_default_curve_accuracy(self):
         if self.curveComboBox.currentIndex() == 0:
-            self.accuracyBezierTextEdit.setText("20.0")
+            self.accuracyCurveTextEdit.setText("20.0")
         if self.curveComboBox.currentIndex() == 1:
-            self.accuracyBezierTextEdit.setText("0.1")
+            self.accuracyCurveTextEdit.setText("0.1")
