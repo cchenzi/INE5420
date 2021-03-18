@@ -8,15 +8,14 @@ Este repositório contém o trabalho prático desenvolvido para a primeira parte
 
 Os detalhes sobre as implementações passadas estão no arquivo OLD_README.md. Decidimos deixar neste arquivo apenas as novidades desenvolvidas.
 
-## Versão 1.5 - Implemente Curvas em 2D usando Blending Functions
+## Versão 1.6: B-Splines utilizando Forward Differences
 
-* Nesta entrega, decidimos implementar a Curva de Bézier. Para isso:
-    - adicionamos uma nova classe `BezierCurve`, que herda de `Wireframe`. Ela possui duas alterações básicas: recebe um conjunto de `base points`, que necessariamente respeita as regras de criação (tamanho 4, 7, 10...), e um método novo que cria as coordenadas baseadas nos `base points` e na `accuracy` definida. Sendo assim, é possível inserir diversas curvas em apenas um objeto `BezierCurve`, como solicitado, com continuidade G(0).
-    - foi alterada a interface de criação de `wireframe`: agora, há uma nova aba destinada para a inserção de Curva de Bézier (botão `add`).
-    - definimos as `blending functions` de Bézier em `app/math_functions.py`, assim como o método auxiliar para o cálculo dos pontos.
-    - aplicamos o `clipping` de pontos, na função `clip` (`app/clipping.py`).
-
-* Como sugestão de teste, criamos uma figura de um coração, composta por duas curvas de Bézier. Os pontos base, caso queiram visualizar, são (0.0, 100.0), (120.0, 200.0), (240.0, 100.0), (0.0, -100.0), para o lado direito, e (0.0, 100.0), (-120.0, 200.0), (-240.0, 100.0), (0.0, -100.0) para o esquerdo. É interessante notar que o `clipping` funciona normalmente caso alguma das extremidades seja levada para fora do retângulo, no sentido de aparecer a "volta" do objeto em tela.
+* Impementamos B-Splines utilizando Foward Differences. Para isso, nós criamos uma classe `Curve`, que herda de `Wireframe`. Após essa mudança, tanto `BezierCurve` como `BSplineCurve` herdam de `Curve`. Para `BSplineCurve`, existem algumas funções importantes de nota:
+    - `build_curve_coordinates`: as coordenadas são criadas na própria função . Nela, é invocada a função de gerar as diferenças iniciais para cada conjunto de 4 pontos de controle e realiza as iterações necessárias para o algoritmo.
+    - Em `app/math_functions.py`, estão as funções auxiliares , que retorna a matriz de B-Spline; `calculate_initial_differences`, que calcula o vetor de diferenças iniciais; `calculate_bspline_parameters`, que agrega as duas funções anteriores.
+    - o `clipping` segue a mesma orientação dea entrega anterior.
+    
+* Mudamos a interface de criação de curvas para selecionar qual o modelo desejado, `Bezier` ou `B-Spline`. Conforme seleção, a acurácia (delta, no caso da `B-Spline`) padrão é alterada (20 para a primeira, 0.1 para a segunda). Quando inseridos no `display file`, cada curva específica tem seu nome especificado, também.
 
 ## Execução
 
