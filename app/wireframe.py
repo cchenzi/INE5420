@@ -10,6 +10,7 @@ from app.math_functions import (
     multiply_coordinates_by_transformations,
     normalize_point,
     calculate_bezier_points,
+    calculate_bspline_parameters,
 )
 
 
@@ -126,7 +127,37 @@ class Wireframe:
         return (obj_list, mtl_list)
 
 
-class BezierCurve(Wireframe):
+class Curve(Wireframe):
+    def __init__(
+        self,
+        base_points,
+        index,
+        color,
+        normalization_values,
+        window_transformations,
+        accuracy,
+    ):
+        self.base_points = base_points
+        self.accuracy = accuracy
+        self.coordinates = self.build_curve_coordinates()
+        Wireframe.__init__(
+            self,
+            self.coordinates,
+            index,
+            color,
+            normalization_values,
+            window_transformations,
+        )
+        self.name = self.build_curve_name(index)
+
+    def build_curve_name(self, index):
+        return ""
+
+    def build_curve_coordinates(self):
+        return []
+
+
+class BezierCurve(Curve):
     def __init__(
         self,
         base_points,
@@ -136,20 +167,20 @@ class BezierCurve(Wireframe):
         window_transformations,
         accuracy=20,
     ):
-        self.base_points = base_points
-        self.accuracy = int(accuracy)
-        self.coordinates = self.build_bezier_coordinates()
-        Wireframe.__init__(
+        Curve.__init__(
             self,
-            self.coordinates,
+            base_points,
             index,
             color,
             normalization_values,
             window_transformations,
+            accuracy,
         )
-        self.name = f"Bezier_Curve_{index}"
 
-    def build_bezier_coordinates(self):
+    def build_curve_name(self, index):
+        return f"Bezier_Curve_{index}"
+
+    def build_curve_coordinates(self):
         bezier_points = []
         minimum_points = 4
         # Bezier Curves needs, at minimum, 4 points.
@@ -167,8 +198,66 @@ class BezierCurve(Wireframe):
                         # by the accuracy. This will build the curve like
                         #  a polygon with (acc - 1) polygons
                         calculate_bezier_points(points, t)
-                        for t in np.linspace(0, 1, num=self.accuracy)
+                        for t in np.linspace(0, 1, num=int(self.accuracy))
                     ]
                 )
         flattened_bezier = [item for sublist in bezier_points for item in sublist]
         return [(x, y) for (x, y) in flattened_bezier]
+
+
+class BSplineCurve(Curve):
+    def __init__(
+        self,
+        base_points,
+        index,
+        color,
+        normalization_values,
+        window_transformations,
+        accuracy=0.001,
+    ):
+        Curve.__init__(
+            self,
+            base_points,
+            index,
+            color,
+            normalization_values,
+            window_transformations,
+            accuracy,
+        )
+
+    def build_curve_name(self, index):
+        return f"B-Spline_Curve_{index}"
+
+    def build_curve_coordinates(self):
+        # P0...Pm control points, where m >= 3
+        # generate m - 2 cubic segments
+        spline_points = []
+        iterations = int(1 / self.accuracy)
+        number_points = len(self.base_points)
+        minimum_points = 4
+
+        # Create a rolling window with size 4
+        for i in range(0, number_points):
+            upper_bound = i + minimum_points
+
+            # If out of boundaries, break
+            if upper_bound > number_points:
+                break
+            points = self.base_points[i:upper_bound]
+
+            # Calculate parameters for each 4 control points
+            delta_x, delta_y = calculate_bspline_parameters(points, self.accuracy)
+            x = delta_x[0]
+            y = delta_y[0]
+            spline_points.append((x, y))
+            for _ in range(0, iterations):
+                x += delta_x[1]
+                delta_x[1] += delta_x[2]
+                delta_x[2] += delta_x[3]
+
+                y += delta_y[1]
+                delta_y[1] += delta_y[2]
+                delta_y[2] += delta_y[3]
+
+                spline_points.append((x, y))
+        return spline_points

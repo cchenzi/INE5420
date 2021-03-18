@@ -16,7 +16,7 @@ from app.config import (
 )
 
 from app.obj_handler import ObjLoader, ObjWriter
-from app.wireframe import Wireframe, BezierCurve
+from app.wireframe import Wireframe, Curve
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -366,7 +366,7 @@ class MainWindow(QtWidgets.QMainWindow):
             # When clipping, it might return multiple objects
             for inside_coordinates in coordinates:
                 range_to_draw = len(inside_coordinates)
-                if isinstance(wireframe, BezierCurve):
+                if isinstance(wireframe, Curve):
                     range_to_draw -= 1
                 for index in range(range_to_draw):
                     x1, y1 = inside_coordinates[index]

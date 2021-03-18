@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
-from app.wireframe import Wireframe, BezierCurve
+from app.wireframe import Wireframe, BezierCurve, BSplineCurve
 from app.utils import Shape
 
 
@@ -178,7 +178,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                         "Invalid or empty value on accuracy, using default value (20)"
                     )
                     accuracy = 20
-                wireframe = BezierCurve(
+                wireframe = BSplineCurve(
                     self.points,
                     wireframe_id,
                     self.color,

@@ -9,6 +9,7 @@ from app.math_functions import (
     normalize_point,
     bezier_blending_functions,
     calculate_bezier_points,
+    calculate_bspline_parameters,
 )
 from app.config import (
     X_MAX_TRANSLATED,
@@ -88,3 +89,13 @@ def test_point_normalization_over_boundaries():
     expected_result = (1, -1)
     normalized = normalize_point(point)
     assert normalized == expected_result
+
+
+def test_calculate_bspline_parameters():
+    control_points = [(1, 1), (2, 2), (3, 2), (4, 1)]
+    delta = 0.1
+    x, y = calculate_bspline_parameters(control_points, delta)
+    expected_x = [2, 0.1, 0, 0]
+    expected_y = [1.833, 0.045, -0.01, 0]
+    assert_allclose(x, expected_x, rtol=1e-3, atol=1e-3)
+    assert_allclose(y, expected_y, rtol=1e-3)

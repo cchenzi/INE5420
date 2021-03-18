@@ -1,6 +1,6 @@
 import numpy as np
 from copy import deepcopy
-from app.wireframe import BezierCurve
+from app.wireframe import Curve
 
 
 def get_cohen_sutherland_point_code(
@@ -260,7 +260,7 @@ def clip(wireframe, method=None):
         return is_visible, [[new_p1, new_p2]]
 
     # Apply point clipping to curve
-    if isinstance(wireframe, BezierCurve):
+    if isinstance(wireframe, Curve):
         coordinates = list(map(clip_points, wireframe.transformed_coordinates))
         return True, [coordinates]
 

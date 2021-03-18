@@ -91,7 +91,7 @@ def build_reflection_matrix(over):
 
 def bezier_blending_functions(t):
     """
-    Givin Bezier matrix as:
+    Given Bezier matrix as:
         [-1  3 -3  1]
         [ 3 -6  3  0]
         [-3  3  0  0]
@@ -113,6 +113,62 @@ def calculate_bezier_points(points, t):
 
     blending_functions = bezier_blending_functions(t)
     return np.dot(blending_functions, points)
+
+
+def build_bspline_matrix():
+    """
+    Build B-Spline matrix as
+        [ -1/6  1/2  -1/2  1/6]
+        [  1/2   -1   1/2    0]
+        [ -1/2    0   1/2    0]
+        [  1/6  2/3   1/6    0]
+    """
+    return np.array(
+        [
+            [-1 / 6, 1 / 2, -1 / 2, 1 / 6],
+            [1 / 2, -1, 1 / 2, 0],
+            [-1 / 2, 0, 1 / 2, 0],
+            [1 / 6, 2 / 3, 1 / 6, 0],
+        ]
+    )
+
+
+def calculate_initial_differences(delta, a, b, c, d):
+    """
+    Calculate initial differences vector as
+        [ d              ]
+        [ aδ³  + bδ² + cδ]
+        [ 6aδ³ + 2bδ²    ]
+        [ 6aδ³           ]
+    """
+    delta_2 = delta ** 2
+    delta_3 = delta ** 3
+    return [
+        d,
+        a * delta_3 + b * delta_2 + c * delta,
+        6 * a * delta_3 + 2 * b * delta_2,
+        6 * a * delta_3,
+    ]
+
+
+def calculate_bspline_parameters(points, delta):
+    MBS = build_bspline_matrix()
+
+    GBS_x = []
+    GBS_y = []
+    for (x, y) in points:
+        GBS_x.append(x)
+        GBS_y.append(y)
+
+    GBS_x = np.array([GBS_x]).T
+    coeff_x = MBS.dot(GBS_x).T[0]
+    init_diff_x = calculate_initial_differences(delta, *coeff_x)
+
+    GBS_y = np.array([GBS_y]).T
+    coeff_y = MBS.dot(GBS_y).T[0]
+    init_diff_y = calculate_initial_differences(delta, *coeff_y)
+
+    return init_diff_x, init_diff_y
 
 
 transformations_functions_dict = {
