@@ -20,14 +20,11 @@ class Wireframe:
     ):
         self.coordinates = coordinates
         self.number_points = len(self.coordinates)
-        self.homogeneous_coordinates = build_homogeneous_coordinates(self.coordinates)
         self.polygon_type = Shape(self.number_points).name
         self.name = f"{self.polygon_type}_{index}"
         self.color = color
-        self.transformations = []
         self.transformations_codes = []
         self.transformed_coordinates = []
-        self.normalized_coordinates = []
         self.normalization_values = normalization_values
         self.window_angle = 0
         self.window_x_shift_acc = 0
@@ -60,27 +57,39 @@ class Wireframe:
             if self.needs_translation(code):
                 if code in ["rt"]:
                     if len(params[1]) > 0:
-                        translate_x, translate_y = normalize_point(
+                        translate_x, translate_y, translate_z = normalize_point(
                             params[1], self.window_width / 2, self.window_height / 2
                         )
                     else:
-                        translate_x, translate_y, _ = calculate_object_center(coord_aux)
+                        (
+                            translate_x,
+                            translate_y,
+                            translate_z,
+                            _,
+                        ) = calculate_object_center(coord_aux)
                     params = [params[0]]
                 else:
-                    translate_x, translate_y, _ = calculate_object_center(coord_aux)
+                    print("aquiii", coord_aux)
+                    translate_x, translate_y, translate_z, _ = calculate_object_center(
+                        coord_aux
+                    )
                 t_aux.append(
-                    transformations_functions_dict["tr"](-translate_x, -translate_y)
+                    transformations_functions_dict["tr"](
+                        -translate_x, -translate_y, -translate_z
+                    )
                 )
                 t_aux.append(transformations_functions_dict[code](*params))
                 t_aux.append(
-                    transformations_functions_dict["tr"](translate_x, translate_y)
+                    transformations_functions_dict["tr"](
+                        translate_x, translate_y, translate_z
+                    )
                 )
             else:
                 if code == "tr":
-                    x_normalized, y_normalized = normalize_point(
+                    x_normalized, y_normalized, z_normalized = normalize_point(
                         params, self.window_width / 2, self.window_height / 2
                     )
-                    params = [x_normalized, y_normalized]
+                    params = [x_normalized, y_normalized, z_normalized]
                 t_aux.append(transformations_functions_dict[code](*params))
 
             composition_matrix = reduce(np.dot, t_aux)
@@ -202,7 +211,7 @@ class BezierCurve(Curve):
                     ]
                 )
         flattened_bezier = [item for sublist in bezier_points for item in sublist]
-        return [(x, y) for (x, y) in flattened_bezier]
+        return [(x, y, z) for (x, y, z) in flattened_bezier]
 
 
 class BSplineCurve(Curve):
@@ -249,7 +258,7 @@ class BSplineCurve(Curve):
             delta_x, delta_y = calculate_bspline_parameters(points, self.accuracy)
             x = delta_x[0]
             y = delta_y[0]
-            spline_points.append((x, y))
+            spline_points.append((x, y, 0))
             for _ in range(0, iterations):
                 x += delta_x[1]
                 delta_x[1] += delta_x[2]
@@ -259,5 +268,5 @@ class BSplineCurve(Curve):
                 delta_y[1] += delta_y[2]
                 delta_y[2] += delta_y[3]
 
-                spline_points.append((x, y))
+                spline_points.append((x, y, 0))
         return spline_points

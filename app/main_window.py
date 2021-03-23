@@ -348,10 +348,12 @@ class MainWindow(QtWidgets.QMainWindow):
             should_clip = False
 
         wireframe.transform_coordinates()
-        coordinates = [wireframe.transformed_coordinates]
-
+        # TODO = ADD PROJECTION
+        coordinates = [[(x, y) for (x, y, z) in wireframe.transformed_coordinates]]
         if should_clip:
-            is_visible, coordinates = clip(wireframe, method=self.line_clipping_method)
+            is_visible, coordinates = clip(
+                wireframe, coordinates[0], method=self.line_clipping_method
+            )
         else:
             is_visible = True
 

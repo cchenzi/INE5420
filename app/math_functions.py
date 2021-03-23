@@ -31,29 +31,33 @@ def y_viewport_transform(
     ) + 20
 
 
-def build_translation_matrix(Dx, Dy):
+def build_translation_matrix(Dx, Dy, Dz):
     """
     Build translation matrix as:
-        [1   0  0]
-        [0   1  0]
-        [Dx  Dy 1]
+        [1   0  0  0]
+        [0   1  0  0]
+        [0   0  1  0]
+        [Dx  Dy Dz 0]
     """
-    matrix = np.identity(3)
-    matrix[2][0] = Dx
-    matrix[2][1] = Dy
+    matrix = np.identity(4)
+    matrix[3][0] = Dx
+    matrix[3][1] = Dy
+    matrix[3][2] = Dz
     return matrix
 
 
-def build_scaling_matrix(Sx, Sy):
+def build_scaling_matrix(Sx, Sy, Sz):
     """
     Build scaling matrix as:
-        [Sx 0  0]
-        [0  Sy 0]
-        [0  0  1]
+        [Sx 0  0  0]
+        [0  Sy 0  0]
+        [0  0  Sz 0]
+        [0  0  0  1]
     """
-    matrix = np.identity(3)
+    matrix = np.identity(4)
     matrix[0][0] = Sx
     matrix[1][1] = Sy
+    matrix[2][2] = Sz
     return matrix
 
 
@@ -156,7 +160,7 @@ def calculate_bspline_parameters(points, delta):
 
     GBS_x = []
     GBS_y = []
-    for (x, y) in points:
+    for (x, y, _) in points:
         GBS_x.append(x)
         GBS_y.append(y)
 
@@ -196,23 +200,24 @@ def multiply_coordinates_by_transformations(coordinates, transformations):
 
 
 def normalize_point(point, height, width):
-    x, y = point
-    return (x / height, y / width)
+    x, y, z = point
+    return (x / height, y / width, z / height)
 
 
 def build_window_normalizations(
     window_x_shift, window_y_shift, window_width, window_height, window_angle
 ):
     translation_matrix = transformations_functions_dict["tr"](
-        window_x_shift, window_y_shift
+        window_x_shift, window_y_shift, 0
     )
-    rotation_matrix = transformations_functions_dict["rt"](window_angle)
+    # rotation_matrix = transformations_functions_dict["rt"](window_angle)
 
     scaling_matrix = transformations_functions_dict["sc"](
-        2 / window_width, 2 / window_height
+        2 / window_width, 2 / window_height, 2 / window_width
     )
 
-    composition = reduce(np.dot, [translation_matrix, rotation_matrix, scaling_matrix])
+    # composition = reduce(np.dot, [translation_matrix, rotation_matrix, scaling_matrix])
+    composition = reduce(np.dot, [translation_matrix, scaling_matrix])
 
     return composition
 

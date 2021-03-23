@@ -22,14 +22,18 @@ from app.config import (
 
 
 def test_translation_matrix():
-    matrix = build_translation_matrix(30, 30)
-    expected_matrix = np.array([[1, 0, 0], [0, 1, 0], [30, 30, 1]])
+    matrix = build_translation_matrix(30, 30, 0)
+    expected_matrix = np.array(
+        [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [30, 30, 0, 1]]
+    )
     assert_array_equal(matrix, expected_matrix)
 
 
 def test_scaling_matrix():
-    matrix = build_scaling_matrix(30, 30)
-    expected_matrix = np.array([[30, 0, 0], [0, 30, 0], [0, 0, 1]])
+    matrix = build_scaling_matrix(30, 30, 0)
+    expected_matrix = np.array(
+        [[30, 0, 0, 0], [0, 30, 0, 0], [0, 0, 0, 0], [0, 0, 0, 1]]
+    )
     assert_array_equal(matrix, expected_matrix)
 
 
