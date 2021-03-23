@@ -134,6 +134,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         if active_tab == 0:
             xTextEdit = self.newXWireframeTextEdit
             yTextEdit = self.newYWireframeTextEdit
+            # zTextEdit = self.newZWireframeTextEdit
         if active_tab == 1:
             xTextEdit = self.newXCurveTextEdit
             yTextEdit = self.newYCurveTextEdit
@@ -144,7 +145,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
             self.partnerDialog.console_print("Invalid or empty value on X or Y")
             return
         # self.partnerDialog.console_print(f"Points={(x, y)}")
-        self.points.append((x, y))
+        self.points.append((x, y, 0))
         self.partnerDialog.console_print(f"Points after append={self.points}")
         xTextEdit.clear()
         yTextEdit.clear()

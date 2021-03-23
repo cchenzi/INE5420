@@ -236,10 +236,10 @@ def clip_points(point):
     return np.clip(np.array(point), -1, 1)
 
 
-def clip(wireframe, method=None):
+def clip(wireframe, coordinates, method=None):
     # Apply point clipping
     if wireframe.number_points == 1:
-        coord_aux = np.array(wireframe.transformed_coordinates[0])
+        coord_aux = np.array(coordinates[0])
         if is_point_outside_window(coord_aux):
             print(f"Coords {coord_aux} not visible!")
             is_visible = False
@@ -251,8 +251,8 @@ def clip(wireframe, method=None):
 
     # Apply line clipping
     if wireframe.number_points == 2:
-        p1 = wireframe.transformed_coordinates[0]
-        p2 = wireframe.transformed_coordinates[1]
+        p1 = coordinates[0]
+        p2 = coordinates[1]
         if method == "liang-barsky":
             is_visible, new_p1, new_p2 = liang_barsky(p1, p2)
         if method == "cohen-sutherland":
@@ -261,9 +261,9 @@ def clip(wireframe, method=None):
 
     # Apply point clipping to curve
     if isinstance(wireframe, Curve):
-        coordinates = list(map(clip_points, wireframe.transformed_coordinates))
+        coordinates = list(map(clip_points, coordinates))
         return True, [coordinates]
 
     # Apply polygon clipping
-    is_visible, coordinates = weiler_atherton(wireframe.transformed_coordinates)
+    is_visible, coordinates = weiler_atherton(coordinates)
     return is_visible, coordinates

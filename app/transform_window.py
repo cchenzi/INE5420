@@ -194,7 +194,6 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.rotationComboBox.currentIndexChanged.connect(self.select_rotation)
 
     def transform(self):
-        self.wireframe.transform_coordinates()
         self.partnerDialog.redraw_wireframes()
         self.partnerDialog.console_print(f"Transformations applyed")
 
@@ -271,7 +270,8 @@ class TransformWindow(QtWidgets.QMainWindow):
         y_text = self.translationYTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 0
         y = float(y_text) if y_text != "" else 0
-        self.wireframe.transformations_codes.append(("tr", [x, y]))
+        z = float(0)
+        self.wireframe.transformations_codes.append(("tr", [x, y, z]))
         self.add_last_n_transformations_to_list(1)
 
     def show_translation(self, x, y):
@@ -283,7 +283,8 @@ class TransformWindow(QtWidgets.QMainWindow):
         y_text = self.scalingYTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 1
         y = float(y_text) if y_text != "" else 1
-        self.wireframe.transformations_codes.append(("sc", [x, y]))
+        z = float(0)
+        self.wireframe.transformations_codes.append(("sc", [x, y, z]))
         self.add_last_n_transformations_to_list(1)
 
     def show_scaling(self, x, y):

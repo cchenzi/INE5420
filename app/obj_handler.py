@@ -22,8 +22,8 @@ class ObjLoader:
     def vertice_handler(self, args):
         x = float(args[0])
         y = float(args[1])
-        # z = float(args[2])
-        vertex = (x, y)
+        z = float(args[2])
+        vertex = (x, y, z)
         self.vertices.append(vertex)
 
     def mtllib_handler(self, args):
