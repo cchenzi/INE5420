@@ -61,21 +61,44 @@ def build_scaling_matrix(Sx, Sy, Sz):
     return matrix
 
 
-def build_rotation_matrix(degree):
+def build_rotation_matrix(dX, dY, dZ):
     """
-    Build rotation matrix as:
-        [cos(O) -sin(O) 0]
-        [sin(O)  cos(O) 0]
-        [0       0      1]
+    Build rotation matrix as composition from:
+
+    Rx = [1  0       0       0]
+         [0  cos(dX) sen(dX) 0]
+         [0 -sen(dX) cos(dX) 0]
+         [0  0       0       1]
+
+    Ry = [cos(dY) 0 -sen(dY) 0]
+         [0       1 0        0]
+         [sen(dY) 0 cos(dY)  0]
+         [0       0 0        1]
+
+    Rz = [cos(dZ)  sen(dZ) 0 0]
+         [-sen(dZ) cos(dZ) 0 0]
+         [0        0       1 0]
+         [0        0       0 1]
     """
-    matrix = np.identity(3)
-    cos = np.cos(np.deg2rad(degree))
-    sin = np.sin(np.deg2rad(degree))
-    matrix[0][0] = cos
-    matrix[1][1] = cos
-    matrix[0][1] = -sin
-    matrix[1][0] = sin
-    return matrix
+    Rx = np.identity(4)
+    Rx[1][1] = np.cos(np.deg2rad(dX))
+    Rx[1][2] = np.sin(np.deg2rad(dX))
+    Rx[2][1] = -np.sin(np.deg2rad(dX))
+    Rx[2][2] = np.cos(np.deg2rad(dX))
+
+    Ry = np.identity(4)
+    Ry[0][0] = np.cos(np.deg2rad(dY))
+    Ry[0][2] = -np.sin(np.deg2rad(dY))
+    Ry[2][0] = np.sin(np.deg2rad(dY))
+    Ry[2][2] = np.cos(np.deg2rad(dY))
+
+    Rz = np.identity(4)
+    Rz[0][0] = np.cos(np.deg2rad(dZ))
+    Rz[0][1] = np.sin(np.deg2rad(dZ))
+    Rz[1][0] = -np.sin(np.deg2rad(dZ))
+    Rz[1][1] = np.cos(np.deg2rad(dZ))
+
+    return reduce(np.dot, [Rx, Ry, Rz])
 
 
 def build_reflection_matrix(over):
@@ -205,19 +228,26 @@ def normalize_point(point, height, width):
 
 
 def build_window_normalizations(
-    window_x_shift, window_y_shift, window_width, window_height, window_angle
+    window_x_shift,
+    window_y_shift,
+    window_width,
+    window_height,
+    window_angle_x,
+    window_angle_y,
+    window_angle_z,
 ):
     translation_matrix = transformations_functions_dict["tr"](
         window_x_shift, window_y_shift, 0
     )
-    # rotation_matrix = transformations_functions_dict["rt"](window_angle)
+    rotation_matrix = transformations_functions_dict["rt"](
+        window_angle_x, window_angle_y, window_angle_z
+    )
 
     scaling_matrix = transformations_functions_dict["sc"](
         2 / window_width, 2 / window_height, 2 / window_width
     )
 
-    # composition = reduce(np.dot, [translation_matrix, rotation_matrix, scaling_matrix])
-    composition = reduce(np.dot, [translation_matrix, scaling_matrix])
+    composition = reduce(np.dot, [translation_matrix, rotation_matrix, scaling_matrix])
 
     return composition
 

@@ -246,8 +246,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
         self.fillCheckBox.setChecked(False)
         self.fillCheckBox.setEnabled(False)
-        self.newZWireframeTextEdit.setText('0')
-        self.newZCurveTextEdit.setText('0')
+        self.newZWireframeTextEdit.setText("0")
+        self.newZCurveTextEdit.setText("0")
         self.close()
 
     def delete_active_point(self):

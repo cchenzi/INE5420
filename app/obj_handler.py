@@ -53,7 +53,7 @@ class ObjLoader:
     def face_handler(self, args):
         points = []
         for arg in args:
-            raw_index = arg.split('/')[0]
+            raw_index = arg.split("/")[0]
             if raw_index[0] == "-":
                 index = int(raw_index)
                 points.append(self.vertices[index])
@@ -73,7 +73,7 @@ class ObjLoader:
             self.window_transformations,
         )
         if not self.obj_parsing:
-            self.obj_parsing = f'object_{self.wireframe_index}'
+            self.obj_parsing = f"object_{self.wireframe_index}"
         wireframe.name = self.obj_parsing
         self.wireframes.append(wireframe)
         self.wireframe_index += 1
@@ -96,7 +96,7 @@ class ObjLoader:
         "vn": ignore,
         "g": ignore,
         "s": ignore,
-        "#": ignore
+        "#": ignore,
     }
 
     def newmtl_handler(self, args):
@@ -111,7 +111,7 @@ class ObjLoader:
         self.mtl_parsing = ""
 
     mtl_parser = {
-        "newmtl": newmtl_handler, 
+        "newmtl": newmtl_handler,
         "Kd": Kd_handler,
         "map_Kd": ignore,
         "Ka": ignore,
@@ -121,7 +121,7 @@ class ObjLoader:
         "Ns": ignore,
         "illum": ignore,
         "d": ignore,
-        "#": ignore
+        "#": ignore,
     }
 
     def load(self, file_path):

@@ -228,7 +228,7 @@ def weiler_atherton(object_coordinates):
     else:
         coordinates = [object_coordinates]
 
-    print(f"Coordinates after weiler_atherton={coordinates}")
+    # print(f"Coordinates after weiler_atherton={coordinates}")
     return True, coordinates
 
 
@@ -241,11 +241,11 @@ def clip(wireframe, coordinates, method=None):
     if wireframe.number_points == 1:
         coord_aux = np.array(coordinates[0])
         if is_point_outside_window(coord_aux):
-            print(f"Coords {coord_aux} not visible!")
+            # print(f"Coords {coord_aux} not visible!")
             is_visible = False
             return is_visible, [None]
         else:
-            print(f"Coords {coord_aux} visible!")
+            # print(f"Coords {coord_aux} visible!")
             is_visible = True
             return is_visible, [[coord_aux]]
 
