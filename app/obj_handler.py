@@ -48,21 +48,40 @@ class ObjLoader:
             else:
                 index = int(vertex) - 1
                 points.append(self.vertices[index])
+        self.build_wireframe(points)
+
+    def face_handler(self, args):
+        points = []
+        for arg in args:
+            raw_index = arg.split('/')[0]
+            if raw_index[0] == "-":
+                index = int(raw_index)
+                points.append(self.vertices[index])
+            else:
+                index = int(raw_index) - 1
+                points.append(self.vertices[index])
+        self.build_wireframe(points)
+
+    def build_wireframe(self, vertices):
         if not self.mtl:
             self.mtl = QtCore.Qt.black
         wireframe = Wireframe(
-            points,
+            vertices,
             self.wireframe_index,
             self.mtl,
             self.normalization_values,
             self.window_transformations,
         )
+        if not self.obj_parsing:
+            self.obj_parsing = f'object_{self.wireframe_index}'
         wireframe.name = self.obj_parsing
-        print(wireframe.name)
         self.wireframes.append(wireframe)
         self.wireframe_index += 1
         self.mtl = None
         self.obj_parsing = ""
+
+    def ignore(self, args):
+        pass
 
     obj_parser = {
         "v": vertice_handler,
@@ -72,7 +91,12 @@ class ObjLoader:
         "w": object_build_handler,
         "p": object_build_handler,
         "l": object_build_handler,
-        "f": object_build_handler,
+        "f": face_handler,
+        "vt": ignore,
+        "vn": ignore,
+        "g": ignore,
+        "s": ignore,
+        "#": ignore
     }
 
     def newmtl_handler(self, args):
@@ -86,7 +110,15 @@ class ObjLoader:
         self.mtl_dict[self.mtl_parsing] = color
         self.mtl_parsing = ""
 
-    mtl_parser = {"newmtl": newmtl_handler, "Kd": Kd_handler}
+    mtl_parser = {
+        "newmtl": newmtl_handler, 
+        "Kd": Kd_handler,
+        "Ka": ignore,
+        "Ks": ignore,
+        "Tf": ignore,
+        "Ni": ignore,
+        "illum": ignore,
+    }
 
     def load(self, file_path):
         self.parse_file(file_path, self.obj_parser)
