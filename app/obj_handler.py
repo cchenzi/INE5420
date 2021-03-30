@@ -113,11 +113,15 @@ class ObjLoader:
     mtl_parser = {
         "newmtl": newmtl_handler, 
         "Kd": Kd_handler,
+        "map_Kd": ignore,
         "Ka": ignore,
         "Ks": ignore,
         "Tf": ignore,
         "Ni": ignore,
+        "Ns": ignore,
         "illum": ignore,
+        "d": ignore,
+        "#": ignore
     }
 
     def load(self, file_path):
