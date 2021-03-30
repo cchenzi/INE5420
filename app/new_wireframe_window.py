@@ -57,8 +57,15 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.newYWireframeTextEdit = QtWidgets.QTextEdit(self.wireframeTab)
         self.newYWireframeTextEdit.setGeometry(QtCore.QRect(50, 75, 51, 31))
         self.newYWireframeTextEdit.setObjectName("newYWireframeTextEdit")
+        self.newZWireframeLabel = QtWidgets.QLabel(self.wireframeTab)
+        self.newZWireframeLabel.setGeometry(QtCore.QRect(30, 125, 16, 16))
+        self.newZWireframeLabel.setObjectName("newZWireframeLabel")
+        self.newZWireframeTextEdit = QtWidgets.QTextEdit(self.wireframeTab)
+        self.newZWireframeTextEdit.setGeometry(QtCore.QRect(50, 115, 51, 31))
+        self.newZWireframeTextEdit.setObjectName("newZWireframeTextEdit")
+        self.newZWireframeTextEdit.setText("0")
         self.fillCheckBox = QtWidgets.QCheckBox(self.wireframeTab)
-        self.fillCheckBox.setGeometry(QtCore.QRect(30, 115, 120, 18))
+        self.fillCheckBox.setGeometry(QtCore.QRect(30, 165, 120, 18))
         self.fillCheckBox.setObjectName("fillCheckBox")
         self.fillCheckBox.setEnabled(False)
         self.tabWidget.addTab(self.wireframeTab, "")
@@ -79,16 +86,23 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.newYCurveTextEdit = QtWidgets.QTextEdit(self.bezierTab)
         self.newYCurveTextEdit.setGeometry(QtCore.QRect(50, 75, 51, 31))
         self.newYCurveTextEdit.setObjectName("newYCurveTextEdit")
+        self.newZCurveLabel = QtWidgets.QLabel(self.bezierTab)
+        self.newZCurveLabel.setGeometry(QtCore.QRect(30, 125, 16, 16))
+        self.newZCurveLabel.setObjectName("newZCurveLabel")
+        self.newZCurveTextEdit = QtWidgets.QTextEdit(self.bezierTab)
+        self.newZCurveTextEdit.setGeometry(QtCore.QRect(50, 115, 51, 31))
+        self.newZCurveTextEdit.setObjectName("newZCurveTextEdit")
+        self.newZCurveTextEdit.setText("0")
         self.curveComboBox = QtWidgets.QComboBox(self.bezierTab)
-        self.curveComboBox.setGeometry(QtCore.QRect(30, 120, 142, 25))
+        self.curveComboBox.setGeometry(QtCore.QRect(30, 195, 142, 25))
         self.curveComboBox.setObjectName("curveComboBox")
         self.curveComboBox.addItem("Bezier")
         self.curveComboBox.addItem("B-Spline")
         self.accuracyCurveLabel = QtWidgets.QLabel(self.bezierTab)
-        self.accuracyCurveLabel.setGeometry(QtCore.QRect(30, 165, 81, 16))
+        self.accuracyCurveLabel.setGeometry(QtCore.QRect(30, 160, 81, 16))
         self.accuracyCurveLabel.setObjectName("accuracyLabel")
         self.accuracyCurveTextEdit = QtWidgets.QTextEdit(self.bezierTab)
-        self.accuracyCurveTextEdit.setGeometry(QtCore.QRect(100, 158, 71, 31))
+        self.accuracyCurveTextEdit.setGeometry(QtCore.QRect(100, 155, 71, 31))
         self.accuracyCurveTextEdit.setObjectName("accuracyTextEdit")
         self.accuracyCurveTextEdit.setText("20.0")
         self.tabWidget.addTab(self.bezierTab, "")
@@ -110,8 +124,10 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.setPointsBezierLabel.setText(_translate("Form", "Set points:"))
         self.newXWireframeLabel.setText(_translate("Form", "X:"))
         self.newYWireframeLabel.setText(_translate("Form", "Y:"))
+        self.newZWireframeLabel.setText(_translate("Form", "Z:"))
         self.newXCurveLabel.setText(_translate("Form", "X:"))
         self.newYCurveLabel.setText(_translate("Form", "Y:"))
+        self.newZCurveLabel.setText(_translate("Form", "Z:"))
         self.fillCheckBox.setText(_translate("Form", "Fill Polygon"))
         self.accuracyCurveLabel.setText(_translate("Form", "Accuracy:"))
         self.tabWidget.setTabText(
@@ -134,23 +150,25 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         if active_tab == 0:
             xTextEdit = self.newXWireframeTextEdit
             yTextEdit = self.newYWireframeTextEdit
-            # zTextEdit = self.newZWireframeTextEdit
+            zTextEdit = self.newZWireframeTextEdit
         if active_tab == 1:
             xTextEdit = self.newXCurveTextEdit
             yTextEdit = self.newYCurveTextEdit
+            zTextEdit = self.newZCurveTextEdit
         try:
             x = float(xTextEdit.toPlainText())
             y = float(yTextEdit.toPlainText())
+            z = float(zTextEdit.toPlainText())
         except ValueError:
-            self.partnerDialog.console_print("Invalid or empty value on X or Y")
+            self.partnerDialog.console_print("Invalid or empty value on X, Y or Z")
             return
         # self.partnerDialog.console_print(f"Points={(x, y)}")
-        self.points.append((x, y, 0))
+        self.points.append((x, y, z))
         self.partnerDialog.console_print(f"Points after append={self.points}")
         xTextEdit.clear()
         yTextEdit.clear()
         point_id = len(self.points) - 1
-        point_str = f"Point {point_id}: {x}, {y}"
+        point_str = f"Point {point_id}: {x}, {y}, {z}"
         self.newPointsListWidget.insertItem(point_id, point_str)
         self.set_text_draw_button()
         if len(self.points) > 2:
@@ -228,6 +246,8 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
 
         self.fillCheckBox.setChecked(False)
         self.fillCheckBox.setEnabled(False)
+        self.newZWireframeTextEdit.setText('0')
+        self.newZCurveTextEdit.setText('0')
         self.close()
 
     def delete_active_point(self):

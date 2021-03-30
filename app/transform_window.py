@@ -55,6 +55,12 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.rotationYTextEdit = QtWidgets.QTextEdit(self.rotationTab)
         self.rotationYTextEdit.setGeometry(QtCore.QRect(100, 110, 80, 21))
         self.rotationYTextEdit.setObjectName("rotationYTextEdit")
+        self.rotationZLabel = QtWidgets.QLabel(self.rotationTab)
+        self.rotationZLabel.setGeometry(QtCore.QRect(78, 132, 16, 17))
+        self.rotationZLabel.setObjectName("rotationZLabel")
+        self.rotationZTextEdit = QtWidgets.QTextEdit(self.rotationTab)
+        self.rotationZTextEdit.setGeometry(QtCore.QRect(100, 130, 80, 21))
+        self.rotationZTextEdit.setObjectName("rotationZTextEdit")
         self.disable_edit_rotation_point(True)
         self.tabWidget.addTab(self.rotationTab, "")
 
@@ -72,6 +78,12 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.translationYLabel = QtWidgets.QLabel(self.translationTab)
         self.translationYLabel.setGeometry(QtCore.QRect(20, 50, 16, 17))
         self.translationYLabel.setObjectName("translationYLabel")
+        self.translationZTextEdit = QtWidgets.QTextEdit(self.translationTab)
+        self.translationZTextEdit.setGeometry(QtCore.QRect(40, 80, 80, 21))
+        self.translationZTextEdit.setObjectName("translationZTextEdit")
+        self.translationZLabel = QtWidgets.QLabel(self.translationTab)
+        self.translationZLabel.setGeometry(QtCore.QRect(20, 80, 16, 17))
+        self.translationZLabel.setObjectName("translationZLabel")
         self.tabWidget.addTab(self.translationTab, "")
 
         self.scaleTab = QtWidgets.QWidget()
@@ -88,6 +100,12 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.scalingYTextEdit = QtWidgets.QTextEdit(self.scaleTab)
         self.scalingYTextEdit.setGeometry(QtCore.QRect(40, 50, 80, 21))
         self.scalingYTextEdit.setObjectName("scalingYTextEdit")
+        self.scalingZTextEdit = QtWidgets.QTextEdit(self.scaleTab)
+        self.scalingZTextEdit.setGeometry(QtCore.QRect(40, 80, 80, 21))
+        self.scalingZTextEdit.setObjectName("scalingZTextEdit")
+        self.scalingZLabel = QtWidgets.QLabel(self.scaleTab)
+        self.scalingZLabel.setGeometry(QtCore.QRect(20, 80, 16, 17))
+        self.scalingZLabel.setObjectName("scalingZLabel")
         self.tabWidget.addTab(self.scaleTab, "")
 
         self.reflectionTab = QtWidgets.QWidget()
@@ -98,8 +116,11 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.reflectionYCheckBox = QtWidgets.QCheckBox(self.reflectionTab)
         self.reflectionYCheckBox.setGeometry(QtCore.QRect(20, 50, 92, 23))
         self.reflectionYCheckBox.setObjectName("reflectionYCheckBox")
+        self.reflectionZCheckBox = QtWidgets.QCheckBox(self.reflectionTab)
+        self.reflectionZCheckBox.setGeometry(QtCore.QRect(20, 80, 92, 23))
+        self.reflectionZCheckBox.setObjectName("reflectionYCheckBox")
         self.reflectionOriginCheckBox = QtWidgets.QCheckBox(self.reflectionTab)
-        self.reflectionOriginCheckBox.setGeometry(QtCore.QRect(20, 80, 92, 23))
+        self.reflectionOriginCheckBox.setGeometry(QtCore.QRect(20, 110, 92, 23))
         self.reflectionOriginCheckBox.setObjectName("reflectionOriginCheckBox")
         self.tabWidget.addTab(self.reflectionTab, "")
 
@@ -126,12 +147,14 @@ class TransformWindow(QtWidgets.QMainWindow):
         )
         self.translationXLabel.setText(_translate("TransformWindow", "X:"))
         self.translationYLabel.setText(_translate("TransformWindow", "Y:"))
+        self.translationZLabel.setText(_translate("TransformWindow", "Z:"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.translationTab),
             _translate("TransformWindow", "Translation"),
         )
         self.reflectionXCheckBox.setText(_translate("TransformWindow", "X"))
         self.reflectionYCheckBox.setText(_translate("TransformWindow", "Y"))
+        self.reflectionZCheckBox.setText(_translate("TransformWindow", "Z"))
         self.reflectionOriginCheckBox.setText(_translate("TransformWindow", "Origin"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.reflectionTab),
@@ -153,8 +176,10 @@ class TransformWindow(QtWidgets.QMainWindow):
         )
         self.scalingYLabel.setText(_translate("TransformWindow", "Y:"))
         self.scalingXLabel.setText(_translate("TransformWindow", "X:"))
+        self.scalingZLabel.setText(_translate("TransformWindow", "Z:"))
         self.rotationYLabel.setText(_translate("TransformWindow", "Y:"))
         self.rotationXLabel.setText(_translate("TransformWindow", "X:"))
+        self.rotationZLabel.setText(_translate("TransformWindow", "Z:"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.scaleTab),
             _translate("TransformWindow", "Scaling"),
@@ -220,39 +245,41 @@ class TransformWindow(QtWidgets.QMainWindow):
         elif self.rotationComboBox.currentIndex() == 1:
             # Origin
             self.wireframe.transformations_codes.append(
-                ("rt", [float(degrees), (0, 0)])
+                ("rt", [float(degrees), (0, 0, 0)])
             )
         elif self.rotationComboBox.currentIndex() == 2:
             # Point
             try:
                 x = float(self.rotationXTextEdit.toPlainText())
                 y = float(self.rotationYTextEdit.toPlainText())
+                z = float(self.rotationYTextEdit.toPlainText())
                 self.wireframe.transformations_codes.append(
-                    ("rt", [float(degrees), (x, y)])
+                    ("rt", [float(degrees), (x, y, z)])
                 )
             except ValueError:
                 self.partnerDialog.console_print(
-                    "Please inform valid X and Y values to rotation about a point"
+                    "Please inform valid X, Y and Z values to rotation about a point"
                 )
                 return
         self.add_last_n_transformations_to_list(1)
 
-    def show_rotation(self, degrees, xy):
+    def show_rotation(self, degrees, xyz):
         self.rotationText.setText(str(degrees))
-        if xy == ():
+        if xyz == ():
             self.rotationComboBox.setCurrentIndex(0)
             self.rotationXTextEdit.setText("")
             self.rotationYTextEdit.setText("")
             self.disable_edit_rotation_point(True)
-        elif xy == (0, 0):
+        elif xyz == (0, 0, 0):
             self.rotationComboBox.setCurrentIndex(1)
             self.rotationXTextEdit.setText("0")
             self.rotationYTextEdit.setText("0")
             self.disable_edit_rotation_point(True)
         else:
             self.rotationComboBox.setCurrentIndex(2)
-            self.rotationXTextEdit.setText(str(xy[0]))
-            self.rotationYTextEdit.setText(str(xy[1]))
+            self.rotationXTextEdit.setText(str(xyz[0]))
+            self.rotationYTextEdit.setText(str(xyz[1]))
+            self.rotationZTextEdit.setText(str(xyz[2]))
             self.disable_edit_rotation_point(False)
 
     def select_rotation(self):
@@ -264,32 +291,37 @@ class TransformWindow(QtWidgets.QMainWindow):
     def disable_edit_rotation_point(self, boolean):
         self.rotationXTextEdit.setDisabled(boolean)
         self.rotationYTextEdit.setDisabled(boolean)
+        self.rotationZTextEdit.setDisabled(boolean)
 
     def add_translation(self):
         x_text = self.translationXTextEdit.toPlainText()
         y_text = self.translationYTextEdit.toPlainText()
+        z_text = self.translationZTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 0
         y = float(y_text) if y_text != "" else 0
-        z = float(0)
+        z = float(z_text) if z_text != "" else 0
         self.wireframe.transformations_codes.append(("tr", [x, y, z]))
         self.add_last_n_transformations_to_list(1)
 
-    def show_translation(self, x, y):
+    def show_translation(self, x, y, z):
         self.translationXTextEdit.setText(str(x))
         self.translationYTextEdit.setText(str(y))
+        self.translationZTextEdit.setText(str(z))
 
     def add_scaling(self):
         x_text = self.scalingXTextEdit.toPlainText()
         y_text = self.scalingYTextEdit.toPlainText()
+        z_text = self.scalingZTextEdit.toPlainText()
         x = float(x_text) if x_text != "" else 1
         y = float(y_text) if y_text != "" else 1
-        z = float(0)
+        z = float(z_text) if z_text != "" else 1
         self.wireframe.transformations_codes.append(("sc", [x, y, z]))
         self.add_last_n_transformations_to_list(1)
 
     def show_scaling(self, x, y):
         self.scalingXTextEdit.setText(str(x))
         self.scalingYTextEdit.setText(str(y))
+        self.scalingZTextEdit.setText(str(z))
 
     def add_reflection(self):
         count = 0
@@ -298,6 +330,9 @@ class TransformWindow(QtWidgets.QMainWindow):
             count += 1
         if self.reflectionYCheckBox.isChecked():
             self.wireframe.transformations_codes.append(("rf", ["y"]))
+            count += 1
+        if self.reflectionZCheckBox.isChecked():
+            self.wireframe.transformations_codes.append(("rf", ["z"]))
             count += 1
         if self.reflectionOriginCheckBox.isChecked():
             self.wireframe.transformations_codes.append(("rf", ["origin"]))
@@ -308,11 +343,14 @@ class TransformWindow(QtWidgets.QMainWindow):
     def show_reflection(self, rtype):
         self.reflectionXCheckBox.setChecked(False)
         self.reflectionYCheckBox.setChecked(False)
+        self.reflectionZCheckBox.setChecked(False)
         self.reflectionOriginCheckBox.setChecked(False)
         if rtype == "x":
             self.reflectionXCheckBox.setChecked(True)
         elif rtype == "y":
             self.reflectionYCheckBox.setChecked(True)
+        elif rtype == "z":
+            self.reflectionZCheckBox.setChecked(True)
         elif rtype == "origin":
             self.reflectionOriginCheckBox.setChecked(True)
 
@@ -341,6 +379,7 @@ class TransformWindow(QtWidgets.QMainWindow):
             transformation_code = self.wireframe.transformations_codes[row]
             if transformation_code != "r_rt":
                 params = transformation_code[1]
+                print(params)
                 self.tab_index_to_function[new_index][1](self, *params)
         except AttributeError:
             self.partnerDialog.console_print("Error parsing current transformation")
