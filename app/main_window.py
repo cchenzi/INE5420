@@ -45,7 +45,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.default_y_max - 20,
         )
         self.wireframe_count = 0
-        self.acc_rotation_degrees = 0
+        self.acc_rotation_degrees_X = 0
+        self.acc_rotation_degrees_Y = 0
+        self.acc_rotation_degrees_Z = 0
         self.acc_x_shift = 0
         self.acc_y_shift = 0
         self.window_transformations_matrix = None
@@ -128,15 +130,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rotateXPushButton = QtWidgets.QPushButton(self)
         self.rotateXPushButton.setGeometry(QtCore.QRect(10, 430, 51, 34))
         self.rotateXPushButton.setObjectName("rotateXPushButton")
-        # self.rotateXPushButton.setEnabled(False)
         self.rotateYPushButton = QtWidgets.QPushButton(self)
         self.rotateYPushButton.setGeometry(QtCore.QRect(70, 430, 51, 34))
         self.rotateYPushButton.setObjectName("rotateYPushButton")
-        self.rotateYPushButton.setEnabled(False)
         self.rotateZPushButton = QtWidgets.QPushButton(self)
         self.rotateZPushButton.setGeometry(QtCore.QRect(130, 430, 51, 34))
         self.rotateZPushButton.setObjectName("rotateZPushButton")
-        self.rotateZPushButton.setEnabled(False)
         self.degreesLabel = QtWidgets.QLabel(self)
         self.degreesLabel.setGeometry(QtCore.QRect(20, 400, 58, 18))
         self.degreesLabel.setObjectName("degreesLabel")
@@ -217,7 +216,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.outPushButton.setText(_translate("MainWindow", "Out"))
         self.zoomInPushButton.setText(_translate("MainWindow", "+"))
         self.zoomOutPushButton.setText(_translate("MainWindow", "-"))
-        self.rotateXPushButton.setText(_translate("MainWindow", "⮏"))
+        self.rotateXPushButton.setText(_translate("MainWindow", "X"))
         self.rotateYPushButton.setText(_translate("MainWindow", "Y"))
         self.rotateZPushButton.setText(_translate("MainWindow", "Z"))
         self.degreesLabel.setText(_translate("MainWindow", "Degrees:"))
@@ -252,10 +251,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.transformPushButton.clicked.connect(self.transform_window)
         self.loadPushButton.clicked.connect(self.load_obj_file)
         self.savePushButton.clicked.connect(self.save_obj_file)
-        self.rotateXPushButton.clicked.connect(self.rotate_window)
+        self.rotateXPushButton.clicked.connect(self.rotate_window_x)
+        self.rotateYPushButton.clicked.connect(self.rotate_window_y)
+        self.rotateZPushButton.clicked.connect(self.rotate_window_z)
         self.clippingComboBox.currentIndexChanged.connect(
             self.select_line_clipping_method
         )
+        self.console_print("WELCOME!")
 
     def new_wireframe_window(self):
         self.newWireframeWindowDialog.new_window()
@@ -336,7 +338,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.console_print(f"Clipping method changed to {method}")
 
     def draw_line(self, x1, y1, x2, y2, color):
-        self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
+        # self.console_print(f"Drawning new line! Points={(x1, y1)}, {(x2, y2)}")
         self.displayFrame.update()
         self.painter.setPen(QtGui.QPen(color, 5))
         self.painter.drawLine(x1, y1, x2, y2)
@@ -419,52 +421,78 @@ class MainWindow(QtWidgets.QMainWindow):
         self.window_coordinates.y_max = self.default_y_max / 2
         self.window_coordinates.y_min = -self.default_y_max / 2
         self.scale_acumulator = 0
-        self.acc_rotation_degrees = 0
+        self.acc_rotation_degrees_X = 0
+        self.acc_rotation_degrees_Y = 0
+        self.acc_rotation_degrees_Z = 0
         self.acc_x_shift = 0
         self.acc_y_shift = 0
 
     def shift_window_left(self):
-
+        self.console_print("Window left shift!")
         self.acc_x_shift += 5
         self.redraw_wireframes()
 
     def shift_window_right(self):
+        self.console_print("Window right shift!")
         self.acc_x_shift -= 5
         self.redraw_wireframes()
 
     def shift_window_up(self):
+        self.console_print("Window up shift!")
         self.acc_y_shift -= 5
         self.redraw_wireframes()
 
     def shift_window_down(self):
+        self.console_print("Window down shift!")
         self.acc_y_shift += 5
         self.redraw_wireframes()
 
     def scale_window_by_step(self, step):
         self.scale_acumulator += step
         scale_factor = 1 + self.scale_acumulator
+        self.console_print(f"Scale factor updated to {scale_factor}")
         self.window_coordinates.x_max = self.default_x_max * scale_factor
         self.window_coordinates.y_max = self.default_y_max * scale_factor
 
     def scale_window_in(self):
-        self.scale_window_by_step(-0.01)
+        self.console_print("Zoom in!")
+        self.scale_window_by_step(-0.05)
         self.redraw_wireframes()
 
     def scale_window_out(self):
-        self.scale_window_by_step(0.01)
+        self.console_print("Zoom out!")
+        self.scale_window_by_step(0.05)
         self.redraw_wireframes()
 
-    def rotate_window(self):
+    def rotate_window_x(self):
         degrees = self.degreesEdit.toPlainText()
         try:
-            self.acc_rotation_degrees -= float(degrees)
-            for wireframe in self.display_file:
-                wireframe.window_angle = self.acc_rotation_degrees
+            self.acc_rotation_degrees_X -= float(degrees)
+            self.console_print(f"X rotation degrees {self.acc_rotation_degrees_X}")
+            self.redraw_wireframes()
+        except ValueError:
+            self.console_print("Invalid or missing degrees value")
+
+    def rotate_window_y(self):
+        degrees = self.degreesEdit.toPlainText()
+        try:
+            self.acc_rotation_degrees_Y -= float(degrees)
+            self.console_print(f"Y rotation degrees {self.acc_rotation_degrees_Y}")
+            self.redraw_wireframes()
+        except ValueError:
+            self.console_print("Invalid or missing degrees value")
+
+    def rotate_window_z(self):
+        degrees = self.degreesEdit.toPlainText()
+        try:
+            self.acc_rotation_degrees_Z -= float(degrees)
+            self.console_print(f"Z rotation degrees {self.acc_rotation_degrees_Z}")
             self.redraw_wireframes()
         except ValueError:
             self.console_print("Invalid or missing degrees value")
 
     def refresh_canvas(self):
+        self.console_print("Refresh canvas")
         self.prepare_desnormalization_matrix()
         self.set_navigation_default_paramaters()
         self.redraw_wireframes()
@@ -473,7 +501,13 @@ class MainWindow(QtWidgets.QMainWindow):
         height = self.window_coordinates.y_max - self.window_coordinates.y_min
         width = self.window_coordinates.x_max - self.window_coordinates.x_min
         self.window_transformations_matrix = build_window_normalizations(
-            self.acc_x_shift, self.acc_y_shift, width, height, self.acc_rotation_degrees
+            self.acc_x_shift,
+            self.acc_y_shift,
+            width,
+            height,
+            self.acc_rotation_degrees_X,
+            self.acc_rotation_degrees_Y,
+            self.acc_rotation_degrees_Z,
         )
 
     def prepare_desnormalization_matrix(self):
@@ -484,11 +518,14 @@ class MainWindow(QtWidgets.QMainWindow):
             -self.acc_y_shift,
             4 / width,
             4 / height,
-            -self.acc_rotation_degrees,
+            -self.acc_rotation_degrees_X,
+            -self.acc_rotation_degrees_Y,
+            -self.acc_rotation_degrees_Z,
         )
         self.desnormalization_matrix = matrix
 
     def redraw_wireframes(self):
+        self.console_print(f"Drawning {len(self.display_file)} wireframes")
         self.clear_canvas()
         self.prepare_normalization_matrix()
         height = self.window_coordinates.y_max - self.window_coordinates.y_min
