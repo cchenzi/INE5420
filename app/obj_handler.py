@@ -1,7 +1,7 @@
 import pathlib
 from PyQt5 import QtGui, QtCore
 
-from app.wireframe import Wireframe
+from app.wireframe import Wireframe, WireframeGroup
 
 
 class ObjLoader:
@@ -14,9 +14,12 @@ class ObjLoader:
         self.mtl_parsing = ""
         self.obj_parsing = ""
         self.wireframes = []
+        self.wireframes_dict = {}
         self.wireframe_index = wireframe_index
         self.normalization_values = normalization_values
         self.window_transformations = window_transformations
+        self.file_path = pathlib.Path(file_path)
+        self.window = None
         self.load(file_path)
 
     def vertice_handler(self, args):
@@ -28,16 +31,21 @@ class ObjLoader:
 
     def mtllib_handler(self, args):
         file = args[0]
-        file_path = str(pathlib.Path().absolute() / "obj" / file)
+        file_path = self.file_path.parent / file
         self.parse_file(file_path, self.mtl_parser)
 
     def usemtl_handler(self, args):
         mtl = args[0]
-        self.mtl = self.mtl_dict[mtl]
+        if mtl in self.mtl_dict:
+            self.mtl = self.mtl_dict[mtl]
 
     def object_name_handler(self, args):
         name = args[0]
+        if name == "":
+            name = "generic_object"
         self.obj_parsing = name
+        self.wireframes_dict[name] = []
+        self.mtl = None
 
     def object_build_handler(self, args):
         points = []
@@ -72,13 +80,15 @@ class ObjLoader:
             self.normalization_values,
             self.window_transformations,
         )
-        if not self.obj_parsing:
-            self.obj_parsing = f"object_{self.wireframe_index}"
-        wireframe.name = self.obj_parsing
-        self.wireframes.append(wireframe)
+
+        wireframe.name = self.obj_parsing + str(self.wireframe_index)
+        self.wireframes_dict[self.obj_parsing].append(wireframe)
         self.wireframe_index += 1
-        self.mtl = None
-        self.obj_parsing = ""
+
+    def window_handler(self, args):
+        position_vector = (args[0], args[1])
+        size_vector = (args[2], args[3])
+        self.window = (position_vector, size_vector)
 
     def ignore(self, args):
         pass
@@ -88,13 +98,13 @@ class ObjLoader:
         "mtllib": mtllib_handler,
         "usemtl": usemtl_handler,
         "o": object_name_handler,
-        "w": object_build_handler,
         "p": object_build_handler,
         "l": object_build_handler,
+        "w": window_handler,
         "f": face_handler,
         "vt": ignore,
         "vn": ignore,
-        "g": ignore,
+        "g": object_name_handler,
         "s": ignore,
         "#": ignore,
     }
@@ -126,6 +136,19 @@ class ObjLoader:
 
     def load(self, file_path):
         self.parse_file(file_path, self.obj_parser)
+        for group in self.wireframes_dict:
+            if len(self.wireframes_dict[group]) == 1:
+                wireframe = self.wireframes_dict[group].pop()
+                self.wireframes.append(wireframe)
+            else:
+                wireframes_group = self.wireframes_dict[group]
+                wireframe = WireframeGroup(
+                    wireframes_group,
+                    group,
+                    self.normalization_values,
+                    self.window_transformations,
+                )
+                self.wireframes.append(wireframe)
 
     def parse_file(self, file_path, parse_dict):
         with open(file_path) as file:
@@ -134,7 +157,8 @@ class ObjLoader:
                 try:
                     statement = split[0]
                     args = split[1:]
-                    parse_dict[statement](self, args)
+                    if statement in parse_dict:
+                        parse_dict[statement](self, args)
                 except IndexError:
                     # blank line
                     pass

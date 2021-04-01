@@ -31,18 +31,18 @@ def y_viewport_transform(
     ) + 20
 
 
-def build_translation_matrix(Dx, Dy, Dz):
+def build_translation_matrix(Tx, Ty, Tz):
     """
     Build translation matrix as:
         [1   0  0  0]
         [0   1  0  0]
         [0   0  1  0]
-        [Dx  Dy Dz 0]
+        [Tx  Ty Tz 1]
     """
     matrix = np.identity(4)
-    matrix[3][0] = Dx
-    matrix[3][1] = Dy
-    matrix[3][2] = Dz
+    matrix[3][0] = Tx
+    matrix[3][1] = Ty
+    matrix[3][2] = Tz
     return matrix
 
 
@@ -218,13 +218,12 @@ def calculate_object_center(coordinates):
 
 
 def multiply_coordinates_by_transformations(coordinates, transformations):
-
     return np.dot(coordinates, transformations)
 
 
 def normalize_point(point, height, width):
     x, y, z = point
-    return (x / height, y / width, z / height)
+    return (x / height, y / width, z / width)
 
 
 def build_window_normalizations(

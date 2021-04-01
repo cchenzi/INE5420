@@ -16,7 +16,7 @@ from app.config import (
 )
 
 from app.obj_handler import ObjLoader, ObjWriter
-from app.wireframe import Wireframe, Curve
+from app.wireframe import Wireframe, Curve, WireframeGroup
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -350,7 +350,7 @@ class MainWindow(QtWidgets.QMainWindow):
             should_clip = False
 
         wireframe.transform_coordinates()
-        # TODO = ADD PROJECTION
+
         coordinates = [[(x, y) for (x, y, z) in wireframe.transformed_coordinates]]
         if should_clip:
             is_visible, coordinates = clip(
@@ -361,7 +361,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return is_visible, coordinates
 
-    def draw_wireframe(self, wireframe):
+    def _draw_wireframe(self, wireframe):
         fill_points = []
 
         is_visible, coordinates = self.prepare_coordinates_to_draw(wireframe)
@@ -401,6 +401,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     path.addPolygon(polygon)
                     self.painter.setBrush(wireframe.color)
                     self.painter.drawPath(path)
+
+    def draw_wireframe(self, wireframe):
+        if isinstance(wireframe, WireframeGroup):
+            for w in wireframe.wireframes:
+                self._draw_wireframe(w)
+        else:
+            self._draw_wireframe(wireframe)
 
     def draw_native_objects(self):
         offset = 20
@@ -528,12 +535,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.console_print(f"Drawning {len(self.display_file)} wireframes")
         self.clear_canvas()
         self.prepare_normalization_matrix()
-        height = self.window_coordinates.y_max - self.window_coordinates.y_min
-        width = self.window_coordinates.x_max - self.window_coordinates.x_min
         for wireframe in self.display_file:
-            wireframe.normalization_values = self.window_coordinates
-            wireframe.window_width = width
-            wireframe.window_height = height
-            wireframe.window_transformations = self.window_transformations_matrix
+            wireframe.update_aux_values(
+                self.window_coordinates, self.window_transformations_matrix
+            )
             self.draw_wireframe(wireframe)
         self.draw_native_objects()
