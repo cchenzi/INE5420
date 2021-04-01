@@ -14,6 +14,40 @@ from app.math_functions import (
 )
 
 
+class WireframeGroup:
+    def __init__(self, wireframes, name, normalization_values, window_transformations):
+        self.wireframes = wireframes
+        self.name = name
+        self.normalization_values = normalization_values
+        self.window_transformations = window_transformations
+        self.transformations_codes = []
+        self.center = None
+
+    def update_aux_values(self, normalization_values, window_transformations):
+        self.normalization_values = normalization_values
+        self.window_transformations = window_transformations
+
+        for wireframe in self.wireframes:
+            wireframe.update_aux_values(
+                self.normalization_values, self.window_transformations
+            )
+            wireframe.transformations_codes = self.transformations_codes
+
+        # self.calculate_group_center()
+
+        # for wireframe in self.wireframes:
+        #     wireframe.group_center = self.center
+
+    def calculate_group_center(self):
+        concatenated_matrix = self.wireframes[0].transformed_coordinates
+        for wirefame in self.wireframes[1:]:
+            concatenated_matrix = np.concatenate(
+                (concatenated_matrix, wirefame.transformed_coordinates), axis=0
+            )
+        c_x, c_y, c_z = calculate_object_center(concatenated_matrix)
+        self.center = (c_x, c_y, c_z)
+
+
 class Wireframe:
     def __init__(
         self, coordinates, index, color, normalization_values, window_transformations
@@ -37,15 +71,26 @@ class Wireframe:
             self.normalization_values.y_max - self.normalization_values.y_min
         )
         self.center = None
+        self.group_center = None
         self.filled = False
         self.visible = True
         self.transform_coordinates()
 
-    def calculate_object_center(self):
-        self.center = tuple(np.array(self.transformed_coordinates).mean(axis=0))
+    # def calculate_object_center(self):
+    #     self.center = tuple(np.array(self.transformed_coordinates).mean(axis=0))
+
+    def update_aux_values(self, normalization_values, window_transformations):
+        self.normalization_values = normalization_values
+        self.window_transformations = window_transformations
+        self.window_width = (
+            self.normalization_values.x_max - self.normalization_values.x_min
+        )
+        self.window_height = (
+            self.normalization_values.y_max - self.normalization_values.y_min
+        )
 
     def needs_translation(self, code):
-        return code in ["rt", "sc"]
+        return code in ["rt"]
 
     def transform_coordinates(self):
         coord_aux = build_homogeneous_coordinates(self.coordinates)
@@ -61,6 +106,7 @@ class Wireframe:
                             params[1], self.window_width / 2, self.window_height / 2
                         )
                     else:
+
                         (
                             translate_x,
                             translate_y,
@@ -69,9 +115,12 @@ class Wireframe:
                         ) = calculate_object_center(coord_aux)
                     params = [params[0]] * 3
                 else:
-                    translate_x, translate_y, translate_z, _ = calculate_object_center(
-                        coord_aux
-                    )
+                    (
+                        translate_x,
+                        translate_y,
+                        translate_z,
+                        _,
+                    ) = calculate_object_center(coord_aux)
                 t_aux.append(
                     transformations_functions_dict["tr"](
                         -translate_x, -translate_y, -translate_z
@@ -96,7 +145,7 @@ class Wireframe:
                 coord_aux, composition_matrix
             )
 
-        self.center = calculate_object_center(coord_aux)
+        # self.center = calculate_object_center(coord_aux)
         # Remove last column and map the points to tuple
         self.transformed_coordinates = list(map(tuple, coord_aux[:, :-1]))
         # print("normalized coordinates=", self.transformed_coordinates)

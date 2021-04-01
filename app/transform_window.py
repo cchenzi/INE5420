@@ -220,7 +220,7 @@ class TransformWindow(QtWidgets.QMainWindow):
 
     def transform(self):
         self.partnerDialog.redraw_wireframes()
-        self.partnerDialog.console_print(f"Transformations applyed")
+        self.partnerDialog.console_print(f"Transformations applied")
 
     def delete_transformation(self):
         transformations = len(self.wireframe.transformations_codes)
@@ -318,7 +318,7 @@ class TransformWindow(QtWidgets.QMainWindow):
         self.wireframe.transformations_codes.append(("sc", [x, y, z]))
         self.add_last_n_transformations_to_list(1)
 
-    def show_scaling(self, x, y):
+    def show_scaling(self, x, y, z):
         self.scalingXTextEdit.setText(str(x))
         self.scalingYTextEdit.setText(str(y))
         self.scalingZTextEdit.setText(str(z))
