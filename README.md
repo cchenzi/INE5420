@@ -8,14 +8,15 @@ Este repositório contém o trabalho prático desenvolvido para a primeira parte
 
 Os detalhes sobre as implementações passadas estão no arquivo OLD_README.md. Decidimos deixar neste arquivo apenas as novidades desenvolvidas.
 
-## Versão 1.6: B-Splines utilizando Forward Differences
+## Versão 1.7: Objetos 3D e Projação Paralela Ortogonal
 
-* Impementamos B-Splines utilizando Foward Differences. Para isso, nós criamos uma classe `Curve`, que herda de `Wireframe`. Após essa mudança, tanto `BezierCurve` como `BSplineCurve` herdam de `Curve`. Para `BSplineCurve`, existem algumas funções importantes de nota:
-    - `build_curve_coordinates`: as coordenadas são criadas na própria função . Nela, é invocada a função de gerar as diferenças iniciais para cada conjunto de 4 pontos de controle e realiza as iterações necessárias para o algoritmo.
-    - Em `app/math_functions.py`, estão as funções auxiliares , que retorna a matriz de B-Spline; `calculate_initial_differences`, que calcula o vetor de diferenças iniciais; `calculate_bspline_parameters`, que agrega as duas funções anteriores.
-    - o `clipping` segue a mesma orientação dea entrega anterior.
-    
-* Mudamos a interface de criação de curvas para selecionar qual o modelo desejado, `Bezier` ou `B-Spline`. Conforme seleção, a acurácia (delta, no caso da `B-Spline`) padrão é alterada (20 para a primeira, 0.1 para a segunda). Quando inseridos no `display file`, cada curva específica tem seu nome especificado, também.
+* Para esta tarefa, atualizamos a classe `Wireframe` para suportar pontos, linhas e objetos 3D. Desse modo, tudo que for inserido, na verdade, é tratado como 3D: objetos 2D são objetos 3D com y = 0, definido como padrão na tela de inserção. Para isso, todas as funções que geram matrizes de transformações (translação, escalonamento e rotação) foram atualizadas para 3D (`app/math_functions`). No caso da rotação, gera-se três matrizes e retorna a composição delas.
+
+* A Projeção Paralela Ortogonal está funcionando depois das alterações mencionadas. Além disso, tivemos que adaptar o leitor de arquivos `.obj`. Assim, para agrupamentos, definidos por "g", eles compõem um objeto adicional chamado `WireframeGroup`, responsável por centralizar as transformações. A definição de múltiplos "o" por arquivo ainda é permitida.
+
+* Foram adicionados diversos exemplos na pasta `obj/3d`. retirados mo dodle da disciplina e dos seguintes sites: [https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html] e [http://paulbourke.net/dataformats/obj/]. Não produzimos nenhum 3D. Os objetos 2D ainda funcionam normalmente.
+
+* A **transformação** de rotação ao redor do centro do objeto está com problemas. Entretanto, o resto funciona normalmente.
 
 ## Execução
 

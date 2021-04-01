@@ -1,3 +1,12 @@
+## Versão 1.6: B-Splines utilizando Forward Differences
+
+* Impementamos B-Splines utilizando Foward Differences. Para isso, nós criamos uma classe `Curve`, que herda de `Wireframe`. Após essa mudança, tanto `BezierCurve` como `BSplineCurve` herdam de `Curve`. Para `BSplineCurve`, existem algumas funções importantes de nota:
+    - `build_curve_coordinates`: as coordenadas são criadas na própria função . Nela, é invocada a função de gerar as diferenças iniciais para cada conjunto de 4 pontos de controle e realiza as iterações necessárias para o algoritmo.
+    - Em `app/math_functions.py`, estão as funções auxiliares , que retorna a matriz de B-Spline; `calculate_initial_differences`, que calcula o vetor de diferenças iniciais; `calculate_bspline_parameters`, que agrega as duas funções anteriores.
+    - o `clipping` segue a mesma orientação dea entrega anterior.
+    
+* Mudamos a interface de criação de curvas para selecionar qual o modelo desejado, `Bezier` ou `B-Spline`. Conforme seleção, a acurácia (delta, no caso da `B-Spline`) padrão é alterada (20 para a primeira, 0.1 para a segunda). Quando inseridos no `display file`, cada curva específica tem seu nome especificado, também.
+
 ## Versão 1.5: Implemente Curvas em 2D usando Blending Functions
 
 * Nesta entrega, decidimos implementar a Curva de Bézier. Para isso:
