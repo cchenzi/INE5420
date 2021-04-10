@@ -11,7 +11,7 @@ from app.math_functions import (
     normalize_point,
     calculate_bezier_points,
     calculate_bspline_parameters,
-    calculate_bezier_points_to_surface,
+    calculate_curve_points_to_surface,
 )
 
 
@@ -322,7 +322,7 @@ class BSplineCurve(Curve):
         return spline_points
 
 
-class BezierBicubicSurface(Curve):
+class BicubicSurface(Curve):
     def __init__(
         self,
         base_points,
@@ -330,8 +330,10 @@ class BezierBicubicSurface(Curve):
         color,
         normalization_values,
         window_transformations,
+        curve_type,
         accuracy=20,
     ):
+        self.curve_type = curve_type
         Curve.__init__(
             self,
             base_points,
@@ -343,7 +345,7 @@ class BezierBicubicSurface(Curve):
         )
 
     def build_curve_name(self, index):
-        return f"Bezier_Bicubic_Surface_{index}"
+        return f"{self.curve_type}_Bicubic_Surface_{index}"
 
     def build_curve_coordinates(self):
         bezier_points = []
@@ -361,9 +363,9 @@ class BezierBicubicSurface(Curve):
 
         for s in np.linspace(0, 1, num=int(self.accuracy)):
             for t in np.linspace(0, 1, num=int(self.accuracy)):
-                x_new = calculate_bezier_points_to_surface(gbx, s, t)
-                y_new = calculate_bezier_points_to_surface(gby, s, t)
-                z_new = calculate_bezier_points_to_surface(gbz, s, t)
+                x_new = calculate_curve_points_to_surface(gbx, s, t, self.curve_type)
+                y_new = calculate_curve_points_to_surface(gby, s, t, self.curve_type)
+                z_new = calculate_curve_points_to_surface(gbz, s, t, self.curve_type)
                 point = (x_new, y_new, z_new)
                 bezier_points.append(point)
 
