@@ -259,7 +259,6 @@ class BezierCurve(Curve):
                         for t in np.linspace(0, 1, num=int(self.accuracy))
                     ]
                 )
-                print(bezier_points)
         flattened_bezier = [item for sublist in bezier_points for item in sublist]
         return [(x, y, z) for (x, y, z) in flattened_bezier]
 
