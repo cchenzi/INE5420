@@ -1,3 +1,18 @@
+## Versão 1.8: Projeção em perspectiva
+
+* Não foi implementada.
+
+## Versão 1.7: Objetos 3D e Projação Paralela Ortogonal
+
+* Para esta tarefa, atualizamos a classe `Wireframe` para suportar pontos, linhas e objetos 3D. Desse modo, tudo que for inserido, na verdade, é tratado como 3D: objetos 2D são objetos 3D com y = 0, definido como padrão na tela de inserção. Para isso, todas as funções que geram matrizes de transformações (translação, escalonamento e rotação) foram atualizadas para 3D (`app/math_functions`). No caso da rotação, gera-se três matrizes e retorna a composição delas.
+
+* A Projeção Paralela Ortogonal está funcionando depois das alterações mencionadas. Além disso, tivemos que adaptar o leitor de arquivos `.obj`. Assim, para agrupamentos, definidos por "g", eles compõem um objeto adicional chamado `WireframeGroup`, responsável por centralizar as transformações. A definição de múltiplos "o" por arquivo ainda é permitida.
+
+* Foram adicionados diversos exemplos na pasta `obj/3d`. retirados mo dodle da disciplina e dos seguintes sites: [https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html] e [http://paulbourke.net/dataformats/obj/]. Não produzimos nenhum 3D. Os objetos 2D ainda funcionam normalmente.
+
+* A **transformação** de rotação ao redor do centro do objeto está com problemas. Entretanto, o resto funciona normalmente.
+
+
 ## Versão 1.6: B-Splines utilizando Forward Differences
 
 * Impementamos B-Splines utilizando Foward Differences. Para isso, nós criamos uma classe `Curve`, que herda de `Wireframe`. Após essa mudança, tanto `BezierCurve` como `BSplineCurve` herdam de `Curve`. Para `BSplineCurve`, existem algumas funções importantes de nota:
