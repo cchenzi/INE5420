@@ -164,13 +164,16 @@ def calculate_bezier_points(points, t):
     return np.dot(blending_functions, points)
 
 
-def calculate_bezier_points_to_surface(points, s, t):
+def calculate_curve_points_to_surface(points, s, t, curve):
     s_vector = bezier_vector(s)
     t_vector = bezier_vector(t)
-    bm = bezier_matrix()
+    if curve == "Bezier":
+        m = bezier_matrix()
+    else:
+        m = build_bspline_matrix()
     return reduce(
         np.dot,
-        [s_vector, bm, points, bm.T, t_vector.T],
+        [s_vector, m, points, m.T, t_vector.T],
     )
 
 
