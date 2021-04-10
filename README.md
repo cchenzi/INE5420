@@ -8,15 +8,14 @@ Este repositório contém o trabalho prático desenvolvido para a primeira parte
 
 Os detalhes sobre as implementações passadas estão no arquivo OLD_README.md. Decidimos deixar neste arquivo apenas as novidades desenvolvidas.
 
-## Versão 1.7: Objetos 3D e Projação Paralela Ortogonal
+## Versão 1.9: Desenhando Superfícies Bicúbicas de Bézier e Spline
 
-* Para esta tarefa, atualizamos a classe `Wireframe` para suportar pontos, linhas e objetos 3D. Desse modo, tudo que for inserido, na verdade, é tratado como 3D: objetos 2D são objetos 3D com y = 0, definido como padrão na tela de inserção. Para isso, todas as funções que geram matrizes de transformações (translação, escalonamento e rotação) foram atualizadas para 3D (`app/math_functions`). No caso da rotação, gera-se três matrizes e retorna a composição delas.
+* Para esta entrega, foi adicionada uma nova classe ao projeto: `BicubicSurface`, que também herda de `Curve` (`app/wireframe.py`). Para construção de seu objeto, é necessário um parâmetro a mais: o tipo de curva. O tipo de curva pode ser tanto `Bezier` como `B-Spline`. Além disso, é necessário incluir 16 pontos, para ambos os casos. Também inserimos uma nova aba na interface de adição de `wireframes` (botão `Add`), em que é possível selecionar qual tipo de superfície bicúbica, assim como a acurácia desejada.
 
-* A Projeção Paralela Ortogonal está funcionando depois das alterações mencionadas. Além disso, tivemos que adaptar o leitor de arquivos `.obj`. Assim, para agrupamentos, definidos por "g", eles compõem um objeto adicional chamado `WireframeGroup`, responsável por centralizar as transformações. A definição de múltiplos "o" por arquivo ainda é permitida.
+* Para os cálculos, foram incluidas as matrizes de `Bezier` e o vetor necessário, além de uma função que realiza as multiplicações necessárias: `calculate_curve_points_to_surface` (`app/math_functions.py`). Já na construção do objeto `BicubicSurface`, realizamos a obtenção das matrizes `Gbx, Gby` e `Gbz`, assim como calculamos os pontos necessários a partir dos parâmetros `s` e `t`, igualmente espaçados pela acurácia, entre [0, 1].
 
-* Foram adicionados diversos exemplos na pasta `obj/3d`. retirados mo dodle da disciplina e dos seguintes sites: [https://people.sc.fsu.edu/~jburkardt/data/obj/obj.html] e [http://paulbourke.net/dataformats/obj/]. Não produzimos nenhum 3D. Os objetos 2D ainda funcionam normalmente.
+* Clipping, transformações, rotações, etc, funcionando para ambas as superfícies. Os pontos utilizados para testar foram os obtidos na aula de exemplo numérico, mas multiplicados por 20. Caso seja do interesse usá-los, pontos: [(0, 0, 0), (0, 60, 80), (0, 120, 60), (0, 200, 0), (60, 50, 40), (40, 120, 100), (60, 160, 100), (80, 0, 40), (120, 60, 40), (160, 120, 100), (140, 200, 9), (120, 0, 50), (200, 0, 0), (210, 60, 80), (210, 120, 60), (200, 180, 0)].
 
-* A **transformação** de rotação ao redor do centro do objeto está com problemas. Entretanto, o resto funciona normalmente.
 
 ## Execução
 
