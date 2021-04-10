@@ -11,6 +11,7 @@ from app.math_functions import (
     normalize_point,
     calculate_bezier_points,
     calculate_bspline_parameters,
+    calculate_bezier_points_to_surface,
 )
 
 
@@ -258,6 +259,7 @@ class BezierCurve(Curve):
                         for t in np.linspace(0, 1, num=int(self.accuracy))
                     ]
                 )
+                print(bezier_points)
         flattened_bezier = [item for sublist in bezier_points for item in sublist]
         return [(x, y, z) for (x, y, z) in flattened_bezier]
 
@@ -318,3 +320,51 @@ class BSplineCurve(Curve):
 
                 spline_points.append((x, y, 0))
         return spline_points
+
+
+class BezierBicubicSurface(Curve):
+    def __init__(
+        self,
+        base_points,
+        index,
+        color,
+        normalization_values,
+        window_transformations,
+        accuracy=20,
+    ):
+        Curve.__init__(
+            self,
+            base_points,
+            index,
+            color,
+            normalization_values,
+            window_transformations,
+            accuracy,
+        )
+
+    def build_curve_name(self, index):
+        return f"Bezier_Bicubic_Surface_{index}"
+
+    def build_curve_coordinates(self):
+        bezier_points = []
+
+        gbx = []
+        gby = []
+        gbz = []
+
+        for i in range(0, len(self.base_points), 4):
+            points = self.base_points[i : i + 4]
+            aux = list(zip(*points))
+            gbx.append(aux[0])
+            gby.append(aux[1])
+            gbz.append(aux[2])
+
+        for s in np.linspace(0, 1, num=int(self.accuracy)):
+            for t in np.linspace(0, 1, num=int(self.accuracy)):
+                x_new = calculate_bezier_points_to_surface(gbx, s, t)
+                y_new = calculate_bezier_points_to_surface(gby, s, t)
+                z_new = calculate_bezier_points_to_surface(gbz, s, t)
+                point = (x_new, y_new, z_new)
+                bezier_points.append(point)
+
+        return bezier_points

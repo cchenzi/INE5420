@@ -136,10 +136,42 @@ def bezier_blending_functions(t):
     )
 
 
+def bezier_vector(n):
+    return np.array([n ** 3, n ** 2, n, 1])
+
+
+def bezier_matrix():
+    """
+    Return Bezier matrix as:
+        [-1  3 -3  1]
+        [ 3 -6  3  0]
+        [-3  3  0  0]
+        [ 1  0  0  0],
+    """
+    return np.array(
+        [
+            [-1, 3, -3, 1],
+            [3, -6, 3, 0],
+            [-3, 3, 0, 0],
+            [1, 0, 0, 0],
+        ]
+    )
+
+
 def calculate_bezier_points(points, t):
 
     blending_functions = bezier_blending_functions(t)
     return np.dot(blending_functions, points)
+
+
+def calculate_bezier_points_to_surface(points, s, t):
+    s_vector = bezier_vector(s)
+    t_vector = bezier_vector(t)
+    bm = bezier_matrix()
+    return reduce(
+        np.dot,
+        [s_vector, bm, points, bm.T, t_vector.T],
+    )
 
 
 def build_bspline_matrix():
