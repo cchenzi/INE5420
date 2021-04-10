@@ -136,7 +136,7 @@ def bezier_blending_functions(t):
     )
 
 
-def bezier_vector(n):
+def parameter_vector(n):
     return np.array([n ** 3, n ** 2, n, 1])
 
 
@@ -165,8 +165,8 @@ def calculate_bezier_points(points, t):
 
 
 def calculate_curve_points_to_surface(points, s, t, curve):
-    s_vector = bezier_vector(s)
-    t_vector = bezier_vector(t)
+    s_vector = parameter_vector(s)
+    t_vector = parameter_vector(t)
     if curve == "Bezier":
         m = bezier_matrix()
     else:
