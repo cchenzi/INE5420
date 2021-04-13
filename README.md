@@ -14,7 +14,7 @@ Os detalhes sobre as implementações passadas estão no arquivo OLD_README.md. 
 
 * Para os cálculos, foram incluidas as matrizes de `Bezier` e o vetor necessário, além de uma função que realiza as multiplicações necessárias: `calculate_curve_points_to_surface` (`app/math_functions.py`). Já na construção do objeto `BicubicSurface`, realizamos a obtenção das matrizes `Gbx, Gby` e `Gbz`, assim como calculamos os pontos necessários a partir dos parâmetros `s` e `t`, igualmente espaçados pela acurácia, entre [0, 1].
 
-* Clipping, transformações, rotações, etc, funcionando para ambas as superfícies. Os pontos utilizados para testar foram os obtidos na aula de exemplo numérico, mas multiplicados por 20. Caso seja do interesse usá-los, pontos: [(0, 0, 0), (0, 60, 80), (0, 120, 60), (0, 200, 0), (60, 50, 40), (40, 120, 100), (60, 160, 100), (80, 0, 40), (120, 60, 40), (160, 120, 100), (140, 200, 9), (120, 0, 50), (200, 0, 0), (210, 60, 80), (210, 120, 60), (200, 180, 0)].
+* Clipping, transformações, rotações, etc, funcionando para ambas as superfícies. Os pontos utilizados para testar foram os obtidos na aula de exemplo numérico, mas multiplicados por 20. Caso seja do interesse usá-los, pontos: [(0, 0, 0), (0, 60, 80), (0, 120, 60), (0, 200, 0), (60, 50, 40), (40, 120, 100), (60, 160, 100), (80, 0, 40), (120, 60, 40), (160, 120, 100), (140, 200, 90), (120, 0, 50), (200, 0, 0), (210, 60, 80), (210, 120, 60), (200, 180, 0)].
 
 
 ## Execução

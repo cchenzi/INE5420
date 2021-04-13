@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtGui
 from PyQt5 import QtCore, QtGui, QtWidgets
-from app.wireframe import Wireframe, BezierCurve, BSplineCurve
+from app.wireframe import Wireframe, BezierCurve, BSplineCurve, BicubicSurface
 from app.utils import Shape
 
 
@@ -107,6 +107,45 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.accuracyCurveTextEdit.setText("20.0")
         self.tabWidget.addTab(self.bezierTab, "")
 
+        self.bicubicSurfaceTab = QtWidgets.QWidget()
+        self.setPointsBicubicSurfaceLabel = QtWidgets.QLabel(self.bicubicSurfaceTab)
+        self.setPointsBicubicSurfaceLabel.setGeometry(QtCore.QRect(10, 10, 81, 18))
+        self.setPointsBicubicSurfaceLabel.setObjectName("setPointsBicubicSurfaceLabel")
+        self.newXBicubicSurfaceLabel = QtWidgets.QLabel(self.bicubicSurfaceTab)
+        self.newXBicubicSurfaceLabel.setGeometry(QtCore.QRect(30, 45, 21, 18))
+        self.newXBicubicSurfaceLabel.setObjectName("newXBicubicSurfaceLabel")
+        self.newYBicubicSurfaceLabel = QtWidgets.QLabel(self.bicubicSurfaceTab)
+        self.newYBicubicSurfaceLabel.setGeometry(QtCore.QRect(30, 85, 16, 16))
+        self.newYBicubicSurfaceLabel.setObjectName("newYBicubicSurfaceLabel")
+        self.newXBicubicSurfaceTextEdit = QtWidgets.QTextEdit(self.bicubicSurfaceTab)
+        self.newXBicubicSurfaceTextEdit.setGeometry(QtCore.QRect(50, 35, 51, 31))
+        self.newXBicubicSurfaceTextEdit.setObjectName("newXBicubicSurfaceTextEdit")
+        self.newYBicubicSurfaceTextEdit = QtWidgets.QTextEdit(self.bicubicSurfaceTab)
+        self.newYBicubicSurfaceTextEdit.setGeometry(QtCore.QRect(50, 75, 51, 31))
+        self.newYBicubicSurfaceTextEdit.setObjectName("newYBicubicSurfaceTextEdit")
+        self.newZBicubicSurfaceLabel = QtWidgets.QLabel(self.bicubicSurfaceTab)
+        self.newZBicubicSurfaceLabel.setGeometry(QtCore.QRect(30, 125, 16, 16))
+        self.newZBicubicSurfaceLabel.setObjectName("newZBicubicSurfaceLabel")
+        self.newZBicubicSurfaceTextEdit = QtWidgets.QTextEdit(self.bicubicSurfaceTab)
+        self.newZBicubicSurfaceTextEdit.setGeometry(QtCore.QRect(50, 115, 51, 31))
+        self.newZBicubicSurfaceTextEdit.setObjectName("newZBicubicSurfaceTextEdit")
+        self.newZBicubicSurfaceTextEdit.setText("0")
+        self.bicubicSurfaceComboBox = QtWidgets.QComboBox(self.bicubicSurfaceTab)
+        self.bicubicSurfaceComboBox.setGeometry(QtCore.QRect(30, 195, 142, 25))
+        self.bicubicSurfaceComboBox.setObjectName("bicubicSurfaceComboBox")
+        self.bicubicSurfaceComboBox.addItem("Bezier")
+        self.bicubicSurfaceComboBox.addItem("B-Spline")
+        self.accuracyBicubicSurfaceLabel = QtWidgets.QLabel(self.bicubicSurfaceTab)
+        self.accuracyBicubicSurfaceLabel.setGeometry(QtCore.QRect(30, 160, 81, 16))
+        self.accuracyBicubicSurfaceLabel.setObjectName("bicubicSurfaceLabel")
+        self.accuracyBicubicSurfaceTextEdit = QtWidgets.QTextEdit(
+            self.bicubicSurfaceTab
+        )
+        self.accuracyBicubicSurfaceTextEdit.setGeometry(QtCore.QRect(100, 155, 71, 31))
+        self.accuracyBicubicSurfaceTextEdit.setObjectName("bicubicSurfaceTextEdit")
+        self.accuracyBicubicSurfaceTextEdit.setText("20.0")
+        self.tabWidget.addTab(self.bicubicSurfaceTab, "")
+
         self.retranslateUi()
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -122,14 +161,19 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.colorPickerPushButton.setText(_translate("Form", "Pick Color"))
         self.setPointsWireframeLabel.setText(_translate("Form", "Set points:"))
         self.setPointsBezierLabel.setText(_translate("Form", "Set points:"))
+        self.setPointsBicubicSurfaceLabel.setText(_translate("Form", "Set points:"))
         self.newXWireframeLabel.setText(_translate("Form", "X:"))
         self.newYWireframeLabel.setText(_translate("Form", "Y:"))
         self.newZWireframeLabel.setText(_translate("Form", "Z:"))
         self.newXCurveLabel.setText(_translate("Form", "X:"))
         self.newYCurveLabel.setText(_translate("Form", "Y:"))
         self.newZCurveLabel.setText(_translate("Form", "Z:"))
+        self.newXBicubicSurfaceLabel.setText(_translate("Form", "X:"))
+        self.newYBicubicSurfaceLabel.setText(_translate("Form", "Y:"))
+        self.newZBicubicSurfaceLabel.setText(_translate("Form", "Z:"))
         self.fillCheckBox.setText(_translate("Form", "Fill Polygon"))
         self.accuracyCurveLabel.setText(_translate("Form", "Accuracy:"))
+        self.accuracyBicubicSurfaceLabel.setText(_translate("Form", "Accuracy:"))
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.wireframeTab),
             _translate("Form", "Wireframe"),
@@ -137,6 +181,10 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.bezierTab),
             _translate("Form", "Curve"),
+        )
+        self.tabWidget.setTabText(
+            self.tabWidget.indexOf(self.bicubicSurfaceTab),
+            _translate("Form", "Bicubic Surface"),
         )
 
     def new_window(self):
@@ -155,6 +203,10 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
             xTextEdit = self.newXCurveTextEdit
             yTextEdit = self.newYCurveTextEdit
             zTextEdit = self.newZCurveTextEdit
+        if active_tab == 2:
+            xTextEdit = self.newXBicubicSurfaceTextEdit
+            yTextEdit = self.newYBicubicSurfaceTextEdit
+            zTextEdit = self.newZBicubicSurfaceTextEdit
         try:
             x = float(xTextEdit.toPlainText())
             y = float(yTextEdit.toPlainText())
@@ -167,6 +219,7 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
         self.partnerDialog.console_print(f"Points after append={self.points}")
         xTextEdit.clear()
         yTextEdit.clear()
+        zTextEdit.clear()
         point_id = len(self.points) - 1
         point_str = f"Point {point_id}: {x}, {y}, {z}"
         self.newPointsListWidget.insertItem(point_id, point_str)
@@ -235,6 +288,38 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                     args.append(accuracy)
                     wireframe = BSplineCurve(*args)
 
+            if active_tab == 2:
+
+                if len(self.points) != 16:
+                    self.partnerDialog.console_print("Invalid number of points")
+                    return
+
+                accuracy = None
+                try:
+                    accuracy = float(self.accuracyCurveTextEdit.toPlainText())
+                except ValueError:
+                    self.partnerDialog.console_print(
+                        "Invalid or empty value on accuracy, using default value"
+                    )
+                    accuracy = 20.0
+
+                curve_type = ""
+                if self.bicubicSurfaceComboBox.currentIndex() == 0:
+                    curve_type = "Bezier"
+                elif self.bicubicSurfaceComboBox.currentIndex() == 1:
+                    curve_type = "B-Spline"
+
+                args = [
+                    self.points,
+                    wireframe_id,
+                    self.color,
+                    self.partnerDialog.window_coordinates,
+                    self.partnerDialog.window_transformations_matrix,
+                    curve_type,
+                    accuracy,
+                ]
+                wireframe = BicubicSurface(*args)
+
             self.display_file.append(wireframe)
             self.partnerDialog.draw_wireframe(wireframe)
             self.partnerDialog.draw_native_objects()
@@ -284,9 +369,15 @@ class NewWireframeWindow(QtWidgets.QMainWindow):
                 self.drawPolygonPushButton.setText(f"Draw Nothing")
             else:
                 self.drawPolygonPushButton.setText(f"Draw Curve")
+        if active_tab == 2:
+            if len(self.points) == 0:
+                self.drawPolygonPushButton.setText(f"Draw Nothing")
+            else:
+                self.drawPolygonPushButton.setText(f"Draw Surface")
 
     def set_default_curve_accuracy(self):
         if self.curveComboBox.currentIndex() == 0:
             self.accuracyCurveTextEdit.setText("20.0")
         if self.curveComboBox.currentIndex() == 1:
             self.accuracyCurveTextEdit.setText("0.1")
+        self.accuracyBicubicSurfaceTextEdit.setText("20.0")
